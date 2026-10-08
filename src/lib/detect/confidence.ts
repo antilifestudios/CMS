@@ -199,3 +199,85 @@ export function passesThreshold(r: DetectionResult, isPrimary = false): boolean 
   if (typeof r.score !== 'number') return false;
   return r.score >= (isPrimary ? MIN_PRIMARY_SCORE : MIN_DISPLAY_SCORE);
 }
+
+// ----------------------------------------------------------------
+// Debug explanation (dev-only, never rendered in production UI)
+// ----------------------------------------------------------------
+
+export interface DebugSignalBreakdown {
+  artifact: string;
+  family: string;
+  strength: string;
+  baseWeight: number;
+  specificity: number;
+  adjusted: number;
+  familyWinner: boolean;
+}
+
+export interface DebugDetectionBreakdown {
+  id: string;
+  name: string;
+  score: number;
+  scoreLabel: ScoreLabel;
+  families: number;
+  corroborationBonus: number;
+  signals: DebugSignalBreakdown[];
+}
+
+/**
+ * Explain WHY a detection scored what it did, per evidence family.
+ * Dev/debug only — call from console, tests, or /api/detect with
+ * { debug: true }. Output shape mirrors the task spec:
+ *   Technology: Sentry / Score: 97 / Signals: +40 known script ...
+ */
+export function explainDetection(evidence: Evidence[]): {
+  score: number;
+  families: number;
+  bonus: number;
+  signals: DebugSignalBreakdown[];
+} {
+  const bestByFamily = new Map<string, number>();
+  for (const e of evidence) {
+    const adj = adjustedSignal(e);
+    const fam = e.family ?? 'HTML';
+    if (adj > (bestByFamily.get(fam) ?? -1)) bestByFamily.set(fam, adj);
+  }
+  const families = bestByFamily.size;
+  const bonus = corroborationBonus(families);
+  const signals: DebugSignalBreakdown[] = evidence.map((e) => {
+    const base = STRENGTH_WEIGHT[e.strength ?? 'weak'] ?? 0.3;
+    const spec =
+      typeof e.specificity === 'number'
+        ? Math.min(1, Math.max(0, e.specificity))
+        : specificityForStrength(e.strength ?? 'weak');
+    const raw = base * spec;
+    const fam = e.family ?? 'HTML';
+    return {
+      artifact: e.artifact,
+      family: fam,
+      strength: e.strength ?? 'weak',
+      baseWeight: base,
+      specificity: +spec.toFixed(2),
+      adjusted: +raw.toFixed(3),
+      familyWinner: raw >= (bestByFamily.get(fam) ?? Infinity),
+    };
+  });
+  const { score } = scoreDetection(evidence);
+  return { score, families, bonus, signals };
+}
+
+/** Explain every detection in a result list (debug payload). */
+export function explainDetections(results: DetectionResult[]): DebugDetectionBreakdown[] {
+  return results.map((r) => {
+    const ex = explainDetection(r.evidence);
+    return {
+      id: r.id,
+      name: r.name,
+      score: r.score ?? ex.score,
+      scoreLabel: r.scoreLabel ?? scoreToLabel5(ex.score),
+      families: ex.families,
+      corroborationBonus: ex.bonus,
+      signals: ex.signals,
+    };
+  });
+}

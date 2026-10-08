@@ -21,6 +21,7 @@
 
 import type { APIRoute } from 'astro';
 import { runDetectionPipeline } from '../../lib/detect/pipeline';
+import { explainDetections } from '../../lib/detect/confidence';
 
 export const prerender = false;
 
@@ -83,7 +84,7 @@ export const OPTIONS: APIRoute = () => {
 
 export const POST: APIRoute = async ({ request }) => {
   // Parse body (with a sanity size cap — the URL itself is ≤ 2048 chars)
-  let body: { url?: unknown; token?: unknown };
+  let body: { url?: unknown; token?: unknown; debug?: unknown };
   try {
     const text = await request.text();
     if (text.length > 8192) {
@@ -96,6 +97,7 @@ export const POST: APIRoute = async ({ request }) => {
 
   const rawUrl = typeof body.url === 'string' ? body.url.trim() : '';
   const cfToken = typeof body.token === 'string' ? body.token : '';
+  const wantDebug = body.debug === true;
 
   if (!rawUrl || rawUrl.length > 2048) {
     return json({ ok: false, error: { code: 'INVALID_URL', partialResults: [] } }, 400);
@@ -126,6 +128,15 @@ export const POST: APIRoute = async ({ request }) => {
 
   // Run pipeline (never logs the URL)
   const result = await runDetectionPipeline(rawUrl);
+
+  // Dev/debug: explain WHY each technology scored what it did.
+  // Opt-in via { debug: true } — never cached, never logged.
+  // Shape: { id, name, score, families, corroborationBonus, signals[] }
+  // where each signal shows baseWeight × specificity = adjusted.
+  if (wantDebug && result.ok) {
+    const debug = explainDetections(result.data.results);
+    return json({ ...result, debug }, 200, { 'X-Cache': 'MISS' });
+  }
 
   // Cache successful results for 1 hour. put() needs a Request key in some
   // runtimes, so build one from the synthetic URL.

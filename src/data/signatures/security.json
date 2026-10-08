@@ -4,9 +4,9 @@
     "name": "OneTrust",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.cookielaw\\.org/consent/|cdn\\.cookielaw\\.org/scripttemplates/otSDKStub\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cdn\\.cookielaw\\.org/consent/[a-f0-9-]+/otSDKStub\\.js|OneTrust\\.Notice\\.module|OptanonConsent|otBannerSdk\\.js", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^OptanonConsent$|^OptanonAlertBoxClosed$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.cookielaw\\.org/consent/|cdn\\.cookielaw\\.org/scripttemplates/otSDKStub\\.js|cdn\\.cookielaw\\.org/optanon/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "cdn\\.cookielaw\\.org/consent/[a-f0-9-]+/otSDKStub\\.js|OneTrust\\.Notice\\.module|Optanon\\.Wrapper|OptanonConsent=|OnetrustActiveGroups|otBannerSdk\\.js|__OTBanner|OneTrust\\.AllowAll", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^OptanonConsent$|^OptanonAlertBoxClosed$|^OTConsent$", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -14,8 +14,9 @@
     "name": "Cookiebot",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js[^\"']*cbid=[a-f0-9-]+|Cookiebot\\.consent\\.necessary|data-cbid=\\s*[\"'][a-f0-9-]+[\"']", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js|consent\\.cookiebot\\.com/cb\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js[^\"']*cbid=[a-f0-9-]+|Cookiebot\\.consent\\.necessary|data-cbid=\\s*[\"'][a-f0-9-]+[\"']|Cookiebot\\.show|id\\s*=\\s*[\"']CookieDeclaration[\"']|consent\\.cookiebot\\.com/[a-f0-9-]+/cd\\.js", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^CookieConsent$|^CookieInformationConsent$", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -23,8 +24,9 @@
     "name": "Usercentrics",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "app\\.usercentrics\\.eu/browser-ui/|settings\\.usercentrics\\.eu/settings-data", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "app\\.usercentrics\\.eu/browser-ui/latest/loader\\.js|settings\\.usercentrics\\.eu/settings-data/[^\"'\\s]+|UC_UI\\.showSecondLayer|__ucCmp", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "app\\.usercentrics\\.eu/browser-ui/|settings\\.usercentrics\\.eu/settings-data|usercentrics\\.eu/bridge\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "app\\.usercentrics\\.eu/browser-ui/latest/loader\\.js|settings\\.usercentrics\\.eu/settings-data/[^\"'\\s]+|UC_UI\\.showSecondLayer|__ucCmp|data-settings-id\\s*=\\s*[\"'][A-Za-z0-9_-]+[\"'][^>]*usercentrics", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^uc_settings$|^uc_consent$|^usercentrics_consent$", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -32,8 +34,9 @@
     "name": "TrustArc",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "consent\\.trustarc\\.com/notice|static\\.trustarc\\.com", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "consent\\.trustarc\\.com/notice/js/v3/jsDo\\.jsp|truste\\.js|TrustArc\\.cm\\.api|privacy\\.trustarc\\.com", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "consent\\.trustarc\\.com/notice|static\\.trustarc\\.com|consent\\.trustarc\\.com/m/static", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "consent\\.trustarc\\.com/notice(\\?domain=|/js/v3/jsDo\\.jsp)|truste\\.js|TrustArc\\.cm\\.api|privacy\\.trustarc\\.com|trustarc\\.com/m/static/trustarc", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^notice_behavior$|^notice_gdpr_prefs$|^cmapi_cookieprivacynotice", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -41,8 +44,9 @@
     "name": "iubenda",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.iubenda\\.com/(cs|safe-tcf)/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cdn\\.iubenda\\.com/cs/[^\"']*\\.js|iubenda_cs\\.version|_iub\\.cs\\.consent|cdn\\.iubenda\\.com/privacy-policy/", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.iubenda\\.com/(cs|safe-tcf|api)/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "cdn\\.iubenda\\.com/cs/[^\"']*\\.js|iubenda_cs\\.version|_iub\\.cs\\.consent|cdn\\.iubenda\\.com/privacy-policy/|iubenda\\.init", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^_iub_cs-[0-9]+$", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -51,7 +55,58 @@
     "category": "privacy",
     "signals": [
       { "type": "html-path", "pattern": "/wp-content/plugins/complianz-gdpr/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cmplz_set_cookie|complianz\\.min\\.js|cmplz-document\\.css|/complianz-gdpr/assets", "weight": 80, "strength": "strong" }
+      { "type": "html-regex", "pattern": "cmplz_set_cookie|complianz\\.min\\.js|cmplz-document\\.css|/complianz-gdpr/assets|COMPLIANZ\\s*=|cmplz_get_cookie", "weight": 80, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^cmplz_choice$|^cmplz_statistics$|^cmplz_marketing$|^cmplz_preferences$|^cmplz_functional$", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "didomi",
+    "name": "Didomi",
+    "category": "privacy",
+    "signals": [
+      { "type": "script-host", "pattern": "sdk\\.didomi\\.io/didomi-loader|sdk\\.privacy-center\\.org|cdn\\.privacy-center\\.org", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "sdk\\.didomi\\.io/didomi-loader/[^\"']+\\.js|Didomi\\.notice\\.show|Didomi\\.getUserConsentStatus|didomiConfig|api\\.didomi\\.io/consent", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^didomi_token$|^didomi_", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "osano",
+    "name": "Osano",
+    "category": "privacy",
+    "signals": [
+      { "type": "script-host", "pattern": "cmp\\.osano\\.com/dist/osano\\.js|cdn\\.osano\\.com", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "cmp\\.osano\\.com/dist/osano\\.js[^\"']*customerId=[A-Za-z0-9-]+|Osano\\.cm\\.showDrawer|window\\.__osano|osano\\.init", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^osano_consentmanager$|^osano_consentmanager_uuid$", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "cookieyes",
+    "name": "CookieYes",
+    "category": "privacy",
+    "signals": [
+      { "type": "script-host", "pattern": "cdn-cookieyes\\.com/client_data/|app\\.cookieyes\\.com/cdn/cli\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "cdn-cookieyes\\.com/client_data/[a-f0-9]+/script\\.js|cky-consent|ckyBanner|cookieyes\\.init|app\\.cookieyes\\.com/cdn/cli\\.js", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^cky-consent$|^cookieyes-consent$|^cky-active-check$", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "termly",
+    "name": "Termly",
+    "category": "privacy",
+    "signals": [
+      { "type": "script-host", "pattern": "app\\.termly\\.io/resource-blocker/|cdn\\.termly\\.io/api/|display\\.termly\\.io", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "app\\.termly\\.io/resource-blocker/[a-f0-9-]+\\.min\\.js|termly\\.getConsentState|display\\.termly\\.io/policy|termly-embed|data-termly", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^_termly_visitor$|^termlyConsent$", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "quantcast-choice",
+    "name": "Quantcast Choice",
+    "category": "privacy",
+    "signals": [
+      { "type": "script-host", "pattern": "quantcast\\.mgr\\.consent\\.js|cmp\\.quantcast\\.com/choice/|c1\\.quantserve\\.com/gce|api\\.quantcast\\.com/choice/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "quantcast\\.mgr\\.consent\\.js|cmp\\.quantcast\\.com/choice/[a-zA-Z0-9_-]+/__tcf\\.js|__tcfapi[^<]{0,200}quantcast|quantcast\\.com/choice", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^euconsent-v2$", "weight": 40, "strength": "weak" }
     ]
   },
   {
@@ -59,26 +114,85 @@
     "name": "reCAPTCHA",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "google\\.com/recaptcha/api\\.js|gstatic\\.com/recaptcha/releases/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "google\\.com/recaptcha/api\\.js\\?render=|g-recaptcha\\s+data-sitekey|grecaptcha\\.execute\\(\\s*['\"][A-Za-z0-9_-]+['\"]|recaptcha__en\\.js", "weight": 85, "strength": "strong" }
-    ]
+      { "type": "script-host", "pattern": "google\\.com/recaptcha/(api\\.js|enterprise\\.js)|recaptcha\\.net/recaptcha/(api\\.js|enterprise\\.js)|gstatic\\.com/recaptcha/releases/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "google\\.com/recaptcha/(api|enterprise)\\.js\\?render=[A-Za-z0-9_-]+|recaptcha\\.net/recaptcha/(api|enterprise)\\.js|g-recaptcha\\s+data-sitekey\\s*=\\s*[\"'][A-Za-z0-9_-]{10,}[\"']|grecaptcha\\.execute\\(\\s*['\"][A-Za-z0-9_-]{10,}['\"]|id\\s*=\\s*[\"']g-recaptcha-response[\"']|___grecaptcha_cfg|recaptcha__en\\.js", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^_GRECAPTCHA$", "weight": 60, "strength": "strong" }
+    ],
+    "negative": ["data-sitekey\\s*=\\s*[\"'](YOUR_SITE_KEY|test|example|placeholder|xxxx|123)"]
   },
   {
     "id": "hcaptcha",
     "name": "hCaptcha",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "js\\.hcaptcha\\.com/1\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "js\\.hcaptcha\\.com/1\\.js[^\"']*onload=|class=\\s*[\"'][^\"']*h-captcha|hcaptcha\\.execute\\(", "weight": 85, "strength": "strong" }
-    ]
+      { "type": "script-host", "pattern": "js\\.hcaptcha\\.com/1\\.js|hcaptcha\\.com/captcha/v1/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "js\\.hcaptcha\\.com/1\\.js[^\"']*onload=|class\\s*=\\s*[\"'][^\"']*h-captcha[^\"']*[\"'][^>]*data-sitekey|hcaptcha\\.execute\\(|(id|name)\\s*=\\s*[\"']h-captcha-response[\"']|data-hcaptcha-widget-id|hcaptcha\\.render\\(", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^hc_accessibility$", "weight": 40, "strength": "weak" }
+    ],
+    "negative": ["data-sitekey\\s*=\\s*[\"'](10000000-ffff-ffff-ffff-000000000001|test|example|placeholder)"]
   },
   {
     "id": "sentry",
     "name": "Sentry",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "browser\\.sentry-cdn\\.com/[^\"']*bundle[^\"']*\\.min\\.js|js\\.sentry-cdn\\.com/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "browser\\.sentry-cdn\\.com/[^\"']+\\.min\\.js|Sentry\\.init\\(\\s*\\{|Sentry\\.onLoad\\(|\\.sentry\\.io/api/\\d+/envelope", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "browser\\.sentry-cdn\\.com/[^\"']+\\.min\\.js|js\\.sentry-cdn\\.com/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "Sentry\\.init\\(\\s*\\{|Sentry\\.captureException|Sentry\\.onLoad\\(|[a-z0-9-]+\\.ingest\\.sentry\\.io/api/\\d+/envelope|\\.sentry\\.io/api/\\d+/envelope|dsn\\s*:\\s*['\"]https://[a-f0-9]+@[a-z0-9.-]*\\.?sentry\\.io|__SENTRY__|window\\.Sentry|_sentryDebugIds|__sentryPatched", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "cloudflare-turnstile",
+    "name": "Cloudflare Turnstile",
+    "category": "security",
+    "signals": [
+      { "type": "script-host", "pattern": "challenges\\.cloudflare\\.com/turnstile/v0/api\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "challenges\\.cloudflare\\.com/turnstile/v0/api\\.js|class\\s*=\\s*[\"'][^\"']*cf-turnstile[^\"']*[\"'][^>]*data-sitekey|turnstile\\.render\\(|data-cf-turnstile-response|(id|name)\\s*=\\s*[\"']cf-turnstile-response[\"']", "weight": 85, "strength": "strong" }
+    ],
+    "negative": ["data-sitekey\\s*=\\s*[\"'](0x[a-fA-F0-9]{30,}|test|example|placeholder|xxxx)"]
+  },
+  {
+    "id": "fingerprint",
+    "name": "Fingerprint",
+    "category": "security",
+    "signals": [
+      { "type": "script-host", "pattern": "cdn\\.fingerprint\\.com/|cdn\\.fingerprintjs\\.com/|fp\\.cdn\\.io/v\\d+/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "FingerprintJS\\.load\\(|@fingerprintjs/fingerprintjs|fpjs\\.io/v\\d+|fingerprint\\.com/v\\d+/[^\"']+\\.js", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "datadog",
+    "name": "Datadog RUM",
+    "category": "security",
+    "signals": [
+      { "type": "script-host", "pattern": "browser-intake-datadoghq\\.com/sdk/|rum\\.browser-intake-datadoghq\\.com/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "DD_RUM\\.init\\(|@datadog/browser-rum|browser-intake-datadoghq\\.com/api/v\\d+/rum|datadogRum\\.init", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "new-relic",
+    "name": "New Relic",
+    "category": "security",
+    "signals": [
+      { "type": "script-host", "pattern": "js-agent\\.newrelic\\.com/nr-spa|js-agent\\.newrelic\\.com/nr-loader", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "NREUM\\.(init|info|loader_config)|js-agent\\.newrelic\\.com/nr-spa-[0-9]+\\.min\\.js|bam\\.nr-data\\.net/1/[a-f0-9]+", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "bugsnag",
+    "name": "Bugsnag",
+    "category": "security",
+    "signals": [
+      { "type": "script-host", "pattern": "d2wy8f7a9ursnm\\.cloudfront\\.net/v\\d+/bugsnag\\.min\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "Bugsnag\\.start\\(|Bugsnag\\.notify\\(|notify\\.bugsnag\\.com/sessions\\.bugsnag\\.com|d2wy8f7a9ursnm\\.cloudfront\\.net/v\\d+/bugsnag", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "rollbar",
+    "name": "Rollbar",
+    "category": "security",
+    "signals": [
+      { "type": "script-host", "pattern": "cdn\\.rollbar\\.com/rollbarjs/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "Rollbar\\.configure\\(|_rollbarConfig\\s*=|api\\.rollbar\\.com/api/1/item|cdn\\.rollbar\\.com/rollbarjs/[^\"']+\\.min\\.js", "weight": 85, "strength": "strong" }
     ]
   },
   {
@@ -86,8 +200,8 @@
     "name": "Cloudinary",
     "category": "other",
     "signals": [
-      { "type": "html-regex", "pattern": "res\\.cloudinary\\.com/[a-z0-9_-]+/(image|video|raw)/upload/|cloudinary\\.com/.*\\/fetch\\/", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "res\\.cloudinary\\.com|upload\\.cloudinary\\.com|widget\\.cloudinary\\.com", "weight": 80, "strength": "strong" }
+      { "type": "html-regex", "pattern": "res\\.cloudinary\\.com/[a-z0-9_-]+/(image|video|raw)/upload/|cloudinary\\.com/[a-z0-9_-]+/(image|video)/upload/|cloudinary-video\\.css|cloudinary\\.com/video/player", "weight": 85, "strength": "strong" },
+      { "type": "script-host", "pattern": "res\\.cloudinary\\.com|upload\\.cloudinary\\.com|widget\\.cloudinary\\.com|product-gallery\\.cloudinary\\.com", "weight": 80, "strength": "strong" }
     ]
   },
   {
@@ -96,7 +210,7 @@
     "category": "other",
     "signals": [
       { "type": "script-host", "pattern": "cdn\\.algolia\\.com/algoliasearch|cdn\\.algolianet\\.com/|cdn\\.jsdelivr\\.net/npm/(algoliasearch|instantsearch\\.js)", "weight": 85, "strength": "strong" },
-      { "type": "html-regex", "pattern": "algoliasearch\\.init\\(|docsearch\\.js|instantsearch\\.js|[^a-zA-Z]algolia[^a-zA-Z].*apiKey", "weight": 75, "strength": "strong" }
+      { "type": "html-regex", "pattern": "algoliasearch\\([^)]*apiKey|docsearch\\(\\s*\\{[^}]*apiKey|instantsearch\\(\\s*\\{|[^a-zA-Z]algoliasearch\\.init\\(|[a-z0-9-]+\\.algolia\\.net/v1/indexes|[a-z0-9-]+\\.algolianet\\.com/v1/indexes", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -104,8 +218,8 @@
     "name": "Google Maps",
     "category": "other",
     "signals": [
-      { "type": "script-host", "pattern": "maps\\.googleapis\\.com/maps/api/js|maps\\.google\\.com/maps/api/js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "maps\\.googleapis\\.com/maps/api/js\\?key=[A-Za-z0-9_-]+|new\\s+google\\.maps\\.Map\\(|google\\.maps\\.places\\.Autocomplete", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "maps\\.googleapis\\.com/maps/api/js|maps\\.google\\.com/maps/api/js|maps\\.gstatic\\.com/mapfiles/api-", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "maps\\.googleapis\\.com/maps/api/js\\?[^\"'\\s]+|maps\\.googleapis\\.com/maps/api/staticmap\\?|google\\.com/maps/embed\\?pb=|maps\\.google\\.com/maps\\?q=|new\\s+google\\.maps\\.(Map|Marker|InfoWindow|places\\.Autocomplete)\\(|google\\.maps\\.MapTypeId", "weight": 85, "strength": "strong" }
     ]
   },
   {
@@ -114,7 +228,8 @@
     "category": "other",
     "signals": [
       { "type": "html-regex", "pattern": "(www\\.)?youtube\\.com/embed/[A-Za-z0-9_-]{6,}|youtube-nocookie\\.com/embed/[A-Za-z0-9_-]{6,}", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "youtube\\.com/iframe_api|www\\.youtube\\.com/s/player/", "weight": 80, "strength": "strong" }
+      { "type": "script-host", "pattern": "youtube\\.com/iframe_api|www\\.youtube\\.com/s/player/", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "onYouTubeIframeAPIReady|YT\\.Player\\(|youtube\\.com\\/player_api", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -123,7 +238,8 @@
     "category": "other",
     "signals": [
       { "type": "html-regex", "pattern": "player\\.vimeo\\.com/video/\\d+|vimeo\\.com/api/oembed\\.json", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "player\\.vimeo\\.com/api/player\\.js|f\\.vimeocdn\\.com/js/froogaloop", "weight": 80, "strength": "strong" }
+      { "type": "script-host", "pattern": "player\\.vimeo\\.com/api/player\\.js|f\\.vimeocdn\\.com/", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "new\\s+Vimeo\\.Player\\(|Vimeo\\.Player\\(|f\\.vimeocdn\\.com/p/[^\"']+\\.js", "weight": 75, "strength": "strong" }
     ]
   },
   {
@@ -132,7 +248,8 @@
     "category": "other",
     "signals": [
       { "type": "stylesheet-url", "pattern": "font-awesome|fontawesome|use\\.fontawesome\\.com", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "use\\.fontawesome\\.com/releases/|ka-f\\.fontawesome\\.com", "weight": 80, "strength": "strong" }
+      { "type": "script-host", "pattern": "use\\.fontawesome\\.com/releases/|ka-[a-z]\\.fontawesome\\.com|kit\\.fontawesome\\.com", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "class\\s*=\\s*[\"'][^\"']*fa-(solid|regular|brands|sharp)\\s+fa-[a-z-]+|data-prefix\\s*=\\s*[\"']fa[\"']|(href|src)\\s*=\\s*[\"'][^\"']*fontawesome-free[^\"']*|fontawesome/css/all\\.min\\.css", "weight": 70, "strength": "strong" }
     ]
   }
 ]

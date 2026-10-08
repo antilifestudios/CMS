@@ -9,13 +9,13 @@ import FamilyDetector from '../components/detectors/FamilyDetector.astro';
 const groups = [
   {
     label: 'Privacy / Consent',
-    blurb: 'Consent managers matched by SDK scripts and platform cookies.',
-    items: ['OneTrust', 'Cookiebot', 'Usercentrics', 'TrustArc', 'iubenda', 'Complianz'],
+    blurb: 'Consent managers matched by SDK scripts, JS APIs, and platform cookies.',
+    items: ['OneTrust', 'Cookiebot', 'Usercentrics', 'TrustArc', 'iubenda', 'Complianz', 'Didomi', 'Osano', 'CookieYes', 'Termly', 'Quantcast Choice'],
   },
   {
     label: 'Security',
-    blurb: 'Bot protection and error tracking matched by script host.',
-    items: ['reCAPTCHA', 'hCaptcha', 'Sentry'],
+    blurb: 'Bot protection and error tracking matched by SDK, init calls, and cookies.',
+    items: ['reCAPTCHA', 'hCaptcha', 'Sentry', 'Cloudflare Turnstile', 'Fingerprint', 'Datadog', 'New Relic', 'Bugsnag', 'Rollbar'],
   },
   {
     label: 'Other technologies',
@@ -48,7 +48,7 @@ const groups = [
           name: 'How do you detect consent and security tools?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'We match consent SDK scripts, platform cookies, and security script hosts — for example cdn.cookielaw.org for OneTrust or google.com/recaptcha/api.js for reCAPTCHA. Weak or generic mentions are never reported as detections.',
+            text: 'We match consent SDK scripts, JavaScript APIs, platform cookies, and security script hosts — for example cdn.cookielaw.org for OneTrust or google.com/recaptcha/api.js for reCAPTCHA. Weak or generic mentions are never reported as detections.',
           },
         },
         {
