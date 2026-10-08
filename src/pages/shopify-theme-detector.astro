@@ -3,20 +3,48 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
+import ThemeCard from '../components/ThemeCard.astro';
 ---
 <Base
   title="Shopify Theme Detector — Identify Any Shopify Store's Theme"
   description="Find the Shopify theme powering any store, including theme name and store ID. Free CMS Detector AI tool."
   pagePath="/shopify-theme-detector"
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'Shopify Theme Detector',
-    url: 'https://cmsdetectorai.com/shopify-theme-detector',
-    applicationCategory: 'DeveloperApplication',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    inLanguage: 'en',
-  }}
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'Shopify Theme Detector',
+      url: 'https://cmsdetectorai.com/shopify-theme-detector',
+      applicationCategory: 'DeveloperApplication',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      inLanguage: 'en',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Popular Shopify themes',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Dawn',
+          url: 'https://themes.shopify.com/themes/dawn',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Prestige',
+          url: 'https://themes.shopify.com/themes/prestige',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Impulse',
+          url: 'https://themes.shopify.com/themes/impulse',
+        },
+      ],
+    },
+  ]}
 >
   <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="shopify-h1">
     <div class="container">
@@ -33,7 +61,7 @@ import NavIcon from '../components/layout/NavIcon.astro';
         </div>
         <div style="margin-block-start: var(--spacing-xxl);">
           <form id="shopify-form" novalidate>
-            <div style="display: flex; gap: 8px;">
+            <div class="shopify-input-row">
               <label for="shopify-input" class="sr-only">Shopify store URL</label>
               <input id="shopify-input" type="url" class="input url-input" placeholder="https://store.myshopify.com" required />
               <button type="submit" class="btn btn-primary detect-btn" id="shopify-submit">Find Theme</button>
@@ -51,15 +79,103 @@ import NavIcon from '../components/layout/NavIcon.astro';
       </div>
     </div>
   </Section>
+
+  <Section theme="light" ariaLabelledby="shopify-popular-h2">
+    <div class="container">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+        <span class="eyebrow type-mono-eyebrow">Popular themes</span>
+        <h2 id="shopify-popular-h2" class="type-display-sm" style="color: var(--color-ink); margin: 0;">
+          Widely used Shopify themes
+        </h2>
+        <p class="type-body" style="color: var(--color-slate); margin: 0; max-inline-size: 640px;">
+          A free reference theme plus two long-established premium themes — a
+          practical mix for comparing minimalist, editorial, and promotion-led
+          storefronts. Paste any store URL above to check which theme it runs.
+        </p>
+      </div>
+      <div class="theme-grid">
+        <ThemeCard
+          name="Dawn"
+          maker="Shopify"
+          category="Free · Online Store 2.0"
+          availability="Free"
+          description="Shopify's free, open-source reference theme for Online Store 2.0. Minimalist and media-forward, with JSON templates and app blocks on every page — the default starting point for lean catalogs and custom builds."
+          features={[
+            'Free with JSON templates and app blocks',
+            'Media-forward product pages and filtering',
+            'Performance-focused, HTML-first codebase',
+          ]}
+          href="https://themes.shopify.com/themes/dawn"
+          linkLabel="View Dawn in the Theme Store"
+          previewLabel="themes.shopify.com/themes/dawn"
+          imageSrc="/themes/dawn.webp"
+          imageWidth={800}
+          imageHeight={999}
+          imageAlt="Preview of the Dawn theme demo storefront with a fashion hero image and product grid"
+        />
+        <ThemeCard
+          name="Prestige"
+          maker="Maestrooo"
+          category="Premium · Editorial luxury"
+          availability="Premium — paid theme"
+          description="Premium theme aimed at high-end brands, built around editorial storytelling: lookbooks, collection navigation, and product discovery features that support larger catalogs without losing a luxury feel."
+          features={[
+            'Editorial sections for brand storytelling',
+            'Collection navigation, filtering, and mega menu',
+            'Product discovery: search, swatches, recently viewed',
+          ]}
+          href="https://themes.shopify.com/themes/prestige"
+          linkLabel="View Prestige in the Theme Store"
+          previewLabel="themes.shopify.com/themes/prestige"
+          imageSrc="/themes/prestige.webp"
+          imageWidth={800}
+          imageHeight={999}
+          imageAlt="Preview of the Prestige theme demo store with an editorial hero and best-sellers row"
+        />
+        <ThemeCard
+          name="Impulse"
+          maker="Archetype Themes"
+          category="Premium · Promotions"
+          availability="Premium — paid theme"
+          description="Promotion-led premium theme for fashion and high-traffic stores. Combines a shoppable hero with sale banners and conversion-oriented sections, backed by catalog tooling for stores running frequent campaigns."
+          features={[
+            'Shoppable hero and promo banners',
+            'Mega menu and collection-page navigation',
+            'Built for frequent sales and campaign turnover',
+          ]}
+          href="https://themes.shopify.com/themes/impulse"
+          linkLabel="View Impulse in the Theme Store"
+          previewLabel="themes.shopify.com/themes/impulse"
+          imageSrc="/themes/impulse.webp"
+          imageWidth={800}
+          imageHeight={999}
+          imageAlt="Preview of the Impulse theme demo store with a shoppable fashion hero and collection tiles"
+        />
+      </div>
+      <p class="type-caption" style="color: var(--color-mute); margin: var(--spacing-lg) 0 0 0;">
+        Premium themes are paid — see the Shopify Theme Store for current pricing.
+      </p>
+    </div>
+  </Section>
 </Base>
 <style>
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
+  .shopify-input-row { display: flex; gap: 8px; }
   .url-input { flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg); padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06); border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); }
   .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
   .url-input::placeholder { color: var(--color-slate-soft); }
   .detect-btn { block-size: 56px; }
   .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
+  .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
+  .theme-grid > :global(article) { min-inline-size: 0; }
+  @media (max-width: 960px) {
+    .theme-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .shopify-input-row { flex-direction: column; }
+    .detect-btn { inline-size: 100%; }
+  }
 </style>
 <script>
 const form   = document.getElementById('shopify-form')   as HTMLFormElement | null;

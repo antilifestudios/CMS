@@ -3,20 +3,48 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
+import ThemeCard from '../components/ThemeCard.astro';
 ---
 <Base
   title="WordPress Theme Detector — Find Any WordPress Theme Free"
   description="Instantly detect the WordPress theme and child theme of any site — including theme name, author, and version. Free, no sign-up."
   pagePath="/wordpress-theme-detector"
-  jsonLd={{
-    '@context': 'https://schema.org',
-    '@type': 'WebApplication',
-    name: 'WordPress Theme Detector',
-    url: 'https://cmsdetectorai.com/wordpress-theme-detector',
-    applicationCategory: 'DeveloperApplication',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    inLanguage: 'en',
-  }}
+  jsonLd={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: 'WordPress Theme Detector',
+      url: 'https://cmsdetectorai.com/wordpress-theme-detector',
+      applicationCategory: 'DeveloperApplication',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      inLanguage: 'en',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      name: 'Popular WordPress themes',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Astra',
+          url: 'https://wordpress.org/themes/astra/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Hello Elementor',
+          url: 'https://wordpress.org/themes/hello-elementor/',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Kadence',
+          url: 'https://wordpress.org/themes/kadence/',
+        },
+      ],
+    },
+  ]}
 >
   <Section theme="dark" class="hero" ariaLabelledby="wp-h1">
     <div class="container">
@@ -87,6 +115,80 @@ import NavIcon from '../components/layout/NavIcon.astro';
       </div>
     </div>
   </Section>
+
+  <Section theme="light" ariaLabelledby="wp-popular-h2">
+    <div class="container">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+        <span class="eyebrow type-mono-eyebrow">Popular themes</span>
+        <h2 id="wp-popular-h2" class="type-display-sm" style="color: var(--color-ink); margin: 0;">
+          Widely used WordPress themes
+        </h2>
+        <p class="type-body" style="color: var(--color-slate); margin: 0; max-inline-size: 640px;">
+          Three themes that consistently rank near the top of the WordPress.org
+          directory. Paste any site URL above to check whether it runs one of them.
+        </p>
+      </div>
+      <div class="theme-grid">
+        <ThemeCard
+          name="Astra"
+          maker="Brainstorm Force"
+          category="Multipurpose · Customizer"
+          availability="Free · optional paid upgrades"
+          description="Performance-focused multipurpose theme with extensive Customizer controls. A common choice for business sites and WooCommerce stores that need fine-grained header, layout, and typography settings without a page builder lock-in."
+          features={[
+            'Lightweight base with modular Customizer options',
+            'Works with Spectra, Elementor, and Beaver Builder',
+            'WooCommerce-compatible store layouts',
+          ]}
+          href="https://wordpress.org/themes/astra/"
+          linkLabel="View Astra on WordPress.org"
+          previewLabel="wordpress.org/themes/astra"
+          imageSrc="/themes/astra.webp"
+          imageWidth={800}
+          imageHeight={600}
+          imageAlt="Preview of the Astra theme demo homepage with a purple hero section and service columns"
+        />
+        <ThemeCard
+          name="Hello Elementor"
+          maker="Elementor"
+          category="Page-builder canvas"
+          availability="Free"
+          description="Minimal canvas theme built by the Elementor team as a starting point for Elementor-built pages. Ships with almost no styling of its own, so the page-builder design controls the output — including WooCommerce pages."
+          features={[
+            'Bare-bones base designed for Elementor',
+            'Minimal CSS and scripts for fast loads',
+            'WooCommerce support for Elementor-built stores',
+          ]}
+          href="https://wordpress.org/themes/hello-elementor/"
+          linkLabel="View Hello Elementor on WordPress.org"
+          previewLabel="wordpress.org/themes/hello-elementor"
+          imageSrc="/themes/hello-elementor.webp"
+          imageWidth={800}
+          imageHeight={600}
+          imageAlt="Preview of the Hello Elementor theme demo page with a large Hello headline and hero image"
+        />
+        <ThemeCard
+          name="Kadence"
+          maker="Nexcess (Kadence WP)"
+          category="Multipurpose · Block editor"
+          availability="Free · optional paid upgrades"
+          description="Lightweight theme pairing a visual header and footer builder with global design controls. Often chosen with its companion Kadence Blocks plugin for content-rich Gutenberg sites that still want fast load times."
+          features={[
+            'Drag-and-drop header and footer builder',
+            'Global palette, typography, and layout controls',
+            'Pairs with Kadence Blocks for Gutenberg',
+          ]}
+          href="https://wordpress.org/themes/kadence/"
+          linkLabel="View Kadence on WordPress.org"
+          previewLabel="wordpress.org/themes/kadence"
+          imageSrc="/themes/kadence.webp"
+          imageWidth={800}
+          imageHeight={600}
+          imageAlt="Preview of the Kadence theme demo homepage with a hero banner and product columns"
+        />
+      </div>
+    </div>
+  </Section>
 </Base>
 
 <style>
@@ -117,6 +219,12 @@ import NavIcon from '../components/layout/NavIcon.astro';
   @media (max-width: 480px) {
     .input-row { flex-direction: column; }
     .detect-btn { inline-size: 100%; }
+  }
+
+  .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
+  .theme-grid > :global(article) { min-inline-size: 0; }
+  @media (max-width: 960px) {
+    .theme-grid { grid-template-columns: 1fr; }
   }
 </style>
 

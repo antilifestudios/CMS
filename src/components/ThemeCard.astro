@@ -1,0 +1,180 @@
+---
+/**
+ * ThemeCard — popular-theme card for detector pages.
+ * Follows DESIGN.md: feature-card-light surface (white, ink text,
+ * 12px marketing radius, hairline border, 32px padding), mono eyebrow,
+ * heading-sm title, body-sm slate copy, pill CTA.
+ *
+ * The preview is a CSS browser frame (macOS dots + address bar) with the
+ * theme's real official screenshot inside the viewport. Screenshots are
+ * local static WebP assets (public/themes/) so pages stay fully static
+ * and fast on the Cloudflare Free tier.
+ */
+interface Props {
+  name: string;
+  maker: string;
+  category: string;
+  /** Pricing/availability as plain text (never a pill — we list, not sell). */
+  availability: string;
+  description: string;
+  features: string[];
+  href: string;
+  linkLabel: string;
+  /** Short label shown in the browser address bar (official source path). */
+  previewLabel: string;
+  /** Local static screenshot shown inside the browser viewport. */
+  imageSrc: string;
+  imageWidth: number;
+  imageHeight: number;
+  imageAlt: string;
+}
+
+const {
+  name,
+  maker,
+  category,
+  availability,
+  description,
+  features,
+  href,
+  linkLabel,
+  previewLabel,
+  imageSrc,
+  imageWidth,
+  imageHeight,
+  imageAlt,
+} = Astro.props;
+---
+
+<article class="card-light theme-card">
+  <div class="theme-preview">
+    <div class="tp-chrome" aria-hidden="true">
+      <span class="tp-dots"><i></i><i></i><i></i></span>
+      <span class="tp-url type-mono-micro">{previewLabel}</span>
+    </div>
+    <img
+      class="tp-shot"
+      src={imageSrc}
+      width={imageWidth}
+      height={imageHeight}
+      alt={imageAlt}
+      loading="lazy"
+      decoding="async"
+    />
+  </div>
+
+  <div class="theme-meta">
+    <p class="type-mono-caps text-mute theme-eyebrow">{category}</p>
+    <h3 class="type-heading-sm theme-name">{name}</h3>
+    <p class="type-caption text-mute theme-maker">by {maker} · {availability}</p>
+  </div>
+
+  <p class="type-body-sm theme-desc">{description}</p>
+
+  <ul class="theme-features" aria-label={`${name} key strengths`}>
+    {features.map((f) => (
+      <li class="type-caption">{f}</li>
+    ))}
+  </ul>
+
+  <div class="theme-foot">
+    <a
+      class="btn btn-primary-on-light theme-cta"
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {linkLabel}
+    </a>
+  </div>
+</article>
+
+<style>
+  .theme-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  /* Preview — browser frame with real screenshot in the viewport */
+  .theme-preview {
+    background-color: var(--color-canvas-paper);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    overflow: hidden;
+  }
+  .tp-chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-block-end: 1px solid var(--color-hairline);
+    background-color: var(--color-canvas-light);
+  }
+  .tp-dots { display: inline-flex; gap: 4px; }
+  .tp-dots i {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-ash);
+  }
+  .tp-dots i:first-child { background-color: var(--color-brand); }
+  .tp-url {
+    flex: 1;
+    color: var(--color-mute);
+    background-color: var(--color-canvas-paper);
+    border-radius: var(--radius-app-sm);
+    padding: 2px 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .tp-shot {
+    display: block;
+    inline-size: 100%;
+    block-size: auto;
+  }
+
+  .theme-meta { display: flex; flex-direction: column; gap: 4px; }
+  .theme-eyebrow { margin: 0; }
+  .theme-name { color: var(--color-ink); margin: 0; overflow-wrap: break-word; }
+  .theme-maker { margin: 0; }
+  .theme-desc { color: var(--color-slate); margin: 0; }
+
+  .theme-features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+  .theme-features li {
+    color: var(--color-ink);
+    padding-inline-start: 20px;
+    position: relative;
+  }
+  .theme-features li::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 6px;
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: var(--radius-full);
+    border: 2px solid var(--color-ink);
+  }
+
+  .theme-foot {
+    margin-block-start: auto;
+    padding-block-start: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    align-items: flex-start;
+  }
+  .theme-cta { min-block-size: 44px; }
+  @media (max-width: 768px) {
+    .theme-cta { inline-size: 100%; min-block-size: 48px; }
+  }
+</style>
