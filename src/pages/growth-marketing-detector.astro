@@ -2,6 +2,7 @@
 export const prerender = true;
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
+import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
 
 const CATEGORIES = ['analytics', 'advertising', 'marketing', 'payments', 'chat'];
@@ -9,22 +10,27 @@ const CATEGORIES = ['analytics', 'advertising', 'marketing', 'payments', 'chat']
 const groups = [
   {
     label: 'Analytics',
+    blurb: 'Measurement scripts, tag managers, and behavioural analytics.',
     items: ['Google Analytics', 'Google Tag Manager', 'Microsoft Clarity', 'Hotjar', 'Matomo', 'Plausible', 'Mixpanel', 'PostHog', 'Segment', 'Adobe Analytics'],
   },
   {
     label: 'Advertising',
+    blurb: 'Ad platforms and conversion pixels matched by script host.',
     items: ['Google Ads', 'Google AdSense', 'Meta Pixel', 'TikTok Pixel', 'LinkedIn Insight Tag', 'Pinterest Tag', 'Reddit Pixel', 'Snapchat Pixel'],
   },
   {
     label: 'Marketing',
+    blurb: 'Automation and CRM platforms matched by SDK and asset evidence.',
     items: ['HubSpot', 'Klaviyo', 'Mailchimp', 'ActiveCampaign', 'Marketo', 'Salesforce'],
   },
   {
     label: 'Payments',
+    blurb: 'Checkout and wallet providers matched by SDK scripts.',
     items: ['Stripe', 'PayPal', 'Razorpay', 'Square', 'Adyen', 'Apple Pay', 'Google Pay'],
   },
   {
     label: 'Chat & Support',
+    blurb: 'Live-chat and support widgets matched by embed scripts.',
     items: ['Intercom', 'Zendesk', 'Crisp', 'Tawk.to', 'Drift', 'LiveChat', 'HubSpot Chat'],
   },
 ];
@@ -116,18 +122,7 @@ const groups = [
           enough. If we can't tell, we say so.
         </p>
       </div>
-      <div class="tech-category-grid">
-        {groups.map(({ label, items }) => (
-          <div class="card-light">
-            <p class="type-mono-caps" style="color: var(--color-mute); margin: 0 0 12px 0;">{label}</p>
-            <div class="tech-chips">
-              {items.map((item) => (
-                <span class="badge badge-filled">{item}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <CoverageDirectory groups={groups} />
     </div>
   </Section>
 </Base>
@@ -141,10 +136,6 @@ const groups = [
   .url-input::placeholder { color: var(--color-slate-soft); }
   .detect-btn { block-size: 56px; flex-shrink: 0; }
   .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
-  .tech-category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
-  .tech-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  @media (max-width: 960px) { .tech-category-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 768px) { .tech-category-grid { grid-template-columns: 1fr; } }
   @media (max-width: 480px) { .input-row { flex-direction: column; } .detect-btn { inline-size: 100%; } }
 
   /* Result cards (same visual language as the main detector) */

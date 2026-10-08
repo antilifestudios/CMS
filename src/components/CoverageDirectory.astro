@@ -1,0 +1,174 @@
+---
+/**
+ * CoverageDirectory — compact "technical directory" / "detector coverage"
+ * presentation for detector coverage sections.
+ *
+ * Follows DESIGN.md (light commercial surface):
+ * - container: {feature-card-light} tokens (canvas-light, hairline border,
+ *   {rounded.marketing}, no shadow, no pills, no accent colour)
+ * - rows divided by {colors.hairline} rules, like {comparison-table-row}
+ * - category name (sans, ink) is the primary element; count is a secondary
+ *   {typography.mono-caps} label; technology names are secondary plain text
+ *   separated by middots — never badge/pill chips
+ * - row height is determined by content, so small families (e.g. 3 items)
+ *   never inherit the visual weight of large ones
+ *
+ * Props:
+ *   groups: { label, blurb, items, note? }[] — note renders a subtle
+ *     mono-micro fallback line (used for the "Other technologies"
+ *     controlled-fallback category).
+ */
+interface Group {
+  label: string;
+  blurb: string;
+  items: string[];
+  note?: string;
+}
+
+interface Props {
+  groups: Group[];
+}
+
+const { groups } = Astro.props;
+const total = groups.reduce((n, g) => n + g.items.length, 0);
+---
+
+<div class="coverage-directory" role="list" aria-label={`Detector coverage: ${total} technologies in ${groups.length} families`}>
+  {groups.map(({ label, blurb, items, note }, i) => (
+    <div class="dir-row" role="listitem">
+      <div class="dir-meta">
+        <div class="dir-title-row">
+          <span class="type-mono-caps dir-index" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="dir-name">{label}</h3>
+          <span class="type-mono-caps dir-count">{items.length} technologie{items.length === 1 ? '' : 's'}</span>
+        </div>
+        <p class="type-body-sm dir-blurb">{blurb}</p>
+        {note && <p class="type-mono-micro dir-note">{note}</p>}
+      </div>
+      <ul class="dir-items" aria-label={`${label} technologies`}>
+        {items.map((item) => (
+          <li class="dir-item">{item}</li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
+
+<style>
+  .coverage-directory {
+    background-color: var(--color-canvas-light);
+    color: var(--color-ink);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-marketing);
+    overflow: hidden;
+  }
+
+  .dir-row {
+    display: grid;
+    grid-template-columns: minmax(220px, 300px) 1fr;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    align-items: start;
+  }
+
+  .dir-row + .dir-row {
+    border-block-start: 1px solid var(--color-hairline);
+  }
+
+  .dir-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+    min-inline-size: 0;
+  }
+
+  .dir-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
+    min-inline-size: 0;
+  }
+
+  .dir-index {
+    color: var(--color-mute);
+    flex-shrink: 0;
+  }
+
+  .dir-name {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 550;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--color-ink);
+    flex: 1 1 auto;
+    min-inline-size: 0;
+    overflow-wrap: break-word;
+  }
+
+  .dir-count {
+    color: var(--color-mute);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .dir-blurb {
+    margin: 0;
+    color: var(--color-slate);
+    font-size: 14px;
+  }
+
+  .dir-note {
+    margin: 0;
+    color: var(--color-mute);
+    border-inline-start: 2px solid var(--color-hairline);
+    padding-inline-start: var(--spacing-xs);
+  }
+
+  /* Technology names: secondary plain text, middot-separated, wraps naturally. */
+  .dir-items {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 0;
+    min-inline-size: 0;
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--color-ink-soft);
+  }
+
+  .dir-item {
+    margin: 0;
+    padding: 0;
+    overflow-wrap: break-word;
+  }
+
+  .dir-item + .dir-item::before {
+    content: "·";
+    color: var(--color-mute);
+    padding-inline: 10px;
+  }
+
+  @media (max-width: 900px) {
+    .dir-row {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-lg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .dir-row {
+      padding: var(--spacing-md);
+    }
+    .dir-items {
+      font-size: 14px;
+    }
+    .dir-item + .dir-item::before {
+      padding-inline: 8px;
+    }
+  }
+</style>

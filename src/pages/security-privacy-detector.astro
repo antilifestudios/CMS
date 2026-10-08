@@ -2,6 +2,7 @@
 export const prerender = true;
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
+import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
 
 const CATEGORIES = ['privacy', 'security', 'other'];
@@ -9,14 +10,18 @@ const CATEGORIES = ['privacy', 'security', 'other'];
 const groups = [
   {
     label: 'Privacy / Consent',
+    blurb: 'Consent managers matched by SDK scripts and platform cookies.',
     items: ['OneTrust', 'Cookiebot', 'Usercentrics', 'TrustArc', 'iubenda', 'Complianz'],
   },
   {
     label: 'Security',
+    blurb: 'Bot protection and error tracking matched by script host.',
     items: ['reCAPTCHA', 'hCaptcha', 'Sentry'],
   },
   {
     label: 'Other technologies',
+    blurb: 'Supporting technologies identified from technical evidence.',
+    note: 'Controlled fallback — only reported with identifiable integration evidence, never a weak guess.',
     items: ['Cloudinary', 'Algolia', 'Google Maps', 'YouTube', 'Vimeo', 'Font Awesome'],
   },
 ];
@@ -109,18 +114,7 @@ const groups = [
           guesses.
         </p>
       </div>
-      <div class="tech-category-grid">
-        {groups.map(({ label, items }) => (
-          <div class="card-light">
-            <p class="type-mono-caps" style="color: var(--color-mute); margin: 0 0 12px 0;">{label}</p>
-            <div class="tech-chips">
-              {items.map((item) => (
-                <span class="badge badge-filled">{item}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+      <CoverageDirectory groups={groups} />
     </div>
   </Section>
 </Base>
@@ -134,10 +128,6 @@ const groups = [
   .url-input::placeholder { color: var(--color-slate-soft); }
   .detect-btn { block-size: 56px; flex-shrink: 0; }
   .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
-  .tech-category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
-  .tech-chips { display: flex; flex-wrap: wrap; gap: 6px; }
-  @media (max-width: 960px) { .tech-category-grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 768px) { .tech-category-grid { grid-template-columns: 1fr; } }
   @media (max-width: 480px) { .input-row { flex-direction: column; } .detect-btn { inline-size: 100%; } }
 
   /* Result cards (same visual language as the main detector) */
