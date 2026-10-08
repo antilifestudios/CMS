@@ -4,8 +4,7 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
-
-const CATEGORIES = ['analytics', 'advertising', 'marketing', 'payments', 'chat'];
+import FamilyDetector from '../components/detectors/FamilyDetector.astro';
 
 const groups = [
   {
@@ -88,22 +87,18 @@ const groups = [
             finding. Free, instant, no sign-up.
           </p>
         </div>
-        <div style="margin-block-start: var(--spacing-xxl);" id="growth-root" data-categories={CATEGORIES.join(',')}>
-          <form id="growth-form" novalidate aria-label="Growth and marketing detection">
-            <div class="input-row">
-              <label for="growth-input" class="sr-only">Website URL</label>
-              <input id="growth-input" type="url" inputmode="url" autocomplete="url" autocorrect="off" class="input url-input" placeholder="https://example.com" required />
-              <button type="submit" class="btn btn-primary detect-btn" id="growth-submit">Detect Stack</button>
-            </div>
-          </form>
-          <div id="growth-loading" hidden style="margin-block-start: 24px;" aria-live="polite" aria-busy="true">
-            <div class="skeleton-card">
-              <div class="skeleton" style="block-size:32px;inline-size:50%;border-radius:4px;"></div>
-              <div class="skeleton" style="block-size:20px;inline-size:70%;border-radius:4px;margin-block-start:8px;"></div>
-            </div>
-          </div>
-          <div id="growth-result" hidden style="margin-block-start: 24px;" aria-live="polite"></div>
-          <div id="growth-error" hidden style="margin-block-start: 24px;" role="alert"></div>
+        <div style="margin-block-start: var(--spacing-xxl);">
+          <FamilyDetector
+            detector="growth"
+            detectorEyebrow="Growth & Marketing Detector"
+            resultEyebrow="Growth & marketing stack for"
+            categories={['analytics', 'advertising', 'marketing', 'payments', 'chat']}
+            categoryLabels={{ analytics: 'Analytics', advertising: 'Advertising', marketing: 'Marketing', payments: 'Payments', chat: 'Chat & Support' }}
+            emptyTitle="No growth & marketing technologies detected"
+            emptyBody="We found no confident analytics, advertising, marketing, payment, or chat signals on this site. This means no supported technical signals were found — not that these technologies are definitely absent."
+            storageKey="growth_recent"
+            submitLabel="Detect Stack"
+          />
         </div>
       </div>
     </div>
@@ -130,204 +125,4 @@ const groups = [
 <style>
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
-  .input-row { display: flex; gap: 8px; }
-  .url-input { flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg); padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06); border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); }
-  .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
-  .url-input::placeholder { color: var(--color-slate-soft); }
-  .detect-btn { block-size: 56px; flex-shrink: 0; }
-  .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
-  @media (max-width: 480px) { .input-row { flex-direction: column; } .detect-btn { inline-size: 100%; } }
-
-  /* Result cards (same visual language as the main detector) */
-  .result-card { display: flex; flex-direction: column; gap: var(--spacing-md); }
-  .result-url { margin: 0; word-break: break-all; color: var(--color-on-primary); }
-  .detection-card { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
-  .detection-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-md); flex-wrap: wrap; margin-block-end: 4px; }
-  .detection-name-row { display: flex; align-items: center; gap: var(--spacing-xs); flex-wrap: wrap; }
-  .detection-name { color: var(--color-on-primary); margin: 0; }
-  .category-label { display: block; }
-  .score-line { margin: 0; }
-  .conflict-note { margin: 8px 0 0 0; }
-  .evidence-section { margin-block-start: var(--spacing-sm); }
-  .evidence-toggle { cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--color-mute); list-style: none; padding: 4px 0; }
-  .evidence-toggle::-webkit-details-marker { display: none; }
-  .evidence-toggle:hover { color: var(--color-ash); }
-  details[open] .toggle-icon { transform: rotate(180deg); }
-  .toggle-icon { transition: transform 0.15s ease; }
-  .evidence-groups { margin: var(--spacing-xs) 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--spacing-sm); }
-  .evidence-group-label { display: block; margin-block-end: 4px; }
-  .evidence-rows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
-  .evidence-row { display: flex; align-items: flex-start; gap: 8px; background-color: var(--color-canvas); border-radius: var(--radius-app-sm); padding: 6px 8px; font-family: var(--font-mono); font-size: 11px; color: var(--color-ash); word-break: break-all; }
-  .evidence-row .tick { color: var(--color-success); flex-shrink: 0; }
-  .conf-high { background-color: #34d399; color: #052e16; }
-  .conf-medium { background-color: #fbbf24; color: #451a03; }
-  .conf-low { background-color: #9ca3af; color: #111827; }
-  .error-card { margin-block-start: var(--spacing-lg); }
 </style>
-
-<script>
-const rootEl = document.getElementById('growth-root') as HTMLElement | null;
-const WANT = new Set((rootEl?.dataset.categories ?? '').split(',').map((s) => s.trim()).filter(Boolean));
-const form   = document.getElementById('growth-form')   as HTMLFormElement | null;
-const input  = document.getElementById('growth-input')  as HTMLInputElement | null;
-const btn    = document.getElementById('growth-submit') as HTMLButtonElement | null;
-const loadEl = document.getElementById('growth-loading') as HTMLElement | null;
-const resEl  = document.getElementById('growth-result')  as HTMLElement | null;
-const errEl  = document.getElementById('growth-error')   as HTMLElement | null;
-
-const CATEGORY_LABELS: Record<string, string> = {
-  analytics: 'Analytics', advertising: 'Advertising', marketing: 'Marketing',
-  payments: 'Payments', chat: 'Chat & Support',
-};
-const FAMILY_LABELS: Record<string, string> = {
-  NETWORK: 'Headers', HTML: 'HTML markers', ASSET: 'Asset paths',
-  SCRIPT: 'Scripts', META: 'Meta tags', COOKIE: 'Cookies',
-  PLATFORM_IDENTIFIER: 'Platform identifiers',
-};
-const SIGNAL_LABELS: Record<string, string> = {
-  'meta-generator': 'Generator meta tag', 'html-path': 'HTML asset path',
-  'html-regex': 'HTML pattern', 'script-host': 'Script hostname',
-  'stylesheet-url': 'Stylesheet URL', 'js-global': 'JavaScript global',
-  'inline-script': 'Inline script', 'meta-tag': 'Meta tag',
-  'link-relation': 'Link relation', 'header': 'HTTP header',
-  'cookie-name': 'Cookie name', 'probe': 'Secondary probe',
-};
-const ERROR_MESSAGES: Record<string, string> = {
-  INVALID_URL: 'Please enter a valid website URL (e.g. https://example.com).',
-  PRIVATE_IP: 'Private or internal addresses can\'t be checked for security reasons.',
-  BLOCKED: 'This site returned a bot-protection response. We collected header data below.',
-  TIMEOUT: 'The request timed out (8s). The site may be slow or blocking automated access.',
-  DNS_FAILURE: 'We couldn\'t resolve the domain. Double-check the URL and try again.',
-  INVALID_TLS: 'The site has a TLS certificate error. We can\'t safely connect to it.',
-  NON_HTML: 'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
-  REDIRECT_LOOP: 'We detected a redirect loop and stopped following redirects.',
-  UNKNOWN: 'An unexpected error occurred. Please try again.',
-};
-
-function esc(s: string): string {
-  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-// Numeric evidence score when the API provides it; otherwise fall back
-// to the legacy three-level label (confirmed/likely shown, possible hidden).
-function scored(r: any): { score: number; label: string; show: boolean } {
-  if (typeof r.score === 'number') {
-    const label = r.scoreLabel ?? (r.score >= 90 ? 'VERY HIGH' : r.score >= 75 ? 'HIGH' : r.score >= 60 ? 'MEDIUM' : r.score >= 40 ? 'LOW' : 'INSUFFICIENT');
-    return { score: r.score, label, show: r.score >= 40 };
-  }
-  const legacy = r.confidenceLabel === 'confirmed' ? { s: 92, l: 'VERY HIGH' } : r.confidenceLabel === 'likely' ? { s: 78, l: 'HIGH' } : null;
-  if (!legacy) return { score: 0, label: 'INSUFFICIENT', show: false };
-  return { score: legacy.s, label: legacy.l, show: true };
-}
-
-function badgeClass(label: string): string {
-  if (label === 'VERY HIGH' || label === 'HIGH') return 'conf-high';
-  if (label === 'MEDIUM') return 'conf-medium';
-  return 'conf-low';
-}
-
-function renderDetection(d: any): string {
-  const { score, label } = scored(d);
-  const byFamily = new Map<string, any[]>();
-  for (const e of d.evidence ?? []) {
-    const fam = e.family ?? 'HTML';
-    if (!byFamily.has(fam)) byFamily.set(fam, []);
-    byFamily.get(fam)!.push(e);
-  }
-  const groupsHtml = [...byFamily.entries()].map(([fam, items]) => `
-    <li>
-      <span class="type-mono-caps text-mute evidence-group-label">${esc(FAMILY_LABELS[fam] ?? fam)}</span>
-      <ul class="evidence-rows" role="list">
-        ${items.map((e) => `<li class="evidence-row"><span class="tick" aria-hidden="true">✓</span><span>${esc(e.value ?? e.artifact ?? '')}</span></li>`).join('')}
-      </ul>
-    </li>`).join('');
-  const fams = typeof d.families === 'number' ? d.families : byFamily.size;
-  return `
-    <div class="detection-card">
-      <div class="detection-header">
-        <div class="detection-name-row">
-          <span class="type-heading-sm detection-name">${esc(d.name)}</span>
-          <span class="badge ${badgeClass(label)}">${score} · ${esc(label)}</span>
-        </div>
-        <span class="type-mono-caps text-mute category-label">${esc(CATEGORY_LABELS[d.category] ?? d.category)}</span>
-      </div>
-      <p class="type-caption text-mute score-line">Detected across ${fams} independent evidence famil${fams === 1 ? 'y' : 'ies'}</p>
-      ${Array.isArray(d.conflicting) && d.conflicting.length > 0
-        ? `<p class="type-caption conflict-note"><span class="text-mute">Conflicting evidence also resembles: </span>${d.conflicting.map(esc).join(', ')}</p>`
-        : ''}
-      <details class="evidence-section">
-        <summary class="evidence-toggle type-caption-tight">
-          <span>Why we think this</span>
-          <svg class="toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </summary>
-        <ul class="evidence-groups" role="list">${groupsHtml}</ul>
-      </details>
-    </div>`;
-}
-
-form?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const url = input?.value.trim() ?? '';
-  if (!url) return;
-  if (loadEl) loadEl.hidden = false;
-  if (resEl) resEl.hidden = true;
-  if (errEl) errEl.hidden = true;
-  if (btn) { btn.disabled = true; btn.textContent = 'Detecting…'; }
-  try {
-    const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
-    const res = await fetch('/api/detect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, token }),
-    });
-    const data = await res.json() as any;
-    if (loadEl) loadEl.hidden = true;
-    if (btn) { btn.disabled = false; btn.textContent = 'Detect Stack'; }
-    if (data.ok) {
-      const found = (data.data.results ?? []).filter((r: any) => WANT.has(r.category) && scored(r).show);
-      const displayUrl = String(data.data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
-      const byCat = new Map<string, any[]>();
-      for (const r of found) {
-        if (!byCat.has(r.category)) byCat.set(r.category, []);
-        byCat.get(r.category)!.push(r);
-      }
-      if (resEl) {
-        resEl.innerHTML = `
-          <div class="result-card">
-            <div>
-              <p class="type-mono-caps text-mute" style="margin: 0 0 4px 0;">Growth & marketing stack for</p>
-              <h2 class="type-heading-md result-url">${esc(displayUrl)}</h2>
-            </div>
-            ${found.length === 0
-              ? `<div class="card-dark"><p class="type-heading-sm" style="margin: 0 0 8px 0; color: var(--color-on-primary);">Not confidently detected</p>
-                 <p class="type-body-sm text-ash" style="margin: 0;">We found no confident analytics, advertising, marketing, payment, or chat signals on this site. We'd rather say so than guess — try the <a href="/" class="text-link-dark">full technology scan</a> for the broader stack.</p></div>`
-              : [...byCat.entries()].map(([cat, items]) => `
-                <div>
-                  <p class="type-mono-caps text-mute" style="margin: 16px 0 8px 0;">${esc(CATEGORY_LABELS[cat] ?? cat)}</p>
-                  <div class="result-card">${items.map(renderDetection).join('')}</div>
-                </div>`).join('')}
-          </div>`;
-        resEl.hidden = false;
-      }
-    } else {
-      const code = data.error?.code ?? 'UNKNOWN';
-      if (errEl) {
-        errEl.innerHTML = `<div class="card-dark error-card"><span class="badge badge-error">Error</span>
-          <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p></div>`;
-        errEl.hidden = false;
-      }
-    }
-  } catch {
-    if (loadEl) loadEl.hidden = true;
-    if (btn) { btn.disabled = false; btn.textContent = 'Detect Stack'; }
-    if (errEl) {
-      errEl.innerHTML = `<div class="card-dark error-card"><span class="badge badge-error">Network error</span>
-        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your connection and try again.</p></div>`;
-      errEl.hidden = false;
-    }
-  }
-});
-input?.focus();
-</script>

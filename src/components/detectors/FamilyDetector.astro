@@ -1,0 +1,535 @@
+---
+/**
+ * FamilyDetector — shared interactive island for the two
+ * technology-family detectors ONLY:
+ *   /growth-marketing-detector
+ *   /security-privacy-detector
+ *
+ * Must NOT be imported by CMS / Technology / Hosting / CDN pages.
+ * Visual language follows index.astro result cards + global design tokens:
+ * dark canvas, canvas-soft cards, hairline-soft borders, mono eyebrows,
+ * solid confidence badges. All selectors are prefixed with .fam-detector
+ * so styles never leak to other routes.
+ *
+ * Supports single-URL scans only (/api/detect). The submitted URL
+ * is checked as-is — no multi-page sampling, no scanned-URL list.
+ * Detection logic, scoring and evidence model are consumed as-is —
+ * this component only presents them.
+ */
+interface Props {
+  detector: 'growth' | 'security';
+  detectorEyebrow: string;
+  resultEyebrow: string;
+  categories: string[];
+  categoryLabels: Record<string, string>;
+  emptyTitle: string;
+  emptyBody: string;
+  storageKey: string;
+  submitLabel?: string;
+}
+
+const {
+  detector,
+  detectorEyebrow,
+  resultEyebrow,
+  categories,
+  categoryLabels,
+  emptyTitle,
+  emptyBody,
+  storageKey,
+  submitLabel = 'Detect Stack',
+} = Astro.props;
+
+const prefix = detector === 'growth' ? 'growth' : 'sec';
+const catData = categories.join(',');
+const labelsData = JSON.stringify(categoryLabels);
+---
+
+<div
+  class="fam-detector"
+  id={`${prefix}-root`}
+  data-detector={detector}
+  data-categories={catData}
+  data-labels={labelsData}
+  data-eyebrow={detectorEyebrow}
+  data-result-eyebrow={resultEyebrow}
+  data-empty-title={emptyTitle}
+  data-empty-body={emptyBody}
+  data-storage-key={storageKey}
+  data-submit-label={submitLabel}
+>
+  <form id={`${prefix}-form`} class="fam-form" novalidate aria-label={detectorEyebrow}>
+    <div class="fam-input-row">
+      <label for={`${prefix}-input`} class="sr-only">Website URL</label>
+      <input
+        id={`${prefix}-input`}
+        type="url"
+        inputmode="url"
+        autocomplete="url"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        class="input fam-url-input"
+        placeholder="https://example.com"
+        required
+      />
+      <button type="submit" class="btn btn-primary fam-detect-btn" id={`${prefix}-submit`}>{submitLabel}</button>
+    </div>
+  </form>
+
+  <div id={`${prefix}-recent`} class="fam-recent" hidden>
+    <span class="type-mono-caps text-mute">Recent:</span>
+    <ul id={`${prefix}-recent-list`} role="list" class="fam-recent-list"></ul>
+    <button type="button" id={`${prefix}-recent-clear`} class="fam-recent-clear type-caption">Clear</button>
+  </div>
+
+  <div id={`${prefix}-loading`} class="fam-loading" hidden aria-live="polite" aria-busy="true">
+    <div class="fam-skeleton-card">
+      <div class="skeleton fam-sk-head"></div>
+      <div class="skeleton fam-sk-body"></div>
+      <div class="skeleton fam-sk-body fam-sk-short"></div>
+    </div>
+    <p class="type-caption text-mute" style="margin-block-start: 12px;">Analysing — this usually takes under 3 seconds…</p>
+  </div>
+
+  <div id={`${prefix}-result`} class="fam-result" hidden aria-live="polite"></div>
+  <div id={`${prefix}-error`} class="fam-error" hidden aria-live="assertive" role="alert"></div>
+</div>
+
+<style is:global>
+  /* Scoped to .fam-detector — never affects CMS/CDN/hosting routes. */
+  .fam-detector { display: flex; flex-direction: column; gap: 8px; min-inline-size: 0; }
+  .fam-form { display: flex; flex-direction: column; gap: 8px; }
+  .fam-input-row { display: flex; gap: 8px; align-items: stretch; }
+  .fam-url-input {
+    flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg);
+    padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06);
+    border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); min-inline-size: 0;
+  }
+  .fam-url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); background-color: rgba(255,255,255,0.09); box-shadow: 0 0 0 3px rgba(255,255,255,0.08); }
+  .fam-url-input::placeholder { color: var(--color-slate-soft); }
+  .fam-detect-btn { flex-shrink: 0; block-size: 56px; font-size: 16px; }
+  .fam-recent { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .fam-recent-list { list-style: none; padding: 0; margin: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .fam-recent-btn { font-size: 12px; block-size: 28px; padding-inline: 10px; border-radius: var(--radius-full); }
+  .fam-recent-clear { background: transparent; border: none; color: var(--color-mute); cursor: pointer; text-decoration: underline; padding: 4px; }
+  .fam-recent-clear:hover { color: var(--color-ash); }
+  .fam-loading { margin-block-start: 16px; }
+  .fam-skeleton-card { background-color: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
+  .fam-sk-head { block-size: 32px; inline-size: 60%; }
+  .fam-sk-body { block-size: 20px; inline-size: 85%; }
+  .fam-sk-short { inline-size: 50%; }
+
+  /* ---- Report ---- */
+  .fam-result { margin-block-start: 16px; min-inline-size: 0; }
+  .fam-report { display: flex; flex-direction: column; gap: var(--spacing-lg); min-inline-size: 0; }
+  .fam-report-head { display: flex; flex-direction: column; gap: 8px; }
+  .fam-eyebrow { margin: 0; }
+  .fam-domain { margin: 0; color: var(--color-on-primary); font-size: clamp(26px, 3vw, 34px); font-weight: 425; line-height: 1.15; letter-spacing: -0.01em; overflow-wrap: anywhere; word-break: break-word; }
+  .fam-metrics { display: flex; gap: 0; margin-block-start: 12px; border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); overflow: hidden; background-color: var(--color-canvas-soft); max-inline-size: 560px; }
+  .fam-metric { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px 8px; min-inline-size: 0; }
+  .fam-metric + .fam-metric { border-inline-start: 1px solid var(--color-hairline-soft); }
+  .fam-metric-num { font-size: 26px; font-weight: 500; line-height: 1.1; color: var(--color-on-primary); font-variant-numeric: tabular-nums; }
+  .fam-metric-label { color: var(--color-mute); text-align: center; }
+  .fam-detected-label { margin: 4px 0 0 0; }
+  .fam-cat { display: flex; flex-direction: column; gap: 12px; }
+  .fam-cat + .fam-cat { margin-block-start: 8px; }
+  .fam-cat-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; border-block-end: 1px solid var(--color-hairline-soft); padding-block-end: 8px; }
+  .fam-cat-title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-on-primary); font-family: var(--font-sans); }
+  .fam-cat-count { color: var(--color-mute); }
+  .fam-tech-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-md); align-items: start; }
+  .fam-card { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-lg); display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; overflow: hidden; transition: border-color 0.15s ease; }
+  .fam-card:hover { border-color: var(--color-graphite); }
+  .fam-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .fam-tech-name { color: var(--color-on-primary); font-size: 19px; font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; margin: 0; overflow-wrap: break-word; min-inline-size: 0; }
+  .fam-conf { flex-shrink: 0; font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .fam-conf-high { background-color: #34d399; color: #052e16; }
+  .fam-conf-medium { background-color: #fbbf24; color: #451a03; }
+  .fam-conf-low { background-color: #9ca3af; color: #111827; }
+  .fam-fams { margin: 0; font-size: 13px; color: var(--color-mute); line-height: 1.5; }
+  .fam-fams-list { margin: 0; font-size: 12px; color: var(--color-slate-soft); font-family: var(--font-mono); }
+  .fam-low-hint { margin: 6px 0 0 0; font-size: 13px; color: var(--color-ash); background: rgba(255,255,255,0.04); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-app-sm); padding: 8px 10px; line-height: 1.5; }
+  .fam-ev { margin-block-start: 6px; }
+  .fam-ev-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--color-mute); list-style: none; padding: 6px 0; font-size: 13px; font-weight: 500; }
+  .fam-ev-toggle::-webkit-details-marker { display: none; }
+  .fam-ev-toggle:hover { color: var(--color-ash); }
+  .fam-ev details[open] .fam-toggle-icon, details[open] > summary .fam-toggle-icon { transform: rotate(180deg); }
+  .fam-toggle-icon { transition: transform 0.15s ease; }
+  .fam-why-label { margin: 8px 0 0 0; }
+  .fam-ev-groups { margin: 8px 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .fam-ev-group-label { display: block; margin-block-end: 6px; }
+  .fam-ev-rows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .fam-ev-row { display: flex; align-items: flex-start; gap: 8px; background-color: var(--color-canvas); border-radius: var(--radius-app-sm); padding: 7px 8px; min-inline-size: 0; }
+  .fam-ev-text { flex: 1; min-inline-size: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.55; color: var(--color-ash); overflow-wrap: anywhere; word-break: break-word; }
+  .fam-ev-host { color: var(--color-on-primary); display: block; overflow-wrap: anywhere; }
+  .fam-ev-path { color: var(--color-ash); display: block; overflow-wrap: anywhere; word-break: break-all; }
+  .fam-ev-single { display: block; overflow-wrap: anywhere; word-break: break-word; }
+  .fam-copy { flex-shrink: 0; background: transparent; border: 1px solid var(--color-hairline-soft); color: var(--color-mute); border-radius: var(--radius-app-sm); font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; cursor: pointer; line-height: 1.6; }
+  .fam-copy:hover { color: var(--color-on-primary); border-color: var(--color-graphite); }
+  .fam-conflict { margin: 6px 0 0 0; font-size: 12px; color: var(--color-mute); }
+  .fam-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 4px; }
+  .fam-action-btn { font-size: 12px; block-size: 32px; }
+  .fam-report-link { color: var(--color-mute); text-decoration: underline; text-underline-offset: 2px; align-self: flex-start; padding: 4px 0; font-size: 13px; }
+  .fam-report-link:hover { color: var(--color-ash); }
+  .fam-empty { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
+  .fam-empty-title { margin: 0 0 8px 0; color: var(--color-on-primary); font-size: 20px; font-weight: 500; }
+  .fam-empty-body { margin: 0; font-size: 14px; color: var(--color-ash); line-height: 1.6; }
+  .fam-empty-body a { color: var(--color-link-blue-soft); text-decoration: underline; }
+  .fam-error-card { margin-block-start: 16px; background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
+
+  @media (max-width: 760px) {
+    .fam-tech-grid { grid-template-columns: 1fr; }
+    .fam-metrics { max-inline-size: none; }
+    .fam-metric-num { font-size: 22px; }
+    .fam-card { padding: var(--spacing-md); }
+    .fam-domain { font-size: 24px; }
+  }
+  @media (max-width: 480px) {
+    .fam-input-row { flex-direction: column; }
+    .fam-detect-btn { inline-size: 100%; }
+    .fam-tech-name { font-size: 17px; }
+  }
+</style>
+
+<script>
+(() => {
+  const roots = document.querySelectorAll('.fam-detector');
+  if (!roots.length) return;
+
+  const FAMILY_LABELS = {
+    NETWORK: 'Headers', HTML: 'HTML markers', ASSET: 'Asset paths',
+    SCRIPT: 'Scripts', META: 'Meta tags', COOKIE: 'Cookies',
+    PLATFORM_IDENTIFIER: 'Platform identifiers',
+  };
+
+  const ERROR_MESSAGES = {
+    INVALID_URL: 'Please enter a valid website URL (e.g. https://example.com).',
+    PRIVATE_IP: "Private or internal addresses can't be checked for security reasons.",
+    BLOCKED: 'This site returned a bot-protection response. We collected header data below.',
+    TIMEOUT: 'The request timed out (8s). The site may be slow or blocking automated access.',
+    DNS_FAILURE: "We couldn't resolve the domain. Double-check the URL and try again.",
+    INVALID_TLS: "The site has a TLS certificate error. We can't safely connect to it.",
+    NON_HTML: 'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
+    REDIRECT_LOOP: 'We detected a redirect loop and stopped following redirects.',
+    TURNSTILE_FAILED: 'Bot verification failed. Please try again.',
+    UNKNOWN: 'An unexpected error occurred. Please try again.',
+  };
+
+  function esc(s) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function scored(r) {
+    if (typeof r.score === 'number') {
+      const label = r.scoreLabel ?? (r.score >= 90 ? 'VERY HIGH' : r.score >= 75 ? 'HIGH' : r.score >= 60 ? 'MEDIUM' : r.score >= 40 ? 'LOW' : 'INSUFFICIENT');
+      return { score: r.score, label, show: r.score >= 40 };
+    }
+    const legacy = r.confidenceLabel === 'confirmed' ? { s: 92, l: 'VERY HIGH' } : r.confidenceLabel === 'likely' ? { s: 78, l: 'HIGH' } : null;
+    if (!legacy) return { score: 0, label: 'INSUFFICIENT', show: false };
+    return { score: legacy.s, label: legacy.l, show: true };
+  }
+
+  function normLabel(label) {
+    const u = String(label ?? '').toUpperCase();
+    if (u === 'VERY HIGH' || u === 'HIGH' || u === 'MEDIUM' || u === 'LOW') return u;
+    if (u === 'CONFIRMED') return 'VERY HIGH';
+    if (u === 'LIKELY') return 'HIGH';
+    if (u === 'POSSIBLE') return 'LOW';
+    return u || 'LOW';
+  }
+
+  function badgeClass(label) {
+    const u = normLabel(label);
+    if (u === 'VERY HIGH' || u === 'HIGH') return 'fam-conf-high';
+    if (u === 'MEDIUM') return 'fam-conf-medium';
+    return 'fam-conf-low';
+  }
+
+  // Split a raw evidence string into host + path when it carries a URL.
+  // Never throws; always returns display-safe parts plus the full raw.
+  function splitEvidence(raw) {
+    const s = String(raw ?? '').trim().replace(/^["']|["']$/g, '');
+    if (!s) return { host: '', path: '', single: '', full: String(raw ?? '') };
+    const m = s.match(/((?:https?:)?\/\/)?(([a-z0-9-]+\.)+[a-z]{2,})(:\d+)?(\/[^\s"'<>]*)?/i);
+    if (m) {
+      const host = (m[2] + (m[4] ?? '')).toLowerCase();
+      let path = m[5] ?? '';
+      if (path.length > 90) path = path.slice(0, 87) + '…';
+      // Only treat as URL split when host looks real and isn't the whole noise.
+      if (host.includes('.') && (path || s.length < 80)) {
+        return { host, path: path || '', single: '', full: s };
+      }
+    }
+    const single = s.length > 120 ? s.slice(0, 117) + '…' : s;
+    return { host: '', path: '', single, full: s };
+  }
+
+  function evRowHtml(displayValue, fullRaw) {
+    const parts = splitEvidence(displayValue);
+    const text = parts.host
+      ? `<span class="fam-ev-text" title="${esc(parts.full)}"><span class="fam-ev-host">${esc(parts.host)}</span>${parts.path ? `<span class="fam-ev-path">${esc(parts.path)}</span>` : ''}</span>`
+      : `<span class="fam-ev-text" title="${esc(parts.full)}"><span class="fam-ev-single">${esc(parts.single || parts.full)}</span></span>`;
+    return `<li class="fam-ev-row">${text}<button type="button" class="fam-copy" data-copy="${esc(parts.full || fullRaw || displayValue)}">Copy</button></li>`;
+  }
+
+  function renderCard(d, opts) {
+    const s = scored(d);
+    const label = normLabel(s.label);
+    const fams = typeof d.families === 'number' ? d.families : (d._groupCount ?? 1);
+    const famNames = Array.isArray(d._famNames) && d._famNames.length ? d._famNames : null;
+    const isLow = label === 'LOW';
+    return `
+    <article class="fam-card">
+      <div class="fam-card-top">
+        <h4 class="fam-tech-name">${esc(d.name)}</h4>
+        <span class="badge fam-conf ${badgeClass(label)}">${esc(label)}</span>
+      </div>
+      <p class="fam-fams">Detected across ${fams} independent evidence famil${fams === 1 ? 'y' : 'ies'}</p>
+      ${famNames ? `<p class="fam-fams-list">${esc(famNames.join(' + '))}</p>` : ''}
+      ${isLow ? `<p class="fam-low-hint">Limited supporting evidence. Treat as a hint, not a confirmation.</p>` : ''}
+      ${Array.isArray(d.conflicting) && d.conflicting.length ? `<p class="fam-conflict"><span>Conflicting evidence also resembles: </span>${d.conflicting.map(esc).join(', ')}</p>` : ''}
+      <details class="fam-ev">
+        <summary class="fam-ev-toggle"><span>Why we think this</span>
+          <svg class="fam-toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <p class="type-mono-caps text-mute fam-why-label">Why we think this</p>
+        <ul class="fam-ev-groups" role="list">${d._groupsHtml}</ul>
+      </details>
+    </article>`;
+  }
+
+  function buildSingleGroups(d) {
+    const byFamily = new Map();
+    for (const e of d.evidence ?? []) {
+      const fam = e.family ?? 'HTML';
+      if (!byFamily.has(fam)) byFamily.set(fam, []);
+      byFamily.get(fam).push(e);
+    }
+    const names = [...byFamily.keys()].map((f) => FAMILY_LABELS[f] ?? f);
+    const html = [...byFamily.entries()].map(([fam, items]) => `
+      <li><span class="type-mono-caps text-mute fam-ev-group-label">${esc(FAMILY_LABELS[fam] ?? fam)}</span>
+      <ul class="fam-ev-rows" role="list">
+        ${items.map((e) => evRowHtml(e.value ?? e.artifact ?? '')).join('')}
+      </ul></li>`).join('');
+    return { count: byFamily.size, names, html };
+  }
+
+  function normalizeDomain(raw) {
+    let s = String(raw ?? '').trim().toLowerCase();
+    if (!s) return '';
+    s = s.replace(/^https?:\/\//, '');
+    s = s.split(/[/?#]/)[0];
+    if (s.startsWith('www.')) s = s.slice(4);
+    s = s.replace(/:\d+$/, '').replace(/\.+$/, '');
+    if (!/^[\w.-]+\.[a-z]{2,}$/i.test(s)) return '';
+    return s;
+  }
+
+  roots.forEach((root) => {
+    const WANT = new Set(String(root.dataset.categories ?? '').split(',').map((s) => s.trim()).filter(Boolean));
+    let CAT_LABELS = {};
+    try { CAT_LABELS = JSON.parse(root.dataset.labels ?? '{}'); } catch { CAT_LABELS = {}; }
+    const ORDER = String(root.dataset.categories ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+    const EYEBROW = root.dataset.eyebrow ?? 'Detector';
+    const EMPTY_TITLE = root.dataset.emptyTitle ?? 'No technologies detected';
+    const EMPTY_BODY = root.dataset.emptyBody ?? 'We found no confident signals.';
+    const STORAGE_KEY = root.dataset.storageKey ?? 'fam_recent';
+    const SUBMIT_LABEL = root.dataset.submitLabel ?? 'Detect Stack';
+    const MAX_RECENT = 5;
+
+    const form = root.querySelector('form');
+    const input = root.querySelector('input[type="url"]');
+    const btn = root.querySelector('button[type="submit"]');
+    const loadEl = root.querySelector('[id$="-loading"]');
+    const resEl = root.querySelector('[id$="-result"]');
+    const errEl = root.querySelector('[id$="-error"]');
+    const recentEl = root.querySelector('[id$="-recent"]');
+    const recentList = root.querySelector('[id$="-recent-list"]');
+    const recentClear = root.querySelector('[id$="-recent-clear"]');
+
+    function loadRecent() {
+      try {
+        const p = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+        if (!Array.isArray(p)) return [];
+        return p.filter((u) => typeof u === 'string' && u.length > 0).slice(0, MAX_RECENT);
+      } catch { return []; }
+    }
+    function saveRecent(rawUrl) {
+      const domain = normalizeDomain(rawUrl);
+      if (!domain) return;
+      const list = [domain, ...loadRecent().filter((u) => normalizeDomain(u) !== domain)].slice(0, MAX_RECENT);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+    }
+    function renderRecent() {
+      if (!recentList || !recentEl) return;
+      recentList.innerHTML = '';
+      const list = loadRecent();
+      list.forEach((domain) => {
+        const li = document.createElement('li');
+        const b = document.createElement('button');
+        b.className = 'btn btn-secondary-dark fam-recent-btn';
+        b.textContent = domain;
+        b.title = domain;
+        b.type = 'button';
+        b.addEventListener('click', () => { if (input) input.value = domain; run(domain); });
+        li.appendChild(b);
+        recentList.appendChild(li);
+      });
+      recentEl.hidden = list.length === 0;
+    }
+
+    async function getToken() {
+      try {
+        if (window.cmsDetectorToken) return await window.cmsDetectorToken();
+      } catch { /* server decides */ }
+      return '';
+    }
+
+    function setLoading(on, label) {
+      if (!btn || !loadEl || !resEl || !errEl) return;
+      if (on) {
+        btn.disabled = true;
+        btn.textContent = label;
+        loadEl.hidden = false;
+        resEl.hidden = true;
+        errEl.hidden = true;
+      } else {
+        btn.disabled = false;
+        btn.textContent = SUBMIT_LABEL;
+        loadEl.hidden = true;
+      }
+    }
+
+    function showError(code, partialHtml) {
+      if (!errEl) return;
+      errEl.innerHTML = `<div class="fam-error-card"><span class="badge badge-error">Error</span>
+        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p>${partialHtml ?? ''}</div>`;
+      errEl.hidden = false;
+    }
+
+    function metricsHtml(found) {
+      const cats = new Set(found.map((r) => r._cat));
+      const high = found.filter((r) => { const l = normLabel(scored(r).label); return l === 'HIGH' || l === 'VERY HIGH'; }).length;
+      const cell = (n, l) => `<div class="fam-metric"><span class="fam-metric-num">${esc(String(n))}</span><span class="type-mono-caps fam-metric-label">${esc(l)}</span></div>`;
+      return `<div class="fam-metrics" role="list" aria-label="Scan summary">${cell(found.length, 'Technologies')}${cell(cats.size, 'Categories')}${cell(high, 'High confidence')}</div>`;
+    }
+
+    function catsHtml(byCat) {
+      return ORDER.filter((c) => (byCat.get(c) ?? []).length > 0).map((cat) => {
+        const items = byCat.get(cat);
+        const label = CAT_LABELS[cat] ?? cat;
+        return `<section class="fam-cat" aria-label="${esc(label)}">
+          <div class="fam-cat-head"><h3 class="fam-cat-title">${esc(label)}</h3><span class="type-mono-caps text-mute fam-cat-count">${esc(String(items.length))} technolog${items.length === 1 ? 'y' : 'ies'}</span></div>
+          <div class="fam-tech-grid">${items.map((d) => renderCard(d, {})).join('')}</div>
+        </section>`;
+      }).join('');
+    }
+
+    function actionsHtml() {
+      return `<div class="fam-actions">
+        <button type="button" class="btn btn-secondary-dark fam-action-btn" data-fam-another>Check another site</button>
+        <button type="button" class="btn btn-secondary-dark fam-action-btn" data-fam-copy>Copy link</button>
+      </div><a class="fam-report-link" href="mailto:hello@cmsdetectorai.com?subject=Result+feedback">Report a wrong result</a>`;
+    }
+
+    function wireActions(scope) {
+      scope.querySelectorAll('[data-fam-another]').forEach((b) => {
+        b.addEventListener('click', () => {
+          if (resEl) resEl.hidden = true;
+          if (errEl) errEl.hidden = true;
+          if (input) { input.value = ''; input.focus(); }
+        });
+      });
+      scope.querySelectorAll('[data-fam-copy]').forEach((b) => {
+        b.addEventListener('click', async () => {
+          const btnEl = b;
+          try { await navigator.clipboard.writeText(window.location.href); btnEl.textContent = 'Copied'; }
+          catch {
+            try {
+              const ta = document.createElement('textarea');
+              ta.value = window.location.href;
+              ta.style.position = 'fixed'; ta.style.opacity = '0';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); ta.remove();
+              btnEl.textContent = 'Copied';
+            } catch { btnEl.textContent = 'Copy link'; }
+          }
+          setTimeout(() => { btnEl.textContent = 'Copy link'; }, 1600);
+        });
+      });
+      scope.querySelectorAll('.fam-copy').forEach((b) => {
+        b.addEventListener('click', async () => {
+          const raw = b.getAttribute('data-copy') ?? '';
+          const orig = b.textContent ?? 'Copy';
+          try { await navigator.clipboard.writeText(raw); b.textContent = 'Copied'; }
+          catch {
+            try {
+              const ta = document.createElement('textarea');
+              ta.value = raw; ta.style.position = 'fixed'; ta.style.opacity = '0';
+              document.body.appendChild(ta); ta.select();
+              document.execCommand('copy'); ta.remove();
+              b.textContent = 'Copied';
+            } catch { /* noop */ }
+          }
+          setTimeout(() => { b.textContent = orig; }, 1200);
+        });
+      });
+    }
+
+    function renderSingle(data, url) {
+      const found = (data.results ?? []).filter((r) => WANT.has(r.category) && scored(r).show);
+      const displayUrl = String(data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const sorted = [...found].map((r) => {
+        const g = buildSingleGroups(r);
+        return { ...r, _cat: r.category, families: g.count, _groupCount: g.count, _famNames: g.names, _groupsHtml: g.html };
+      });
+      const byCatSorted = new Map();
+      for (const r of sorted) {
+        if (!byCatSorted.has(r._cat)) byCatSorted.set(r._cat, []);
+        byCatSorted.get(r._cat).push(r);
+      }
+      const body = sorted.length === 0
+        ? `<div class="fam-empty"><h3 class="fam-empty-title">${esc(EMPTY_TITLE)}</h3><p class="fam-empty-body">${esc(EMPTY_BODY)} <a href="/">Try the full technology scan</a> for the broader stack.</p></div>`
+        : `<p class="type-mono-caps text-mute fam-detected-label">Detected stack</p>${catsHtml(byCatSorted)}`;
+      return `<div class="fam-report">
+        <div class="fam-report-head"><p class="type-mono-caps text-mute fam-eyebrow">${esc(EYEBROW)}</p>
+        <h2 class="fam-domain">${esc(displayUrl)}</h2>${sorted.length ? metricsHtml(sorted) : ''}</div>
+        ${body}${actionsHtml()}</div>`;
+    }
+
+    async function runDetect(url) {
+      const token = await getToken();
+      const res = await fetch('/api/detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, token }) });
+      const data = await res.json();
+      if (loadEl) loadEl.hidden = true;
+      setLoading(false);
+      if (data.ok) {
+        saveRecent(url); renderRecent();
+        if (resEl) { resEl.innerHTML = renderSingle(data.data, url); resEl.hidden = false; wireActions(resEl); resEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      } else {
+        showError(data.error?.code ?? 'UNKNOWN');
+      }
+    }
+
+    async function run(url) {
+      const clean = String(url ?? '').trim();
+      if (!clean) return;
+      setLoading(true, 'Detecting…');
+      try {
+        await runDetect(clean);
+      } catch {
+        if (loadEl) loadEl.hidden = true;
+        setLoading(false);
+        if (errEl) { errEl.innerHTML = `<div class="fam-error-card"><span class="badge badge-error">Network error</span><p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your connection and try again.</p></div>`; errEl.hidden = false; }
+      }
+    }
+
+    form?.addEventListener('submit', (e) => { e.preventDefault(); run(input?.value ?? ''); });
+    recentClear?.addEventListener('click', () => { try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ } renderRecent(); input?.focus(); });
+    renderRecent();
+    input?.focus();
+  });
+})();
+</script>
