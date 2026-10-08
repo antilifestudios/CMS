@@ -6,7 +6,14 @@
  *
  * Response body (JSON):
  *   { ok: true, data: PipelineSuccess }
- *   | { ok: false, error: { code: string, partialResults: DetectionResult[] } }
+ *   | { ok: false, error: { code, partialResults, httpStatus?, botProtection? } }
+ *
+ * When the target answers with a bot-protection / challenge response,
+ * code is 'BLOCKED' and error carries a botProtection payload:
+ *   { status: 'bot_protected', httpStatus, provider: { name, confidence,
+ *     evidence } | null, responseHeaders, limitations }
+ * partialResults then holds header/cookie-level detections only — the
+ * challenge page's scripts are never reported as site technologies.
  *
  * Cloudflare Workers runtime — no Node APIs.
  * Never logs the submitted URL.
@@ -62,6 +69,14 @@ function json(body: unknown, status = 200, extra?: Record<string, string>): Resp
   });
 }
 
+/**
+ * Scoring / signature revision. Bump whenever the confidence model or a
+ * signature rule changes meaningfully, so cached results from an older
+ * engine are never served as current findings (stale LOW scores must not
+ * survive a scoring fix).
+ */
+const DETECTOR_REVISION = 2;
+
 /** Normalise a cache key: lowercase host, strip trailing slash + fragment. */
 function cacheKeyFor(rawUrl: string): string | undefined {
   try {
@@ -69,7 +84,7 @@ function cacheKeyFor(rawUrl: string): string | undefined {
     const parsed = new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`);
     const host = parsed.hostname.toLowerCase();
     const path = parsed.pathname.replace(/\/+$/, '') || '/';
-    return `https://cmsdetectorai.com/api/detect?u=${encodeURIComponent(host + path)}`;
+    return `https://cmsdetectorai.com/api/detect?rev=${DETECTOR_REVISION}&u=${encodeURIComponent(host + path)}`;
   } catch {
     return undefined;
   }

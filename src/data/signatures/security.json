@@ -4,9 +4,9 @@
     "name": "OneTrust",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.cookielaw\\.org/consent/|cdn\\.cookielaw\\.org/scripttemplates/otSDKStub\\.js|cdn\\.cookielaw\\.org/optanon/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cdn\\.cookielaw\\.org/consent/[a-f0-9-]+/otSDKStub\\.js|OneTrust\\.Notice\\.module|Optanon\\.Wrapper|OptanonConsent=|OnetrustActiveGroups|otBannerSdk\\.js|__OTBanner|OneTrust\\.AllowAll", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^OptanonConsent$|^OptanonAlertBoxClosed$|^OTConsent$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.cookielaw\\.org/consent/|cdn\\.cookielaw\\.org/scripttemplates/otSDKStub\\.js|cdn\\.cookielaw\\.org/optanon/", "weight": 92, "strength": "definitive", "description": "Known OneTrust consent SDK detected" },
+      { "type": "html-regex", "pattern": "cdn\\.cookielaw\\.org/consent/[a-f0-9-]+/otSDKStub\\.js|OneTrust\\.Notice\\.module|Optanon\\.Wrapper|OptanonConsent=|OnetrustActiveGroups|otBannerSdk\\.js|__OTBanner|OneTrust\\.AllowAll", "weight": 88, "strength": "definitive", "description": "OneTrust consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^OptanonConsent$|^OptanonAlertBoxClosed$|^OTConsent$", "weight": 72, "strength": "strong", "description": "OneTrust consent cookie detected" }
     ]
   },
   {
@@ -14,9 +14,9 @@
     "name": "Cookiebot",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js|consent\\.cookiebot\\.com/cb\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js[^\"']*cbid=[a-f0-9-]+|Cookiebot\\.consent\\.necessary|data-cbid=\\s*[\"'][a-f0-9-]+[\"']|Cookiebot\\.show|id\\s*=\\s*[\"']CookieDeclaration[\"']|consent\\.cookiebot\\.com/[a-f0-9-]+/cd\\.js", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^CookieConsent$|^CookieInformationConsent$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js|consent\\.cookiebot\\.com/cb\\.js", "weight": 92, "strength": "definitive", "description": "Known Cookiebot consent SDK detected" },
+      { "type": "html-regex", "pattern": "consent\\.cookiebot\\.(com|net)/uc\\.js[^\"']*cbid=[a-f0-9-]+|Cookiebot\\.consent\\.necessary|data-cbid=\\s*[\"'][a-f0-9-]+[\"']|Cookiebot\\.show|id\\s*=\\s*[\"']CookieDeclaration[\"']|consent\\.cookiebot\\.com/[a-f0-9-]+/cd\\.js", "weight": 88, "strength": "definitive", "description": "Cookiebot consent configuration detected" },
+      { "type": "cookie-name", "pattern": "^CookieConsent$|^CookieInformationConsent$", "weight": 72, "strength": "strong", "description": "Cookiebot consent cookie detected" }
     ]
   },
   {
@@ -24,9 +24,9 @@
     "name": "Usercentrics",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "app\\.usercentrics\\.eu/browser-ui/|settings\\.usercentrics\\.eu/settings-data|usercentrics\\.eu/bridge\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "app\\.usercentrics\\.eu/browser-ui/latest/loader\\.js|settings\\.usercentrics\\.eu/settings-data/[^\"'\\s]+|UC_UI\\.showSecondLayer|__ucCmp|data-settings-id\\s*=\\s*[\"'][A-Za-z0-9_-]+[\"'][^>]*usercentrics", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^uc_settings$|^uc_consent$|^usercentrics_consent$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "app\\.usercentrics\\.eu/browser-ui/|settings\\.usercentrics\\.eu/settings-data|usercentrics\\.eu/bridge\\.js", "weight": 92, "strength": "definitive", "description": "Known Usercentrics consent SDK detected" },
+      { "type": "html-regex", "pattern": "app\\.usercentrics\\.eu/browser-ui/latest/loader\\.js|settings\\.usercentrics\\.eu/settings-data/[^\"'\\s]+|UC_UI\\.showSecondLayer|__ucCmp|data-settings-id\\s*=\\s*[\"'][A-Za-z0-9_-]+[\"'][^>]*usercentrics", "weight": 88, "strength": "definitive", "description": "Usercentrics consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^uc_settings$|^uc_consent$|^usercentrics_consent$", "weight": 72, "strength": "strong", "description": "Usercentrics consent cookie detected" }
     ]
   },
   {
@@ -34,9 +34,9 @@
     "name": "TrustArc",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "consent\\.trustarc\\.com/notice|static\\.trustarc\\.com|consent\\.trustarc\\.com/m/static", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "consent\\.trustarc\\.com/notice(\\?domain=|/js/v3/jsDo\\.jsp)|truste\\.js|TrustArc\\.cm\\.api|privacy\\.trustarc\\.com|trustarc\\.com/m/static/trustarc", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^notice_behavior$|^notice_gdpr_prefs$|^cmapi_cookieprivacynotice", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "consent\\.trustarc\\.com/notice|static\\.trustarc\\.com|consent\\.trustarc\\.com/m/static", "weight": 92, "strength": "definitive", "description": "Known TrustArc consent SDK detected" },
+      { "type": "html-regex", "pattern": "consent\\.trustarc\\.com/notice(\\?domain=|/js/v3/jsDo\\.jsp)|truste\\.js|TrustArc\\.cm\\.api|privacy\\.trustarc\\.com|trustarc\\.com/m/static/trustarc", "weight": 88, "strength": "definitive", "description": "TrustArc consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^notice_behavior$|^notice_gdpr_prefs$|^cmapi_cookieprivacynotice", "weight": 72, "strength": "strong", "description": "TrustArc consent cookie detected" }
     ]
   },
   {
@@ -44,9 +44,9 @@
     "name": "iubenda",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.iubenda\\.com/(cs|safe-tcf|api)/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cdn\\.iubenda\\.com/cs/[^\"']*\\.js|iubenda_cs\\.version|_iub\\.cs\\.consent|cdn\\.iubenda\\.com/privacy-policy/|iubenda\\.init", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^_iub_cs-[0-9]+$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.iubenda\\.com/(cs|safe-tcf|api)/", "weight": 92, "strength": "definitive", "description": "Known iubenda consent SDK detected" },
+      { "type": "html-regex", "pattern": "cdn\\.iubenda\\.com/cs/[^\"']*\\.js|iubenda_cs\\.version|_iub\\.cs\\.consent|cdn\\.iubenda\\.com/privacy-policy/|iubenda\\.init", "weight": 88, "strength": "definitive", "description": "iubenda consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^_iub_cs-[0-9]+$", "weight": 72, "strength": "strong", "description": "iubenda consent cookie detected" }
     ]
   },
   {
@@ -54,9 +54,9 @@
     "name": "Complianz",
     "category": "privacy",
     "signals": [
-      { "type": "html-path", "pattern": "/wp-content/plugins/complianz-gdpr/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cmplz_set_cookie|complianz\\.min\\.js|cmplz-document\\.css|/complianz-gdpr/assets|COMPLIANZ\\s*=|cmplz_get_cookie", "weight": 80, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^cmplz_choice$|^cmplz_statistics$|^cmplz_marketing$|^cmplz_preferences$|^cmplz_functional$", "weight": 75, "strength": "strong" }
+      { "type": "html-path", "pattern": "/wp-content/plugins/complianz-gdpr/", "weight": 92, "strength": "definitive", "description": "Complianz plugin asset path detected" },
+      { "type": "html-regex", "pattern": "cmplz_set_cookie|complianz\\.min\\.js|cmplz-document\\.css|/complianz-gdpr/assets|COMPLIANZ\\s*=|cmplz_get_cookie", "weight": 88, "strength": "definitive", "description": "Complianz consent code detected" },
+      { "type": "cookie-name", "pattern": "^cmplz_choice$|^cmplz_statistics$|^cmplz_marketing$|^cmplz_preferences$|^cmplz_functional$", "weight": 72, "strength": "strong", "description": "Complianz consent cookie detected" }
     ]
   },
   {
@@ -64,9 +64,9 @@
     "name": "Didomi",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "sdk\\.didomi\\.io/didomi-loader|sdk\\.privacy-center\\.org|cdn\\.privacy-center\\.org", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "sdk\\.didomi\\.io/didomi-loader/[^\"']+\\.js|Didomi\\.notice\\.show|Didomi\\.getUserConsentStatus|didomiConfig|api\\.didomi\\.io/consent", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^didomi_token$|^didomi_", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "sdk\\.didomi\\.io/didomi-loader|sdk\\.privacy-center\\.org|cdn\\.privacy-center\\.org", "weight": 92, "strength": "definitive", "description": "Known Didomi consent SDK detected" },
+      { "type": "html-regex", "pattern": "sdk\\.didomi\\.io/didomi-loader/[^\"']+\\.js|Didomi\\.notice\\.show|Didomi\\.getUserConsentStatus|didomiConfig|api\\.didomi\\.io/consent", "weight": 88, "strength": "definitive", "description": "Didomi consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^didomi_token$|^didomi_", "weight": 72, "strength": "strong", "description": "Didomi consent cookie detected" }
     ]
   },
   {
@@ -74,9 +74,9 @@
     "name": "Osano",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "cmp\\.osano\\.com/dist/osano\\.js|cdn\\.osano\\.com", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cmp\\.osano\\.com/dist/osano\\.js[^\"']*customerId=[A-Za-z0-9-]+|Osano\\.cm\\.showDrawer|window\\.__osano|osano\\.init", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^osano_consentmanager$|^osano_consentmanager_uuid$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "cmp\\.osano\\.com/dist/osano\\.js|cdn\\.osano\\.com", "weight": 92, "strength": "definitive", "description": "Known Osano consent SDK detected" },
+      { "type": "html-regex", "pattern": "cmp\\.osano\\.com/dist/osano\\.js[^\"']*customerId=[A-Za-z0-9-]+|Osano\\.cm\\.showDrawer|window\\.__osano|osano\\.init", "weight": 88, "strength": "definitive", "description": "Osano consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^osano_consentmanager$|^osano_consentmanager_uuid$", "weight": 72, "strength": "strong", "description": "Osano consent cookie detected" }
     ]
   },
   {
@@ -84,9 +84,9 @@
     "name": "CookieYes",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "cdn-cookieyes\\.com/client_data/|app\\.cookieyes\\.com/cdn/cli\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "cdn-cookieyes\\.com/client_data/[a-f0-9]+/script\\.js|cky-consent|ckyBanner|cookieyes\\.init|app\\.cookieyes\\.com/cdn/cli\\.js", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^cky-consent$|^cookieyes-consent$|^cky-active-check$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn-cookieyes\\.com/client_data/|app\\.cookieyes\\.com/cdn/cli\\.js", "weight": 92, "strength": "definitive", "description": "Known CookieYes consent SDK detected" },
+      { "type": "html-regex", "pattern": "cdn-cookieyes\\.com/client_data/[a-f0-9]+/script\\.js|cky-consent|ckyBanner|cookieyes\\.init|app\\.cookieyes\\.com/cdn/cli\\.js", "weight": 88, "strength": "definitive", "description": "CookieYes consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^cky-consent$|^cookieyes-consent$|^cky-active-check$", "weight": 72, "strength": "strong", "description": "CookieYes consent cookie detected" }
     ]
   },
   {
@@ -94,9 +94,9 @@
     "name": "Termly",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "app\\.termly\\.io/resource-blocker/|cdn\\.termly\\.io/api/|display\\.termly\\.io", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "app\\.termly\\.io/resource-blocker/[a-f0-9-]+\\.min\\.js|termly\\.getConsentState|display\\.termly\\.io/policy|termly-embed|data-termly", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^_termly_visitor$|^termlyConsent$", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "app\\.termly\\.io/resource-blocker/|cdn\\.termly\\.io/api/|display\\.termly\\.io", "weight": 92, "strength": "definitive", "description": "Known Termly consent SDK detected" },
+      { "type": "html-regex", "pattern": "app\\.termly\\.io/resource-blocker/[a-f0-9-]+\\.min\\.js|termly\\.getConsentState|display\\.termly\\.io/policy|termly-embed|data-termly", "weight": 88, "strength": "definitive", "description": "Termly consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^_termly_visitor$|^termlyConsent$", "weight": 72, "strength": "strong", "description": "Termly consent cookie detected" }
     ]
   },
   {
@@ -104,9 +104,9 @@
     "name": "Quantcast Choice",
     "category": "privacy",
     "signals": [
-      { "type": "script-host", "pattern": "quantcast\\.mgr\\.consent\\.js|cmp\\.quantcast\\.com/choice/|c1\\.quantserve\\.com/gce|api\\.quantcast\\.com/choice/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "quantcast\\.mgr\\.consent\\.js|cmp\\.quantcast\\.com/choice/[a-zA-Z0-9_-]+/__tcf\\.js|__tcfapi[^<]{0,200}quantcast|quantcast\\.com/choice", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^euconsent-v2$", "weight": 40, "strength": "weak" }
+      { "type": "script-host", "pattern": "quantcast\\.mgr\\.consent\\.js|cmp\\.quantcast\\.com/choice/|c1\\.quantserve\\.com/gce|api\\.quantcast\\.com/choice/", "weight": 92, "strength": "definitive", "description": "Known Quantcast Choice consent SDK detected" },
+      { "type": "html-regex", "pattern": "quantcast\\.mgr\\.consent\\.js|cmp\\.quantcast\\.com/choice/[a-zA-Z0-9_-]+/__tcf\\.js|__tcfapi[^<]{0,200}quantcast|quantcast\\.com/choice", "weight": 88, "strength": "definitive", "description": "Quantcast Choice consent initialization detected" },
+      { "type": "cookie-name", "pattern": "^euconsent-v2$", "weight": 40, "strength": "weak", "description": "Generic TCF consent cookie (weak hint)" }
     ]
   },
   {
@@ -114,9 +114,9 @@
     "name": "reCAPTCHA",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "google\\.com/recaptcha/(api\\.js|enterprise\\.js)|recaptcha\\.net/recaptcha/(api\\.js|enterprise\\.js)|gstatic\\.com/recaptcha/releases/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "google\\.com/recaptcha/(api|enterprise)\\.js\\?render=[A-Za-z0-9_-]+|recaptcha\\.net/recaptcha/(api|enterprise)\\.js|g-recaptcha\\s+data-sitekey\\s*=\\s*[\"'][A-Za-z0-9_-]{10,}[\"']|grecaptcha\\.execute\\(\\s*['\"][A-Za-z0-9_-]{10,}['\"]|id\\s*=\\s*[\"']g-recaptcha-response[\"']|___grecaptcha_cfg|recaptcha__en\\.js", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^_GRECAPTCHA$", "weight": 60, "strength": "strong" }
+      { "type": "script-host", "pattern": "google\\.com/recaptcha/(api\\.js|enterprise\\.js)|recaptcha\\.net/recaptcha/(api\\.js|enterprise\\.js)|gstatic\\.com/recaptcha/releases/", "weight": 92, "strength": "definitive", "description": "Known reCAPTCHA SDK detected" },
+      { "type": "html-regex", "pattern": "google\\.com/recaptcha/(api|enterprise)\\.js\\?render=[A-Za-z0-9_-]+|recaptcha\\.net/recaptcha/(api|enterprise)\\.js|g-recaptcha\\s+data-sitekey\\s*=\\s*[\"'][A-Za-z0-9_-]{10,}[\"']|grecaptcha\\.execute\\(\\s*['\"][A-Za-z0-9_-]{10,}['\"]|id\\s*=\\s*[\"']g-recaptcha-response[\"']|___grecaptcha_cfg|recaptcha__en\\.js", "weight": 88, "strength": "definitive", "description": "reCAPTCHA widget or API call detected" },
+      { "type": "cookie-name", "pattern": "^_GRECAPTCHA$", "weight": 60, "strength": "strong", "description": "reCAPTCHA cookie detected" }
     ],
     "negative": ["data-sitekey\\s*=\\s*[\"'](YOUR_SITE_KEY|test|example|placeholder|xxxx|123)"]
   },
@@ -125,9 +125,9 @@
     "name": "hCaptcha",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "js\\.hcaptcha\\.com/1\\.js|hcaptcha\\.com/captcha/v1/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "js\\.hcaptcha\\.com/1\\.js[^\"']*onload=|class\\s*=\\s*[\"'][^\"']*h-captcha[^\"']*[\"'][^>]*data-sitekey|hcaptcha\\.execute\\(|(id|name)\\s*=\\s*[\"']h-captcha-response[\"']|data-hcaptcha-widget-id|hcaptcha\\.render\\(", "weight": 85, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^hc_accessibility$", "weight": 40, "strength": "weak" }
+      { "type": "script-host", "pattern": "js\\.hcaptcha\\.com/1\\.js|hcaptcha\\.com/captcha/v1/", "weight": 92, "strength": "definitive", "description": "Known hCaptcha SDK detected" },
+      { "type": "html-regex", "pattern": "js\\.hcaptcha\\.com/1\\.js[^\"']*onload=|class\\s*=\\s*[\"'][^\"']*h-captcha[^\"']*[\"'][^>]*data-sitekey|hcaptcha\\.execute\\(|(id|name)\\s*=\\s*[\"']h-captcha-response[\"']|data-hcaptcha-widget-id|hcaptcha\\.render\\(", "weight": 88, "strength": "definitive", "description": "hCaptcha widget detected" },
+      { "type": "cookie-name", "pattern": "^hc_accessibility$", "weight": 40, "strength": "weak", "description": "Generic accessibility cookie (weak hint)" }
     ],
     "negative": ["data-sitekey\\s*=\\s*[\"'](10000000-ffff-ffff-ffff-000000000001|test|example|placeholder)"]
   },
@@ -136,8 +136,9 @@
     "name": "Sentry",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "browser\\.sentry-cdn\\.com/[^\"']+\\.min\\.js|js\\.sentry-cdn\\.com/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "Sentry\\.init\\(\\s*\\{|Sentry\\.captureException|Sentry\\.onLoad\\(|[a-z0-9-]+\\.ingest\\.sentry\\.io/api/\\d+/envelope|\\.sentry\\.io/api/\\d+/envelope|dsn\\s*:\\s*['\"]https://[a-f0-9]+@[a-z0-9.-]*\\.?sentry\\.io|__SENTRY__|window\\.Sentry|_sentryDebugIds|__sentryPatched", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "browser\\.sentry-cdn\\.com/|js\\.sentry-cdn\\.com/", "weight": 95, "strength": "definitive", "description": "Known Sentry browser SDK detected" },
+      { "type": "html-regex", "pattern": "Sentry\\.init\\(|Sentry\\.captureException|Sentry\\.onLoad\\(|window\\.Sentry|__SENTRY__", "weight": 90, "strength": "definitive", "description": "Sentry error-monitoring initialization detected" },
+      { "type": "html-regex", "pattern": "[a-z0-9-]+\\.ingest\\.sentry\\.io|\\.sentry\\.io/api/\\d+/envelope|dsn\\s*:\\s*['\"]https://[a-f0-9]+@[a-z0-9.-]*\\.?sentry\\.io|_sentryDebugIds|__sentryPatched", "weight": 95, "strength": "definitive", "description": "Sentry DSN / ingest endpoint detected" }
     ]
   },
   {
@@ -145,8 +146,8 @@
     "name": "Cloudflare Turnstile",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "challenges\\.cloudflare\\.com/turnstile/v0/api\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "challenges\\.cloudflare\\.com/turnstile/v0/api\\.js|class\\s*=\\s*[\"'][^\"']*cf-turnstile[^\"']*[\"'][^>]*data-sitekey|turnstile\\.render\\(|data-cf-turnstile-response|(id|name)\\s*=\\s*[\"']cf-turnstile-response[\"']", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "challenges\\.cloudflare\\.com/turnstile/v0/api\\.js", "weight": 92, "strength": "definitive", "description": "Known Cloudflare Turnstile SDK detected" },
+      { "type": "html-regex", "pattern": "challenges\\.cloudflare\\.com/turnstile/v0/api\\.js|class\\s*=\\s*[\"'][^\"']*cf-turnstile[^\"']*[\"'][^>]*data-sitekey|turnstile\\.render\\(|data-cf-turnstile-response|(id|name)\\s*=\\s*[\"']cf-turnstile-response[\"']", "weight": 88, "strength": "definitive", "description": "Cloudflare Turnstile widget detected" }
     ],
     "negative": ["data-sitekey\\s*=\\s*[\"'](0x[a-fA-F0-9]{30,}|test|example|placeholder|xxxx)"]
   },
@@ -155,8 +156,8 @@
     "name": "Fingerprint",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.fingerprint\\.com/|cdn\\.fingerprintjs\\.com/|fp\\.cdn\\.io/v\\d+/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "FingerprintJS\\.load\\(|@fingerprintjs/fingerprintjs|fpjs\\.io/v\\d+|fingerprint\\.com/v\\d+/[^\"']+\\.js", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.fingerprint\\.com/|cdn\\.fingerprintjs\\.com/|fp\\.cdn\\.io/v\\d+/", "weight": 92, "strength": "definitive", "description": "Known Fingerprint SDK detected" },
+      { "type": "html-regex", "pattern": "FingerprintJS\\.load\\(|@fingerprintjs/fingerprintjs|fpjs\\.io/v\\d+|fingerprint\\.com/v\\d+/[^\"']+\\.js", "weight": 88, "strength": "definitive", "description": "Fingerprint device-identification call detected" }
     ]
   },
   {
@@ -164,8 +165,8 @@
     "name": "Datadog RUM",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "browser-intake-datadoghq\\.com/sdk/|rum\\.browser-intake-datadoghq\\.com/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "DD_RUM\\.init\\(|@datadog/browser-rum|browser-intake-datadoghq\\.com/api/v\\d+/rum|datadogRum\\.init", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "browser-intake-datadoghq\\.com/sdk/|rum\\.browser-intake-datadoghq\\.com/", "weight": 92, "strength": "definitive", "description": "Known Datadog RUM SDK detected" },
+      { "type": "html-regex", "pattern": "DD_RUM\\.init\\(|@datadog/browser-rum|browser-intake-datadoghq\\.com/api/v\\d+/rum|datadogRum\\.init", "weight": 88, "strength": "definitive", "description": "Datadog RUM initialization detected" }
     ]
   },
   {
@@ -173,8 +174,8 @@
     "name": "New Relic",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "js-agent\\.newrelic\\.com/nr-spa|js-agent\\.newrelic\\.com/nr-loader", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "NREUM\\.(init|info|loader_config)|js-agent\\.newrelic\\.com/nr-spa-[0-9]+\\.min\\.js|bam\\.nr-data\\.net/1/[a-f0-9]+", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "js-agent\\.newrelic\\.com/nr-spa|js-agent\\.newrelic\\.com/nr-loader", "weight": 92, "strength": "definitive", "description": "Known New Relic agent detected" },
+      { "type": "html-regex", "pattern": "NREUM\\.(init|info|loader_config)|js-agent\\.newrelic\\.com/nr-spa-[0-9]+\\.min\\.js|bam\\.nr-data\\.net/1/[a-f0-9]+", "weight": 88, "strength": "definitive", "description": "New Relic agent initialization detected" }
     ]
   },
   {
@@ -182,8 +183,8 @@
     "name": "Bugsnag",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "d2wy8f7a9ursnm\\.cloudfront\\.net/v\\d+/bugsnag\\.min\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "Bugsnag\\.start\\(|Bugsnag\\.notify\\(|notify\\.bugsnag\\.com/sessions\\.bugsnag\\.com|d2wy8f7a9ursnm\\.cloudfront\\.net/v\\d+/bugsnag", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "d2wy8f7a9ursnm\\.cloudfront\\.net/v\\d+/bugsnag\\.min\\.js", "weight": 92, "strength": "definitive", "description": "Known Bugsnag SDK detected" },
+      { "type": "html-regex", "pattern": "Bugsnag\\.start\\(|Bugsnag\\.notify\\(|notify\\.bugsnag\\.com/sessions\\.bugsnag\\.com|d2wy8f7a9ursnm\\.cloudfront\\.net/v\\d+/bugsnag", "weight": 88, "strength": "definitive", "description": "Bugsnag error-reporting call detected" }
     ]
   },
   {
@@ -191,8 +192,8 @@
     "name": "Rollbar",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.rollbar\\.com/rollbarjs/", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "Rollbar\\.configure\\(|_rollbarConfig\\s*=|api\\.rollbar\\.com/api/1/item|cdn\\.rollbar\\.com/rollbarjs/[^\"']+\\.min\\.js", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.rollbar\\.com/rollbarjs/", "weight": 92, "strength": "definitive", "description": "Known Rollbar SDK detected" },
+      { "type": "html-regex", "pattern": "Rollbar\\.configure\\(|_rollbarConfig\\s*=|api\\.rollbar\\.com/api/1/item|cdn\\.rollbar\\.com/rollbarjs/[^\"']+\\.min\\.js", "weight": 88, "strength": "definitive", "description": "Rollbar error-reporting configuration detected" }
     ]
   },
   {
@@ -200,8 +201,8 @@
     "name": "Cloudinary",
     "category": "other",
     "signals": [
-      { "type": "html-regex", "pattern": "res\\.cloudinary\\.com/[a-z0-9_-]+/(image|video|raw)/upload/|cloudinary\\.com/[a-z0-9_-]+/(image|video)/upload/|cloudinary-video\\.css|cloudinary\\.com/video/player", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "res\\.cloudinary\\.com|upload\\.cloudinary\\.com|widget\\.cloudinary\\.com|product-gallery\\.cloudinary\\.com", "weight": 80, "strength": "strong" }
+      { "type": "html-regex", "pattern": "res\\.cloudinary\\.com/[a-z0-9_-]+/(image|video|raw)/upload/|cloudinary\\.com/[a-z0-9_-]+/(image|video)/upload/|cloudinary-video\\.css|cloudinary\\.com/video/player", "weight": 90, "strength": "definitive", "description": "Cloudinary-hosted media detected" },
+      { "type": "script-host", "pattern": "res\\.cloudinary\\.com|upload\\.cloudinary\\.com|widget\\.cloudinary\\.com|product-gallery\\.cloudinary\\.com", "weight": 80, "strength": "strong", "description": "Cloudinary resource host referenced" }
     ]
   },
   {
@@ -209,8 +210,9 @@
     "name": "Algolia",
     "category": "other",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.algolia\\.com/algoliasearch|cdn\\.algolianet\\.com/|cdn\\.jsdelivr\\.net/npm/(algoliasearch|instantsearch\\.js)", "weight": 85, "strength": "strong" },
-      { "type": "html-regex", "pattern": "algoliasearch\\([^)]*apiKey|docsearch\\(\\s*\\{[^}]*apiKey|instantsearch\\(\\s*\\{|[^a-zA-Z]algoliasearch\\.init\\(|[a-z0-9-]+\\.algolia\\.net/v1/indexes|[a-z0-9-]+\\.algolianet\\.com/v1/indexes", "weight": 75, "strength": "strong" }
+      { "type": "script-host", "pattern": "cdn\\.algolia\\.com/algoliasearch|cdn\\.algolianet\\.com/|cdn\\.jsdelivr\\.net/npm/(algoliasearch|instantsearch\\.js)|unpkg\\.com/(algoliasearch|instantsearch\\.js)", "weight": 92, "strength": "definitive", "description": "Known Algolia SDK detected" },
+      { "type": "html-regex", "pattern": "algoliasearch\\([^)]*apiKey|docsearch\\(\\s*\\{[^}]*apiKey|instantsearch\\(\\s*\\{|algoliasearch\\.init\\(|[a-z0-9-]+\\.algolia\\.net/(1|v1)/indexes|[a-z0-9-]+\\.algolianet\\.com/(1|v1)/indexes", "weight": 90, "strength": "definitive", "description": "Algolia search initialization / API signature detected" },
+      { "type": "script-host", "pattern": "[a-z0-9-]+\\.algolia\\.net|[a-z0-9-]+\\.algolianet\\.com", "weight": 65, "strength": "strong", "description": "Algolia API endpoint referenced" }
     ]
   },
   {
@@ -218,8 +220,8 @@
     "name": "Google Maps",
     "category": "other",
     "signals": [
-      { "type": "script-host", "pattern": "maps\\.googleapis\\.com/maps/api/js|maps\\.google\\.com/maps/api/js|maps\\.gstatic\\.com/mapfiles/api-", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "maps\\.googleapis\\.com/maps/api/js\\?[^\"'\\s]+|maps\\.googleapis\\.com/maps/api/staticmap\\?|google\\.com/maps/embed\\?pb=|maps\\.google\\.com/maps\\?q=|new\\s+google\\.maps\\.(Map|Marker|InfoWindow|places\\.Autocomplete)\\(|google\\.maps\\.MapTypeId", "weight": 85, "strength": "strong" }
+      { "type": "script-host", "pattern": "maps\\.googleapis\\.com/maps/api/js|maps\\.google\\.com/maps/api/js|maps\\.gstatic\\.com/mapfiles/api-", "weight": 92, "strength": "definitive", "description": "Known Google Maps API SDK detected" },
+      { "type": "html-regex", "pattern": "maps\\.googleapis\\.com/maps/api/js\\?[^\"'\\s]+|maps\\.googleapis\\.com/maps/api/staticmap\\?|google\\.com/maps/embed\\?pb=|maps\\.google\\.com/maps\\?q=|new\\s+google\\.maps\\.(Map|Marker|InfoWindow|places\\.Autocomplete)\\(|google\\.maps\\.MapTypeId", "weight": 88, "strength": "definitive", "description": "Google Maps embed or API call detected" }
     ]
   },
   {
@@ -227,9 +229,9 @@
     "name": "YouTube",
     "category": "other",
     "signals": [
-      { "type": "html-regex", "pattern": "(www\\.)?youtube\\.com/embed/[A-Za-z0-9_-]{6,}|youtube-nocookie\\.com/embed/[A-Za-z0-9_-]{6,}", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "youtube\\.com/iframe_api|www\\.youtube\\.com/s/player/", "weight": 80, "strength": "strong" },
-      { "type": "html-regex", "pattern": "onYouTubeIframeAPIReady|YT\\.Player\\(|youtube\\.com\\/player_api", "weight": 75, "strength": "strong" }
+      { "type": "html-regex", "pattern": "(www\\.)?youtube\\.com/embed/[A-Za-z0-9_-]{6,}|youtube-nocookie\\.com/embed/[A-Za-z0-9_-]{6,}", "weight": 90, "strength": "definitive", "description": "YouTube embed detected" },
+      { "type": "script-host", "pattern": "youtube\\.com/iframe_api|www\\.youtube\\.com/s/player/", "weight": 85, "strength": "strong", "description": "YouTube player SDK detected" },
+      { "type": "html-regex", "pattern": "onYouTubeIframeAPIReady|YT\\.Player\\(|youtube\\.com\\/player_api", "weight": 80, "strength": "strong", "description": "YouTube player API call detected" }
     ]
   },
   {
@@ -237,9 +239,9 @@
     "name": "Vimeo",
     "category": "other",
     "signals": [
-      { "type": "html-regex", "pattern": "player\\.vimeo\\.com/video/\\d+|vimeo\\.com/api/oembed\\.json", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "player\\.vimeo\\.com/api/player\\.js|f\\.vimeocdn\\.com/", "weight": 80, "strength": "strong" },
-      { "type": "html-regex", "pattern": "new\\s+Vimeo\\.Player\\(|Vimeo\\.Player\\(|f\\.vimeocdn\\.com/p/[^\"']+\\.js", "weight": 75, "strength": "strong" }
+      { "type": "html-regex", "pattern": "player\\.vimeo\\.com/video/\\d+|vimeo\\.com/api/oembed\\.json", "weight": 90, "strength": "definitive", "description": "Vimeo embed detected" },
+      { "type": "script-host", "pattern": "player\\.vimeo\\.com/api/player\\.js", "weight": 85, "strength": "strong", "description": "Vimeo player SDK detected" },
+      { "type": "html-regex", "pattern": "new\\s+Vimeo\\.Player\\(|Vimeo\\.Player\\(|f\\.vimeocdn\\.com/p/[^\"']+\\.js", "weight": 80, "strength": "strong", "description": "Vimeo player API call detected" }
     ]
   },
   {
@@ -247,9 +249,9 @@
     "name": "Font Awesome",
     "category": "other",
     "signals": [
-      { "type": "stylesheet-url", "pattern": "font-awesome|fontawesome|use\\.fontawesome\\.com", "weight": 85, "strength": "strong" },
-      { "type": "script-host", "pattern": "use\\.fontawesome\\.com/releases/|ka-[a-z]\\.fontawesome\\.com|kit\\.fontawesome\\.com", "weight": 80, "strength": "strong" },
-      { "type": "html-regex", "pattern": "class\\s*=\\s*[\"'][^\"']*fa-(solid|regular|brands|sharp)\\s+fa-[a-z-]+|data-prefix\\s*=\\s*[\"']fa[\"']|(href|src)\\s*=\\s*[\"'][^\"']*fontawesome-free[^\"']*|fontawesome/css/all\\.min\\.css", "weight": 70, "strength": "strong" }
+      { "type": "stylesheet-url", "pattern": "font-awesome|fontawesome|use\\.fontawesome\\.com", "weight": 88, "strength": "definitive", "description": "Font Awesome stylesheet detected" },
+      { "type": "script-host", "pattern": "use\\.fontawesome\\.com/releases/|ka-[a-z]\\.fontawesome\\.com|kit\\.fontawesome\\.com", "weight": 88, "strength": "definitive", "description": "Font Awesome kit detected" },
+      { "type": "html-regex", "pattern": "class\\s*=\\s*[\"'][^\"']*fa-(solid|regular|brands|sharp)\\s+fa-[a-z-]+|data-prefix\\s*=\\s*[\"']fa[\"']|(href|src)\\s*=\\s*[\"'][^\"']*fontawesome-free[^\"']*|fontawesome/css/all\\.min\\.css", "weight": 65, "strength": "strong", "description": "Font Awesome icon markup detected" }
     ]
   }
 ]

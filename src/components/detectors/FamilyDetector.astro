@@ -160,6 +160,8 @@ const labelsData = JSON.stringify(categoryLabels);
   .fam-ev-group-label { display: block; margin-block-end: 6px; }
   .fam-ev-rows { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
   .fam-ev-row { display: flex; align-items: flex-start; gap: 8px; background-color: var(--color-canvas); border-radius: var(--radius-app-sm); padding: 7px 8px; min-inline-size: 0; }
+  .fam-ev-main { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
+  .fam-ev-desc { font-size: 12px; line-height: 1.5; color: var(--color-ash); overflow-wrap: anywhere; word-break: break-word; }
   .fam-ev-text { flex: 1; min-inline-size: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.55; color: var(--color-ash); overflow-wrap: anywhere; word-break: break-word; }
   .fam-ev-host { color: var(--color-on-primary); display: block; overflow-wrap: anywhere; }
   .fam-ev-path { color: var(--color-ash); display: block; overflow-wrap: anywhere; word-break: break-all; }
@@ -266,12 +268,13 @@ const labelsData = JSON.stringify(categoryLabels);
     return { host: '', path: '', single, full: s };
   }
 
-  function evRowHtml(displayValue, fullRaw) {
+  function evRowHtml(displayValue, fullRaw, description) {
     const parts = splitEvidence(displayValue);
+    const desc = String(description ?? '').trim();
     const text = parts.host
       ? `<span class="fam-ev-text" title="${esc(parts.full)}"><span class="fam-ev-host">${esc(parts.host)}</span>${parts.path ? `<span class="fam-ev-path">${esc(parts.path)}</span>` : ''}</span>`
       : `<span class="fam-ev-text" title="${esc(parts.full)}"><span class="fam-ev-single">${esc(parts.single || parts.full)}</span></span>`;
-    return `<li class="fam-ev-row">${text}<button type="button" class="fam-copy" data-copy="${esc(parts.full || fullRaw || displayValue)}">Copy</button></li>`;
+    return `<li class="fam-ev-row"><span class="fam-ev-main">${desc ? `<span class="fam-ev-desc">${esc(desc)}</span>` : ''}${text}</span><button type="button" class="fam-copy" data-copy="${esc(parts.full || fullRaw || displayValue)}">Copy</button></li>`;
   }
 
   function renderCard(d, opts) {
@@ -311,7 +314,7 @@ const labelsData = JSON.stringify(categoryLabels);
     const html = [...byFamily.entries()].map(([fam, items]) => `
       <li><span class="type-mono-caps text-mute fam-ev-group-label">${esc(FAMILY_LABELS[fam] ?? fam)}</span>
       <ul class="fam-ev-rows" role="list">
-        ${items.map((e) => evRowHtml(e.value ?? e.artifact ?? '')).join('')}
+        ${items.map((e) => evRowHtml(e.value ?? e.artifact ?? '', e.value ?? e.artifact ?? '', e.description ?? '')).join('')}
       </ul></li>`).join('');
     return { count: byFamily.size, names, html };
   }
@@ -402,10 +405,22 @@ const labelsData = JSON.stringify(categoryLabels);
       }
     }
 
-    function showError(code, partialHtml) {
+    function showError(err, url) {
+      const code = err?.code ?? 'UNKNOWN';
+      // Explicit bot-protection state renders as an informative result —
+      // never an alarming generic error, never challenge-page tech guesses.
+      if (code === 'BLOCKED' && err?.botProtection && resEl) {
+        const raw = String(err?.finalUrl ?? url ?? '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+        resEl.innerHTML = botProtectionHtml(err, raw || String(url ?? ''));
+        resEl.hidden = false;
+        if (errEl) errEl.hidden = true;
+        wireActions(resEl);
+        resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
       if (!errEl) return;
       errEl.innerHTML = `<div class="fam-error-card"><span class="badge badge-error">Error</span>
-        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p>${partialHtml ?? ''}</div>`;
+        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p></div>`;
       errEl.hidden = false;
     }
 
@@ -414,6 +429,57 @@ const labelsData = JSON.stringify(categoryLabels);
       const high = found.filter((r) => { const l = normLabel(scored(r).label); return l === 'HIGH' || l === 'VERY HIGH'; }).length;
       const cell = (n, l) => `<div class="fam-metric"><span class="fam-metric-num">${esc(String(n))}</span><span class="type-mono-caps fam-metric-label">${esc(l)}</span></div>`;
       return `<div class="fam-metrics" role="list" aria-label="Scan summary">${cell(found.length, 'Technologies')}${cell(cats.size, 'Categories')}${cell(high, 'High confidence')}</div>`;
+    }
+
+    // BOT PROTECTION DETECTED — the site answered with a challenge page,
+    // so technology detection could not run. Protection is named only
+    // from strong evidence; partials below are header/cookie-level only.
+    function botProtectionHtml(err, displayUrl) {
+      const bp = err.botProtection ?? {};
+      const prot = bp.provider ?? null;
+      const pct = prot ? Math.round((prot.confidence ?? 0) * 100) : null;
+      const status = typeof bp.httpStatus === 'number' ? bp.httpStatus : (typeof err.httpStatus === 'number' ? err.httpStatus : null);
+      const respHeaders = bp.responseHeaders ?? {};
+      const headerRows = Object.entries(respHeaders).map(([k, v]) => evRowHtml(`${k}: ${v}`, `${k}: ${v}`)).join('');
+      const protRows = (prot?.evidence ?? []).map((e) => evRowHtml(e, e)).join('');
+
+      const partials = (err.partialResults ?? []).filter((r) => scored(r).show).map((r) => {
+        const g = buildSingleGroups(r);
+        return { ...r, _cat: r.category, families: g.count, _groupCount: g.count, _famNames: g.names, _groupsHtml: g.html };
+      });
+      const partialCats = new Map();
+      for (const r of partials) {
+        if (!partialCats.has(r._cat)) partialCats.set(r._cat, []);
+        partialCats.get(r._cat).push(r);
+      }
+      const partialHtml = partials.length === 0
+        ? `<div class="fam-empty"><h3 class="fam-empty-title">No header-level signals</h3><p class="fam-empty-body">The blocking response carried no identifiable technology headers or cookies either.</p></div>`
+        : [...partialCats.entries()].map(([cat, items]) => `
+          <section class="fam-cat" aria-label="${esc(cat)}">
+            <div class="fam-cat-head"><h3 class="fam-cat-title">${esc(cat)}</h3><span class="type-mono-caps text-mute fam-cat-count">${esc(String(items.length))} technolog${items.length === 1 ? 'y' : 'ies'}</span></div>
+            <div class="fam-tech-grid">${items.map((d) => renderCard(d, {})).join('')}</div>
+          </section>`).join('');
+
+      return `<div class="fam-report">
+        <div class="fam-report-head"><p class="type-mono-caps text-mute fam-eyebrow">Bot protection detected</p>
+        <h2 class="fam-domain">${esc(displayUrl)}</h2></div>
+        <p class="type-body-sm text-ash" style="margin: 0;">This website is protected against automated requests.
+        We could identify the protection layer, but the site's normal page could not be inspected.</p>
+        <article class="fam-card">
+          <div class="fam-card-top">
+            <h4 class="fam-tech-name">${esc(prot ? prot.name : 'Unknown protection layer')}</h4>
+            ${pct !== null ? `<span class="badge fam-conf fam-conf-medium">${esc(String(pct))}%</span>` : `<span class="badge fam-conf fam-conf-low">Unidentified</span>`}
+          </div>
+          <p class="fam-fams">Detected protection${status !== null ? ` · Status ${esc(String(status))}` : ''}</p>
+          ${(protRows || headerRows) ? `<ul class="fam-ev-groups" role="list">
+            ${protRows ? `<li><span class="type-mono-caps text-mute fam-ev-group-label">Evidence</span><ul class="fam-ev-rows" role="list">${protRows}</ul></li>` : ''}
+            ${headerRows ? `<li><span class="type-mono-caps text-mute fam-ev-group-label">Response headers</span><ul class="fam-ev-rows" role="list">${headerRows}</ul></li>` : ''}
+          </ul>` : ''}
+          ${Array.isArray(bp.limitations) && bp.limitations.length ? `<p class="fam-low-hint">${bp.limitations.map(esc).join(' ')}</p>` : ''}
+        </article>
+        <p class="type-mono-caps text-mute fam-detected-label">Limited detection — headers &amp; cookies only</p>
+        ${partialHtml}
+        ${actionsHtml()}</div>`;
     }
 
     function catsHtml(byCat) {
@@ -509,7 +575,7 @@ const labelsData = JSON.stringify(categoryLabels);
         saveRecent(url); renderRecent();
         if (resEl) { resEl.innerHTML = renderSingle(data.data, url); resEl.hidden = false; wireActions(resEl); resEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       } else {
-        showError(data.error?.code ?? 'UNKNOWN');
+        showError(data.error ?? { code: 'UNKNOWN' }, url);
       }
     }
 

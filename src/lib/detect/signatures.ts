@@ -85,7 +85,11 @@ export interface Signal {
   name?: string;
   /** Regex pattern string */
   pattern: string;
-  /** Confidence contribution (0–100) */
+  /** Confidence contribution (0–100): HOW PROVING this concrete
+   *  signal is. Known official SDK ≈ 90+, unique init/endpoint ≈
+   *  80–90, resource domain ≈ 55–70, generic keyword ≈ 10–30.
+   *  The confidence model scales this by specificity, so one very
+   *  strong signal can confirm a technology on its own. */
   weight: number;
   /** Fingerprint strength (defaults to 'weak' when omitted) */
   strength?: SignalStrength;
@@ -95,6 +99,11 @@ export interface Signal {
   family?: EvidenceFamily;
   /** Specificity multiplier 0–1 (defaults from strength) */
   specificity?: number;
+  /** Human-readable evidence line, e.g. "Known Sentry browser SDK
+   *  detected". Shown in "Why we think this". */
+  description?: string;
+  /** Stable signal id for cross-page dedupe (defaults to type:index). */
+  signalId?: string;
 }
 
 export interface Probe {
@@ -143,6 +152,11 @@ export interface Evidence {
   family: EvidenceFamily;
   /** Specificity multiplier 0–1 applied to this signal. */
   specificity: number;
+  /** Human-readable evidence line, e.g. "Known Sentry browser SDK
+   *  detected". Rendered in "Why we think this". */
+  description: string;
+  /** Stable rule-level id (signalId or type fallback) for dedupe. */
+  signalId: string;
 }
 
 /** 0–100 deterministic confidence label (see confidence.ts). */
@@ -231,17 +245,46 @@ export interface MatchContext {
  *   technologies without loading them.
  * - <pre>/<code>: documentation snippets and tutorials quote integration
  *   code without executing it.
+ * - Fenced code samples (```...```): documentation, including fences
+ *   embedded in JSON data blobs with escaped newlines (docs sites ship
+ *   their guides as JSON — e.g. sentry.io's own homepage carries a dozen
+ *   Sentry.init samples that must never count as SDK usage).
+ * - JSON-LD metadata blocks: structured data, never executed code.
+ * - Named code-sample containers (<div>/<figure class="code-wrapper",
+ *   "highlight", "codeblock", …>): syntax-highlighted samples from
+ *   renderers that don't use <pre>. The `highlight` token only matches
+ *   standalone (never `highlight-section`-style marketing classes), so
+ *   live scripts elsewhere on the page are untouched.
  * Live integrations live in attributes, <script> bodies, and resource
  * URLs — never inside these blocks. Applied to whole-HTML text searches
  * (html-regex / js-global / inline-script) only; resource-URL channels
  * (<script src>, <link href>, …) are unaffected.
  */
 const NON_USAGE_BLOCK_RX = /<(style|pre|code)[\s>][\s\S]*?<\/\1\s*>/gi;
+const FENCED_CODE_RX = /```[\s\S]*?```/g;
+const JSONLD_RX = /<script[^>]+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script\s*>/gi;
+const SAMPLE_CONTAINER_RX =
+  /<(div|figure)[^>]*class=["'][^"']*(code-wrapper|codeblock|code-sample|gatsby-highlight|prettyprint|codehilite|highlighter-|(?<=["'\s])highlight(?=["'\s]))[^"']*["'][^>]*>[\s\S]*?<\/\1\s*>/gi;
 
 function usageHtml(html: string): string {
-  if (!NON_USAGE_BLOCK_RX.test(html)) return html;
-  NON_USAGE_BLOCK_RX.lastIndex = 0;
-  return html.replace(NON_USAGE_BLOCK_RX, '');
+  let out = html;
+  if (NON_USAGE_BLOCK_RX.test(out)) {
+    NON_USAGE_BLOCK_RX.lastIndex = 0;
+    out = out.replace(NON_USAGE_BLOCK_RX, '');
+  }
+  if (FENCED_CODE_RX.test(out)) {
+    FENCED_CODE_RX.lastIndex = 0;
+    out = out.replace(FENCED_CODE_RX, '');
+  }
+  if (JSONLD_RX.test(out)) {
+    JSONLD_RX.lastIndex = 0;
+    out = out.replace(JSONLD_RX, '');
+  }
+  if (SAMPLE_CONTAINER_RX.test(out)) {
+    SAMPLE_CONTAINER_RX.lastIndex = 0;
+    out = out.replace(SAMPLE_CONTAINER_RX, '');
+  }
+  return out;
 }
 
 // ----------------------------------------------------------------
@@ -275,7 +318,11 @@ function matchSignal(
     case 'html-regex':
     case 'js-global':
     case 'inline-script': {
-      const match = rx.exec(usageHtml(ctx.html));
+      // Search AND slice context from the same stripped string — indices
+      // from the stripped text must never be applied to the raw HTML,
+      // or evidence values would show unrelated page content.
+      const searched = usageHtml(ctx.html);
+      const match = rx.exec(searched);
       if (match) {
         // Name is the concrete marker found (e.g. "data-astro-cid",
         // "/_astro/"), not the regex — it reads cleanly in evidence
@@ -283,7 +330,7 @@ function matchSignal(
         const marker = match[0].slice(0, 80);
         const at = match.index ?? 0;
         const from = Math.max(0, at - 24);
-        const context = ctx.html
+        const context = searched
           .slice(from, at + 56)
           .replace(/\s+/g, ' ')
           .trim()
@@ -438,6 +485,25 @@ function matchSignal(
 // Tech-level matching
 // ----------------------------------------------------------------
 
+/** Fallback evidence line when a rule carries no explicit
+ *  description. Never exposes raw regex — describes the channel. */
+function fallbackDescription(signal: Signal, techName: string): string {
+  switch (signal.type) {
+    case 'script-host':    return `${techName} resource URL detected`;
+    case 'stylesheet-url': return `${techName} stylesheet detected`;
+    case 'link-relation':  return `${techName} linked resource detected`;
+    case 'header':         return `${techName} HTTP header detected${signal.name ? ` (${signal.name})` : ''}`;
+    case 'cookie-name':    return `${techName} cookie detected`;
+    case 'meta-generator': return `${techName} generator tag detected`;
+    case 'meta-tag':       return `${techName} meta tag detected`;
+    case 'js-global':      return `${techName} JavaScript global detected`;
+    case 'inline-script':  return `${techName} initialization code detected`;
+    case 'html-path':      return `${techName} asset path detected`;
+    case 'html-regex':     return `${techName} code signature detected`;
+    case 'probe':          return `${techName} endpoint responded`;
+  }
+}
+
 function matchTech(
   sig: TechSignature,
   ctx: MatchContext
@@ -446,7 +512,11 @@ function matchTech(
   let totalWeight = 0;
   let version: string | undefined;
 
-  for (const signal of sig.signals) {
+  // NOTE: matching is purely technical — MatchContext carries only
+  // fetched HTML, response headers and cookie names. The target's own
+  // hostname/URL is never an input, so a domain name alone can never
+  // establish a detection.
+  sig.signals.forEach((signal, index) => {
     const { matched, artifact, version: v, name, value } = matchSignal(signal, ctx);
     if (matched) {
       // Saturating add — each signal can contribute at most its weight,
@@ -465,10 +535,12 @@ function matchTech(
         strength,
         family: familyForSignal(signal.type, signal.family),
         specificity: specificityForStrength(strength, signal.specificity),
+        description: signal.description ?? fallbackDescription(signal, sig.name),
+        signalId: signal.signalId ?? `${sig.id}#${signal.type}:${index}`,
       });
       if (v && !version) version = v;
     }
-  }
+  });
 
   // Probe-based signals (already fetched by the pipeline)
   if (sig.probes && ctx.probeResults) {
@@ -488,6 +560,8 @@ function matchTech(
           strength: 'strong',
           family: 'PLATFORM_IDENTIFIER',
           specificity: specificityForStrength('strong'),
+          description: `${sig.name} endpoint responded`,
+          signalId: `${sig.id}#probe:${probe.path}`,
         });
       }
     }

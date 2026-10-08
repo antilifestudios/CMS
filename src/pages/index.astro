@@ -950,6 +950,87 @@ function renderResults(data: {
 }
 
 // ----------------------------------------------------------------
+// Bot-protection result (explicit scan state, not a generic error).
+// The challenge page's scripts are never reported as technologies —
+// partials below are header/cookie-level detections only.
+// ----------------------------------------------------------------
+interface BotProtection {
+  status?: string;
+  httpStatus?: number;
+  provider?: { name?: string; confidence?: number; evidence?: string[] } | null;
+  responseHeaders?: Record<string, string>;
+  limitations?: string[];
+}
+
+function renderBotProtection(
+  err: { httpStatus?: number; partialResults?: Detection[]; botProtection?: BotProtection },
+  rawUrl: string
+): string {
+  const bp = err.botProtection ?? {};
+  const prot = bp.provider ?? null;
+  const pct = typeof prot?.confidence === 'number' ? Math.round(prot.confidence * 100) : null;
+  const status = typeof bp.httpStatus === 'number' ? bp.httpStatus
+    : typeof err.httpStatus === 'number' ? err.httpStatus : null;
+  const displayUrl = rawUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const mailtoBody = encodeURIComponent(`URL: ${rawUrl}\nDetected: bot protection (${prot?.name ?? 'unidentified'})\nExpected: `);
+
+  const evItems = (prot?.evidence ?? []).map((e) => `
+    <li class="evidence-item"><code class="evidence-artifact">${esc(e)}</code></li>`).join('');
+  const headerItems = Object.entries(bp.responseHeaders ?? {}).map(([k, v]) => `
+    <li class="evidence-item">
+      <span class="type-mono-micro evidence-type">${esc(k)}</span>
+      <code class="evidence-artifact">${esc(v)}</code>
+    </li>`).join('');
+
+  const partials = (err.partialResults ?? []).filter(
+    (r) => typeof (r as { score?: number }).score === 'number'
+      ? ((r as { score?: number }).score ?? 0) >= 40
+      : r.confidenceLabel === 'confirmed' || r.confidenceLabel === 'likely'
+  );
+  const partialHtml = partials.length === 0
+    ? `<p class="type-body-sm text-ash" style="margin: 0;">The blocking response carried no identifiable technology headers or cookies either.</p>`
+    : `<ul class="evidence-list" role="list">${partials.map((r) => `
+      <li class="evidence-item">
+        <span class="type-mono-micro evidence-type">${esc(CATEGORY_LABELS[r.category] ?? r.category)}</span>
+        <code class="evidence-artifact">${esc(r.name)} — header/cookie evidence only</code>
+      </li>`).join('')}</ul>`;
+
+  return `
+    <div class="result-card">
+      <div class="result-header"><div>
+        <p class="type-mono-caps text-mute" style="margin: 0 0 4px 0;">Bot protection detected</p>
+        <h2 class="type-heading-md result-url">${esc(displayUrl)}</h2>
+      </div></div>
+      <p class="type-body-sm text-ash" style="margin: 0;">
+        This website is protected against automated requests. We could inspect the
+        protection layer, but the site's normal page could not be retrieved —
+        full technology detection was not possible.
+      </p>
+      <div class="detection-card" data-id="bot-protection">
+        <div class="detection-header"><div class="detection-name-row">
+          <span class="type-heading-sm detection-name">${esc(prot?.name ?? 'Unknown protection layer')}</span>
+          ${pct !== null ? `<span class="badge conf-medium conf-badge">${esc(String(pct))}%</span>` : ''}
+        </div>
+        <span class="type-mono-caps text-mute category-label">Protection${status !== null ? ` · Status ${esc(String(status))}` : ''}</span>
+        </div>
+        ${evItems || headerItems ? `<ul class="evidence-list" role="list">${evItems}${headerItems}</ul>` : ''}
+        ${(bp.limitations ?? []).length > 0 ? `<p class="type-caption text-mute" style="margin: 8px 0 0 0;">${esc(bp.limitations!.join(' '))}</p>` : ''}
+      </div>
+      <p class="type-caption-tight text-mute" style="margin: 0;">Limited detection — from response headers and cookies only:</p>
+      ${partialHtml}
+      <div class="result-actions-row">
+        <button type="button" class="btn btn-secondary-dark result-action" data-check-another>${esc(t_checkAnother())}</button>
+      </div>
+      <a href="mailto:hello@cmsdetectorai.com?subject=Result+feedback&body=${mailtoBody}" class="report-link type-caption">Report a wrong result</a>
+    </div>`;
+}
+
+// Minimal accessor (avoids threading locale copy through the new branch).
+function t_checkAnother(): string {
+  return document.getElementById('detector-root')?.dataset?.checkAnother ?? 'Check another site';
+}
+
+// ----------------------------------------------------------------
 // Turnstile token (empty string when the challenge is not configured)
 // ----------------------------------------------------------------
 async function getTurnstileToken(): Promise<string> {
@@ -1020,6 +1101,15 @@ async function runDetect(rawUrl: string): Promise<void> {
       wireScanActions(resultEl);
     } else {
       const code = data.error?.code ?? 'UNKNOWN';
+      const bp = (data.error as { botProtection?: BotProtection } | undefined)?.botProtection;
+      if (code === 'BLOCKED' && bp && bp.status === 'bot_protected') {
+        errorEl.innerHTML = renderBotProtection(
+          data.error as { httpStatus?: number; partialResults?: Detection[]; botProtection?: BotProtection },
+          url
+        );
+        errorEl.hidden = false;
+        wireScanActions(errorEl);
+      } else {
       const msg  = ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'];
       const partial = data.error?.partialResults ?? [];
 
@@ -1044,6 +1134,7 @@ async function runDetect(rawUrl: string): Promise<void> {
           ${partialHtml}
         </div>`;
       errorEl.hidden = false;
+      }
     }
   } catch (e) {
     setLoading(false);

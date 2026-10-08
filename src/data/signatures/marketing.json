@@ -4,9 +4,10 @@
     "name": "Google Analytics",
     "category": "analytics",
     "signals": [
-      { "type": "script-host", "pattern": "googletagmanager\\.com/gtag/js|google-analytics\\.com/(analytics\\.js|gtag/js|g\\.js)", "weight": 80, "strength": "strong" },
-      { "type": "html-regex", "pattern": "googletagmanager\\.com/gtag/js\\?id=G-[A-Z0-9]+|google-analytics\\.com/analytics\\.js|_gaq\\.push|ga\\(\\s*['\"]create['\"]", "weight": 75, "strength": "strong" },
-      { "type": "cookie-name", "pattern": "^_ga$|^_gid$|^_gat", "weight": 40, "strength": "weak" }
+      { "type": "script-host", "pattern": "googletagmanager\\.com/gtag/js|google-analytics\\.com/(analytics\\.js|gtag/js|g\\.js)", "weight": 80, "strength": "strong", "description": "Google Analytics SDK detected" },
+      { "type": "html-regex", "pattern": "googletagmanager\\.com/gtag/js\\?id=G-[A-Z0-9]+|google-analytics\\.com/analytics\\.js|_gaq\\.push|ga\\(\\s*['\"]create['\"]", "weight": 75, "strength": "strong", "description": "Google Analytics loader reference detected" },
+      { "type": "html-regex", "pattern": "gtag\\(\\s*['\"]config['\"]\\s*,\\s*['\"](G-[A-Z0-9]{6,}|UA-\\d+-\\d+|AW-[A-Z0-9-]+)['\"]", "weight": 80, "strength": "strong", "description": "Google Analytics configuration call detected" },
+      { "type": "cookie-name", "pattern": "^_ga$|^_gid$|^_gat", "weight": 40, "strength": "weak", "description": "Generic analytics cookie (weak hint)" }
     ]
   },
   {

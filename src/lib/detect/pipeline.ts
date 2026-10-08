@@ -16,6 +16,7 @@
 import { validateUrl, validateRedirect } from './ssrf';
 import { runSignatureEngine, type DetectionResult, type MatchContext } from './signatures';
 import { applyConfidenceModel } from './confidence';
+import { isChallengeResponse, buildBotProtection, type BotProtectionInfo } from './protection';
 import { isKnownShopifyTheme, isKnownWpTheme } from '../../data/themes';
 
 // ----------------------------------------------------------------
@@ -46,8 +47,17 @@ export type PipelineErrorCode =
 
 export interface PipelineError {
   code: PipelineErrorCode;
-  /** Technology IDs detected despite the error (e.g. from headers) */
+  /**
+   * Header/cookie-level detections only. When the scan hit a
+   * bot-protection response these come from an EMPTY-html context —
+   * the challenge page's scripts/embeds are never treated as the
+   * site's technologies.
+   */
   partialResults: DetectionResult[];
+  /** HTTP status of the blocking response (preserved for transparency). */
+  httpStatus?: number;
+  /** Present exactly when code === 'BLOCKED'. */
+  botProtection?: BotProtectionInfo;
 }
 
 export interface PipelineSuccess {
@@ -166,19 +176,31 @@ function isClientRendered(html: string): boolean {
 }
 
 // ----------------------------------------------------------------
-// Bot protection detection
+// Bot-protection error builder (single place both BLOCKED sites use).
+//
+// The challenge HTML is passed ONLY for provider identification —
+// technology detection runs against an EMPTY-html context so
+// challenge-page scripts can never be mistaken for the site's stack.
 // ----------------------------------------------------------------
 
-function isBlocked(status: number, html: string): boolean {
-  const sample = html.slice(0, 8000);
-  const challengeMarkers =
-    /challenge|captcha|security check|ddos protection|just a moment|verify you are human|access denied|request blocked|perimeterx|datadome|kasada|shape\.sh|incapsula/i;
-  // Challenge copy on any status (some WAFs answer 200) means a block.
-  if (challengeMarkers.test(sample)) return true;
-  // 429 is always rate-limiting; 403/503 without readable content are blocks.
-  if (status === 429) return true;
-  if (status === 403 || status === 503 || status === 401 || status === 407) return true;
-  return false;
+function blockedError(
+  httpStatus: number,
+  headers: Record<string, string>,
+  cookies: string[],
+  challengeHtml: string
+): PipelineResult {
+  const headerOnly = applyConfidenceModel(
+    runSignatureEngine({ html: '', headers, cookies })
+  );
+  return {
+    ok: false,
+    error: {
+      code: 'BLOCKED',
+      partialResults: headerOnly,
+      httpStatus,
+      botProtection: buildBotProtection(httpStatus, headers, cookies, challengeHtml),
+    },
+  };
 }
 
 // ----------------------------------------------------------------
@@ -449,11 +471,11 @@ export async function runDetectionPipeline(
   const isHtml = contentType.includes('text/html') || contentType.includes('application/xhtml');
   // Missing content-type with a 200: sniff the body start for "<html".
   if (!isHtml) {
+    if (isChallengeResponse(res.status, '')) {
+      return blockedError(res.status, headers, cookies, '');
+    }
     const ctx: MatchContext = { html: '', headers, cookies };
     const partialResults = runSignatureEngine(ctx);
-    if (isBlocked(res.status, '')) {
-      return { ok: false, error: { code: 'BLOCKED', partialResults } };
-    }
     return { ok: false, error: { code: 'NON_HTML', partialResults } };
   }
 
@@ -469,11 +491,10 @@ export async function runDetectionPipeline(
     return { ok: false, error: { code: 'UNKNOWN', partialResults: [] } };
   }
 
-  // Check for bot block
-  if (isBlocked(res.status, html)) {
-    const ctx: MatchContext = { html: html.slice(0, 5000), headers, cookies };
-    const partialResults = runSignatureEngine(ctx);
-    return { ok: false, error: { code: 'BLOCKED', partialResults } };
+  // Bot-protection / challenge response: never treat the challenge
+  // page as the site's real HTML (see blockedError).
+  if (isChallengeResponse(res.status, html)) {
+    return blockedError(res.status, headers, cookies, html);
   }
 
   // 5. First pass signature matching
@@ -535,6 +556,8 @@ export async function runDetectionPipeline(
               strength: 'strong' as const,
               family: 'PLATFORM_IDENTIFIER' as const,
               specificity: 0.7,
+              description: 'WordPress theme stylesheet identified',
+              signalId: 'wordpress#probe:theme',
             },
           ],
         };
@@ -552,7 +575,7 @@ export async function runDetectionPipeline(
           ...r,
           evidence: [
             ...r.evidence,
-            { type: 'probe' as const, artifact: label, weight: 80, name: 'theme', value: shopifyTheme.name ?? shopifyTheme.id ?? '', strength: 'strong' as const, family: 'PLATFORM_IDENTIFIER' as const, specificity: 0.7 },
+            { type: 'probe' as const, artifact: label, weight: 80, name: 'theme', value: shopifyTheme.name ?? shopifyTheme.id ?? '', strength: 'strong' as const, family: 'PLATFORM_IDENTIFIER' as const, specificity: 0.7, description: 'Shopify theme identified', signalId: 'shopify#probe:theme' },
           ],
         };
       }
@@ -577,6 +600,8 @@ export async function runDetectionPipeline(
         strength: 'strong' as const,
         family: 'ASSET' as const,
         specificity: 0.7,
+        description: `WordPress plugin asset path detected (${slug})`,
+        signalId: `wordpress-plugins#html-path:${slug}`,
       })),
     });
   }
@@ -591,7 +616,7 @@ export async function runDetectionPipeline(
       confidence: 70,
       confidenceLabel: 'likely',
       evidence: [
-        { type: 'probe' as const, artifact: `dns[cname]: "${dnsHint.cname}"`, weight: 70, name: 'cname', value: dnsHint.cname, strength: 'weak' as const, family: 'PLATFORM_IDENTIFIER' as const, specificity: 0.3 },
+        { type: 'probe' as const, artifact: `dns[cname]: "${dnsHint.cname}"`, weight: 70, name: 'cname', value: dnsHint.cname, strength: 'weak' as const, family: 'PLATFORM_IDENTIFIER' as const, specificity: 0.3, description: 'Hosting provider inferred from DNS', signalId: 'hosting#probe:cname' },
       ],
     });
   }

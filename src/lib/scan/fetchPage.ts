@@ -4,6 +4,7 @@
  */
 import { validateUrl, validateRedirect } from '../detect/ssrf';
 import { runSignatureEngine } from '../detect/signatures';
+import { isChallengeResponse } from '../detect/protection';
 import { SCAN_CONFIG } from './config';
 import { pageTechConfidence, toTechItems } from './aggregate';
 import type { ConfidenceLevel, PageScanResult, RedirectHop, TechEvidenceItem } from './types';
@@ -219,7 +220,10 @@ export async function fetchSinglePage(
         /* noop */
       }
 
-      const results = runSignatureEngine({ html, headers, cookies });
+      // A challenge page served with status 200 must never be scanned
+      // as normal HTML — headers/cookies only, flagged as limited.
+      const challenged = isChallengeResponse(res.status, html);
+      const results = runSignatureEngine({ html: challenged ? '' : html, headers, cookies });
       const fw = results.find((r) => FRAMEWORK_CATEGORIES.has(r.category));
       const prov = results.find((r) => r.category === 'hosting');
 
@@ -266,6 +270,11 @@ export async function fetchSinglePage(
         techEvidence,
         frameworkConfidence,
         providerConfidence,
+        // Challenge pages keep their header-derived hints but are
+        // excluded from the baseline like any other limited page.
+        ...(challenged
+          ? { error: 'Blocked: bot-protection challenge — headers and cookies only' }
+          : {}),
       };
     }
   } finally {

@@ -220,7 +220,10 @@ describe('confidence model', () => {
     const { score, families } = scoreDetection([
       { type: 'header', artifact: 'x', weight: 95, name: 'cf-ray', value: 'v', strength: 'definitive', family: 'NETWORK', specificity: 1 },
     ]);
-    assert.equal(score, 100);
+    // Evidence-weighted: a single 95-weight definitive signal scores 95 —
+    // one very strong signature is enough for VERY HIGH, with no need for
+    // corroborating families.
+    assert.ok(score >= 90, `single definitive signal must reach VERY HIGH, got ${score}`);
     assert.equal(families, 1);
     assert.equal(scoreToLabel5(score), 'VERY HIGH');
   });

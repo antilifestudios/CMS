@@ -5,20 +5,31 @@
  * this detection?" It is NOT a calibrated probability.
  *
  * Methodology:
- *  1. Every fingerprint carries a base signal weight from its strength
- *     (definitive 1.0 / strong 0.65 / weak 0.30), adjusted by its
- *     specificity multiplier (0–1).
+ *  1. Every signal carries an author-assigned evidence weight (0–100):
+ *     a known official SDK URL (~90–95) outweighs a generic keyword
+ *     (~10–30). The weight is scaled by the signal's specificity
+ *     multiplier (0–1): definitive 1.0 / strong 0.7 / weak 0.3.
+ *     ONE very strong, highly specific signal can therefore score
+ *     HIGH / VERY HIGH on its own.
  *  2. Correlated signals are grouped into evidence families; each
  *     family contributes only its SINGLE strongest adjusted signal.
  *     Three URLs on the same CDN host never outvote one good header.
  *  3. Independent families combine with noisy-OR: each new family
  *     corroborates, with diminishing returns — never a plain average.
- *  4. A corroboration bonus rewards 2+ / 3+ independent families.
- *  5. A contradiction penalty demotes losers of a mutually-exclusive
+ *  4. A SMALL corroboration bonus rewards 2+ / 3+ independent
+ *     families. Family count is descriptive corroboration, NEVER the
+ *     confidence itself: one definitive signal still outscores three
+ *     weak hints.
+ *  5. Quality ceilings: evidence with no strong-or-better signal caps
+ *     at LOW (weak hints stay hints); evidence with no definitive
+ *     signal caps below VERY HIGH (only a uniquely identifying
+ *     signature confirms).
+ *  6. A contradiction penalty demotes losers of a mutually-exclusive
  *     contest (e.g. WordPress vs Shopify as the primary platform).
- *  6. A coverage penalty applies when evidence spans only some of the
+ *  7. A coverage penalty applies when evidence spans only some of the
  *     scanned pages; minority presence caps at INSUFFICIENT.
- *  7. The result normalises to 0–100 with a human-readable label.
+ *  8. The result normalises to 0–100 with a human-readable label
+ *     (VERY HIGH ≡ CONFIRMED, HIGH, MEDIUM, LOW, INSUFFICIENT).
  *
  * Pure functions, no network. Workers-runtime compatible.
  */
@@ -39,12 +50,23 @@ export const MIN_DISPLAY_SCORE = 40;
 /** Conservative floor for primary platform / theme detections. */
 export const MIN_PRIMARY_SCORE = 60;
 
-/** Base weight per fingerprint strength. */
+/** Base weight per fingerprint strength (fallback when a signal
+ *  carries no explicit 0–100 weight). */
 const STRENGTH_WEIGHT = {
   definitive: 1.0,
   strong: 0.65,
   weak: 0.3,
 } as const;
+
+/**
+ * Quality ceilings — signal quality matters more than signal count.
+ * - No signal stronger than "weak": weak hints stay hints (LOW max),
+ *   however many families they span.
+ * - No "definitive" signal: strong corroboration can reach HIGH, but
+ *   only a uniquely identifying signature reaches VERY HIGH.
+ */
+const WEAK_ONLY_CEILING = 59;
+const NO_DEFINITIVE_CEILING = 89;
 
 /** Corroboration bonus by distinct family count. */
 function corroborationBonus(families: number): number {
@@ -80,27 +102,74 @@ export function scoreToLabel5(score: number): ScoreLabel {
 // ----------------------------------------------------------------
 
 function adjustedSignal(e: Evidence): number {
-  const base = STRENGTH_WEIGHT[e.strength ?? 'weak'] ?? 0.3;
   const spec =
     typeof e.specificity === 'number'
       ? Math.min(1, Math.max(0, e.specificity))
       : specificityForStrength(e.strength ?? 'weak');
-  return base * spec;
+  // Evidence-weighted: the rule author's 0–100 weight measures HOW
+  // PROVING this concrete signal is (known SDK ≈ 90+, generic
+  // keyword ≈ 10–30); specificity scales it. A single very strong,
+  // highly specific signal therefore scores HIGH/VERY HIGH alone,
+  // while weak signals stay weak however they are counted.
+  const w =
+    typeof e.weight === 'number'
+      ? Math.min(100, Math.max(0, e.weight)) / 100
+      : (STRENGTH_WEIGHT[e.strength ?? 'weak'] ?? 0.3);
+  return w * spec;
+}
+
+/** Normalised dedupe key: the same underlying RESOURCE observed through
+ *  two channels (e.g. one SDK URL in both the resource-attribute scan
+ *  and a whole-HTML pattern) is ONE signal, not two. Resource identity
+ *  is host + first path segment, so genuinely different integrations
+ *  on one host (an embed iframe vs a player SDK) still corroborate.
+ *  Non-URL values (init calls, cookie names) dedupe only on exact
+ *  normalised equality within a family — different families stay
+ *  independent, and same-family echoes are already capped by the
+ *  best-per-family rule. */
+function dedupeKey(e: Evidence): string {
+  const raw = String(e.value ?? e.artifact ?? '').trim().toLowerCase();
+  if (!raw) return `t::${e.family}::${e.name}`;
+  const m = raw.match(/((?:[a-z0-9-]+\.)+[a-z]{2,})(:\d+)?(\/[a-z0-9_~.-]*)?/);
+  if (m) {
+    const host = m[1].replace(/^www\./, '');
+    const seg = (m[3] ?? '').replace(/\/+$/, '');
+    return `u::${host}${seg}`;
+  }
+  const norm = raw.replace(/^https?:\/\//, '').replace(/^\/\//, '').replace(/[/?#\s"'<>.,;:]+$/, '');
+  return `t::${e.family}::${norm}`;
 }
 
 /**
  * Score one detection from its evidence list.
  * Returns the 0–100 score and the distinct family count.
+ *
+ * Families and confidence are separate concepts: the family count is
+ * reported alongside the score as descriptive corroboration, but a
+ * single family holding a definitive signature still scores VERY HIGH.
  */
 export function scoreDetection(evidence: Evidence[]): { score: number; families: number } {
   if (evidence.length === 0) return { score: 0, families: 0 };
 
+  // Deduplicate: the same underlying signal seen twice keeps only its
+  // strongest observation.
+  const deduped = new Map<string, Evidence>();
+  for (const e of evidence) {
+    const key = dedupeKey(e);
+    const prev = deduped.get(key);
+    if (!prev || adjustedSignal(e) > adjustedSignal(prev)) deduped.set(key, e);
+  }
+
   // One contribution per family: the strongest adjusted signal only.
   const bestByFamily = new Map<string, number>();
-  for (const e of evidence) {
+  let hasDefinitive = false;
+  let hasStrongOrBetter = false;
+  for (const e of deduped.values()) {
     const family = e.family ?? 'HTML';
     const adj = adjustedSignal(e);
     if (adj > (bestByFamily.get(family) ?? -1)) bestByFamily.set(family, adj);
+    if ((e.strength ?? 'weak') === 'definitive') hasDefinitive = true;
+    if ((e.strength ?? 'weak') !== 'weak') hasStrongOrBetter = true;
   }
 
   const families = bestByFamily.size;
@@ -112,6 +181,10 @@ export function scoreDetection(evidence: Evidence[]): { score: number; families:
   }
 
   let score = Math.round(combined * 100 + corroborationBonus(families));
+  // Quality ceilings: many weak signals can never become HIGH, and
+  // nothing without a uniquely identifying signature is CONFIRMED.
+  if (!hasStrongOrBetter) score = Math.min(score, WEAK_ONLY_CEILING);
+  if (!hasDefinitive) score = Math.min(score, NO_DEFINITIVE_CEILING);
   score = Math.min(100, Math.max(0, score));
   return { score, families };
 }
@@ -208,10 +281,12 @@ export interface DebugSignalBreakdown {
   artifact: string;
   family: string;
   strength: string;
+  signalWeight: number;
   baseWeight: number;
   specificity: number;
   adjusted: number;
   familyWinner: boolean;
+  duplicateOf?: string;
 }
 
 export interface DebugDetectionBreakdown {
@@ -236,8 +311,15 @@ export function explainDetection(evidence: Evidence[]): {
   bonus: number;
   signals: DebugSignalBreakdown[];
 } {
-  const bestByFamily = new Map<string, number>();
+  // Mirror scoreDetection: dedupe first, then best-per-family.
+  const deduped = new Map<string, Evidence>();
   for (const e of evidence) {
+    const key = dedupeKey(e);
+    const prev = deduped.get(key);
+    if (!prev || adjustedSignal(e) > adjustedSignal(prev)) deduped.set(key, e);
+  }
+  const bestByFamily = new Map<string, number>();
+  for (const e of deduped.values()) {
     const adj = adjustedSignal(e);
     const fam = e.family ?? 'HTML';
     if (adj > (bestByFamily.get(fam) ?? -1)) bestByFamily.set(fam, adj);
@@ -245,21 +327,28 @@ export function explainDetection(evidence: Evidence[]): {
   const families = bestByFamily.size;
   const bonus = corroborationBonus(families);
   const signals: DebugSignalBreakdown[] = evidence.map((e) => {
-    const base = STRENGTH_WEIGHT[e.strength ?? 'weak'] ?? 0.3;
+    const signalWeight =
+      typeof e.weight === 'number'
+        ? Math.min(100, Math.max(0, e.weight))
+        : Math.round((STRENGTH_WEIGHT[e.strength ?? 'weak'] ?? 0.3) * 100);
+    const base = signalWeight / 100;
     const spec =
       typeof e.specificity === 'number'
         ? Math.min(1, Math.max(0, e.specificity))
         : specificityForStrength(e.strength ?? 'weak');
     const raw = base * spec;
     const fam = e.family ?? 'HTML';
+    const winner = deduped.get(dedupeKey(e));
     return {
       artifact: e.artifact,
       family: fam,
       strength: e.strength ?? 'weak',
-      baseWeight: base,
+      signalWeight,
+      baseWeight: +base.toFixed(3),
       specificity: +spec.toFixed(2),
       adjusted: +raw.toFixed(3),
-      familyWinner: raw >= (bestByFamily.get(fam) ?? Infinity),
+      familyWinner: winner === e && raw >= (bestByFamily.get(fam) ?? Infinity),
+      ...(winner && winner !== e ? { duplicateOf: winner.artifact } : {}),
     };
   });
   const { score } = scoreDetection(evidence);
