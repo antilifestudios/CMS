@@ -8,11 +8,25 @@
   "nav": {
     "home": "CMS Detector",
     "wpDetector": "WordPress Theme Detector",
+    "wpShort": "WP Theme Detector",
     "shopifyDetector": "Shopify Theme Detector",
     "hostingDetector": "Who Hosts This Website",
+    "hostingShort": "Hosting Detector",
     "guides": "Guides",
     "methodology": "How It Works",
     "about": "About"
+  },
+  "tools": {
+    "heading": "Specialised detectors",
+    "wpTitle": "WordPress Theme Detector",
+    "wpDesc": "Find any WordPress theme — name, author, version.",
+    "shopifyTitle": "Shopify Theme Detector",
+    "shopifyDesc": "Identify the Shopify theme powering any store.",
+    "hostingTitle": "Hosting & CDN Detector",
+    "hostingDesc": "Find out who hosts any website and what CDN they use.",
+    "isWordpressTitle": "Is This Site WordPress?",
+    "isWordpressDesc": "Quick yes/no with evidence for any website.",
+    "tryIt": "Try it →"
   },
   "hero": {
     "eyebrow": "Free · Instant · Evidence-based",
@@ -22,7 +36,8 @@
     "inputLabel": "Website URL",
     "submitButton": "Detect",
     "detectingLabel": "Detecting…",
-    "recentLabel": "Recent checks:",
+    "inputHint": "Accepts bare domains. No account needed.",
+    "recentLabel": "Recent:",
     "clearRecent": "Clear"
   },
   "result": {
@@ -52,15 +67,75 @@
         "header": "HTTP header",
         "cookie-name": "Cookie name",
         "probe": "Secondary probe"
+      },
+      "groups": {
+        "headers": "Headers",
+        "markers": "HTML markers",
+        "paths": "Asset paths"
       }
     },
     "checkAnother": "Check another site",
-    "reportWrong": "Result looks wrong?",
+    "reportWrong": "Report a wrong result",
     "learnMore": "Learn about",
     "noMatch": "No known platform detected",
     "noMatchExplain": "This site may be custom-built. Here's what we could determine:",
     "manualTips": "How to check manually",
-    "shareableLink": "Shareable link"
+    "shareableLink": "Shareable link",
+    "copyLink": "Copy link",
+    "copiedLabel": "Copied",
+    "scanSite": "Scan full site (up to 15 paths)",
+    "scanningLabel": "Scanning paths…",
+    "extraUrlsLabel": "Extra URLs to include (optional, one per line, same domain)",
+    "extraUrlsPlaceholder": "https://example.com/pricing\nhttps://example.com/blog"
+  },
+  "scan": {
+    "title": "Site stack consistency scan",
+    "multiPageToggle": "Scan multiple pages",
+    "advancedOptions": "Advanced options",
+    "extraUrlsHelp": "Same domain only, one per line. These are added to the sample.",
+    "verdictConsistent": "Consistent",
+    "verdictMixed": "Mixed stack",
+    "verdictConsistentLine": "Consistent across {checked} pages: {framework} + {provider}",
+    "verdictMixedLine": "Mixed stack: {odd} of {total} paths differ",
+    "coverageShort": "Checked {checked} of ~{found} pages found.",
+    "frontDoorShort": "All paths share the same CDN ({provider}).",
+    "viewUrls": "View {count} scanned URLs",
+    "differsLabel": "Differs: {what}",
+    "differsFrameworkWord": "framework",
+    "differsProviderWord": "provider",
+    "confidenceLabel": "Confidence: {value}",
+    "confidenceLevels": {
+      "High": "High",
+      "Medium": "Medium",
+      "Low": "Low"
+    },
+    "confidenceTooltip": "Confidence reflects the strength and agreement of the signals found — stronger, independent signals mean higher confidence.",
+    "detectedOnPages": "Detected on {seen}/{checked} pages",
+    "signalCount": "{count} signals",
+    "signalOne": "1 signal",
+    "coverage": "Checked {checked} of ~{found} pages found",
+    "coverageCapped": "Checked {checked} of ~{found} pages found (page cap reached — showing first {checked})",
+    "frontDoorNote": "All paths are served via {provider}. We can only see the front door (the CDN), not the origin server behind it.",
+    "crossDomain": "Redirects off-domain",
+    "differsFramework": "Framework differs",
+    "differsProvider": "Provider differs",
+    "oddRow": "Differs from site baseline",
+    "noDifference": "Matches baseline",
+    "evidenceLabel": "Evidence",
+    "redirectVia": "via {hops}",
+    "skippedRobots": "Skipped (robots.txt)",
+    "viewShareable": "Shareable results page",
+    "howItWorks": "Why can paths run on different stacks?",
+    "howReasons": [
+      "A reverse proxy or rewrite rule sends one path (e.g. /blog) to another server.",
+      "A load balancer or CDN path rule routes by URL prefix.",
+      "A half-finished migration leaves old pages on one stack and new pages on another."
+    ],
+    "pageLimit": {
+      "infoLabel": "About the page limit",
+      "title": "Why {limit} pages?",
+      "body": "To keep CMS Detector AI free and fast, each scan checks a sample of up to {limit} pages, picked from different parts of the site. We're working on raising this limit over time."
+    }
   },
   "errors": {
     "INVALID_URL": "Please enter a valid website URL (e.g. https://example.com).",

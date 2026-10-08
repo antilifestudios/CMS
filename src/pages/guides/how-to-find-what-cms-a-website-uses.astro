@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -33,7 +34,7 @@ const faqJsonLd = {
   pagePath="/guides/how-to-find-what-cms-a-website-uses"
   jsonLd={faqJsonLd}
 >
-  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="g-h1">
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="g-h1">
     <div class="container">
       <div class="eyebrow-lockup">
         <span class="eyebrow type-mono-eyebrow">Guide · Manual methods</span>
@@ -45,9 +46,9 @@ const faqJsonLd = {
         </p>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-light" aria-labelledby="m1">
+  <Section theme="light" ariaLabelledby="m1">
     <div class="container">
       <div class="prose">
         <h2 id="m1" class="type-heading-md" style="color: var(--color-ink); margin: 0 0 12px 0;">Method 1 — View page source (30 seconds)</h2>
@@ -88,7 +89,7 @@ const faqJsonLd = {
         </details>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>

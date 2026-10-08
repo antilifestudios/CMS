@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 ---
 
 <Base
@@ -8,7 +9,7 @@ import Base from '../layouts/Base.astro';
   description="How CMS Detector AI handles your data. Short version: we don't store the URLs you check."
   pagePath="/privacy"
 >
-  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="p-h1">
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="p-h1">
     <div class="container">
       <div class="eyebrow-lockup">
         <span class="eyebrow type-mono-eyebrow">Legal</span>
@@ -16,8 +17,8 @@ import Base from '../layouts/Base.astro';
         <p class="type-subtitle text-ash" style="margin: 0;">Short version: we don’t store the URLs you check.</p>
       </div>
     </div>
-  </section>
-  <section class="section-light">
+  </Section>
+  <Section theme="light">
     <div class="container">
       <div class="narrow">
         <h2 class="type-heading-sm" style="color: var(--color-ink);">What we collect</h2>
@@ -32,7 +33,7 @@ import Base from '../layouts/Base.astro';
         <p class="type-body" style="color: var(--color-slate);">Questions: <a href="mailto:hello@cmsdetectorai.com" class="text-link-light">hello@cmsdetectorai.com</a>.</p>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 <style>
   .narrow { max-inline-size: 720px; }

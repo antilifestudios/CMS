@@ -3,17 +3,21 @@
  * Header — sticky dark nav bar.
  * Follows DESIGN.md nav-bar-dark component spec.
  */
+import NavIcon from './NavIcon.astro';
+import en from '../../i18n/en.json';
+
 interface Props {
   locale?: string;
 }
 const { locale = 'en' } = Astro.props;
 const currentPath = Astro.url.pathname;
 
+// Nav labels come from locale files (no hardcoded strings).
 const navLinks = [
-  { href: '/wordpress-theme-detector', label: 'WP Theme Detector' },
-  { href: '/shopify-theme-detector',   label: 'Shopify Detector' },
-  { href: '/who-hosts-this-website',   label: 'Hosting Detector' },
-  { href: '/methodology',              label: 'How It Works' },
+  { href: '/wordpress-theme-detector', label: (en.nav as Record<string, string>).wpShort, icon: 'wordpress' as const },
+  { href: '/shopify-theme-detector',   label: en.nav.shopifyDetector, icon: 'shopify' as const },
+  { href: '/who-hosts-this-website',   label: (en.nav as Record<string, string>).hostingShort, icon: 'hosting' as const },
+  // TODO: How It Works moves to the footer with About, Contact, Privacy, FAQ
 ];
 ---
 
@@ -31,14 +35,15 @@ const navLinks = [
 
       <!-- Desktop nav links -->
       <ul class="nav-links" role="list" id="nav-links">
-        {navLinks.map(({ href, label }) => (
+        {navLinks.map(({ href, label, icon }) => (
           <li>
             <a
               href={href}
               class={`nav-link${currentPath.startsWith(href) ? ' nav-link--active' : ''}`}
               aria-current={currentPath.startsWith(href) ? 'page' : undefined}
             >
-              {label}
+              <NavIcon name={icon} size={16} />
+              <span>{label}</span>
             </a>
           </li>
         ))}
@@ -105,13 +110,21 @@ const navLinks = [
   }
 
   .nav-link {
-    display: block;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
     padding: 6px 12px;
     font-size: 14px;
     font-weight: 400;
     color: var(--color-ash);
     border-radius: var(--radius-app-md);
     transition: color 0.15s ease, background-color 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .nav-link svg {
+    flex-shrink: 0;
+    display: block;
   }
 
   .nav-link:hover,

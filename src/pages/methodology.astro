@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -49,7 +50,7 @@ const breadcrumbJsonLd = {
   pagePath="/methodology"
   jsonLd={[faqJsonLd, breadcrumbJsonLd]}
 >
-  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="m-h1">
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="m-h1">
     <div class="container">
       <div class="eyebrow-lockup">
         <span class="eyebrow type-mono-eyebrow">Methodology</span>
@@ -62,9 +63,9 @@ const breadcrumbJsonLd = {
         </p>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-light" aria-labelledby="pipeline-h2">
+  <Section theme="light" ariaLabelledby="pipeline-h2">
     <div class="container">
       <div class="prose">
         <h2 id="pipeline-h2" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 16px 0;">The pipeline</h2>
@@ -84,6 +85,15 @@ const breadcrumbJsonLd = {
         </ul>
         <p class="type-body" style="color: var(--color-slate);">The headline verdict appears only for Confirmed or Likely results. When nothing reaches that bar, we say the site may be custom-built and show what we <em>could</em> determine — headers, CDN, server software — with manual-check tips.</p>
 
+        <h2 class="type-display-sm" style="color: var(--color-ink); margin: 32px 0 16px 0;">Why paths can run on different stacks</h2>
+        <p class="type-body" style="color: var(--color-slate);">Our headline feature is per-path scanning: the homepage may run Astro on Cloudflare while <code>/blog</code> runs Next.js on Vercel. Three common causes:</p>
+        <ul class="levels">
+          <li><strong>Reverse proxy or rewrite.</strong> Vercel, Netlify and Cloudflare Workers can all forward one path prefix to another server.</li>
+          <li><strong>Load balancer or CDN path rule.</strong> Traffic routes by URL prefix, so each prefix can have its own origin.</li>
+          <li><strong>Half-finished migration.</strong> Old pages stay on one stack while new pages ship on another.</li>
+        </ul>
+        <p class="type-body" style="color: var(--color-slate);">The <a href="/result/example.com" class="text-link-light">site scan</a> samples the homepage, diverse sitemap prefixes, homepage links and any URLs you paste (up to 15 pages), then reports each path's framework and provider with a consistent/mixed verdict and honest coverage.</p>
+
         <h2 class="type-display-sm" style="color: var(--color-ink); margin: 32px 0 16px 0;">Accuracy policy</h2>
         <p class="type-body" style="color: var(--color-slate);">We optimise for precision over breadth (around 40 technologies in v1). Signatures that fire on generic markers — a bare <code>server: nginx</code> header, a common cookie, a ubiquitous security header — are removed or weighted so they can never confirm a detection alone. If you spot a wrong result, the “Result looks wrong?” link on every answer opens a pre-addressed email with the domain and verdict included.</p>
 
@@ -99,9 +109,9 @@ const breadcrumbJsonLd = {
         <p class="type-body" style="color: var(--color-slate);">Submitted URLs are never logged or stored. Successful results are cached anonymously for one hour to reduce load; page-derived strings are escaped before display. See the <a href="/privacy" class="text-link-light">privacy policy</a>.</p>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-paper" aria-labelledby="m-faq">
+  <Section theme="light" ariaLabelledby="m-faq">
     <div class="container">
       <div class="prose">
         <h2 id="m-faq" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 24px 0;">FAQ</h2>
@@ -119,7 +129,7 @@ const breadcrumbJsonLd = {
         </details>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>

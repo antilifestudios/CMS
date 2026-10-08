@@ -1,0 +1,38 @@
+---
+/**
+ * Section — full-width themed section with subtle CSS grid background.
+ * theme: "dark" | "light" (default "light").
+ * Renders <section class="section section--{theme}"> with grid drawn
+ * on .section::before (see global.css). Forwards class, style, id
+ * and aria-* attributes; extra class="hero" recenters the radial mask.
+ */
+interface Props {
+  theme?: 'dark' | 'light';
+  class?: string;
+  style?: string;
+  id?: string;
+  ariaLabelledby?: string;
+  ariaLabel?: string;
+}
+
+const {
+  theme = 'light',
+  class: extraClass = '',
+  style,
+  id,
+  ariaLabelledby,
+  ariaLabel,
+} = Astro.props;
+
+const classes = ['section', `section--${theme}`, extraClass].filter(Boolean).join(' ');
+---
+
+<section
+  class={classes}
+  style={style}
+  id={id}
+  aria-labelledby={ariaLabelledby}
+  aria-label={ariaLabel}
+>
+  <slot />
+</section>

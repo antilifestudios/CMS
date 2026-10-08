@@ -19,6 +19,17 @@ export type SignalType =
   | 'cookie-name'
   | 'probe';
 
+/**
+ * Fingerprint strength — how much a single matching signal proves the tech.
+ * - definitive: unambiguous vendor signals (cf-ray, server: cloudflare,
+ *   x-vercel-id, an explicit generator tag naming the tech).
+ * - strong: product-specific asset paths or markers (/_astro/,
+ *   /_next/static/, data-astro-cid).
+ * - weak: generic patterns other tech could also produce.
+ * Optional in the JSON so older entries safely default to 'weak'.
+ */
+export type SignalStrength = 'definitive' | 'strong' | 'weak';
+
 export interface Signal {
   type: SignalType;
   /** For header signals: which header name */
@@ -27,6 +38,8 @@ export interface Signal {
   pattern: string;
   /** Confidence contribution (0–100) */
   weight: number;
+  /** Fingerprint strength (defaults to 'weak' when omitted) */
+  strength?: SignalStrength;
   /** Capture group index for version extraction */
   versionGroup?: number;
 }
@@ -55,6 +68,16 @@ export interface Evidence {
   type: SignalType;
   artifact: string;
   weight: number;
+  /**
+   * Stable signal name for cross-page dedupe (header name, cookie
+   * name, or the matched pattern for HTML signals). Always set by
+   * the engine; pipeline augmentations must set it too.
+   */
+  name: string;
+  /** Sample matched value for display (may differ per page). */
+  value: string;
+  /** Fingerprint strength of the rule that produced this evidence. */
+  strength: SignalStrength;
 }
 
 export interface DetectionResult {
@@ -127,8 +150,9 @@ export interface MatchContext {
 function matchSignal(
   signal: Signal,
   ctx: MatchContext
-): { matched: boolean; artifact: string; version?: string } {
+): { matched: boolean; artifact: string; version?: string; name: string; value: string } {
   const rx = regex(signal.pattern);
+  const none = { matched: false, artifact: '', name: '', value: '' };
 
   switch (signal.type) {
     case 'meta-generator': {
@@ -140,22 +164,35 @@ function matchSignal(
         const match = rx.exec(content);
         if (match) {
           const version = signal.versionGroup ? (match[signal.versionGroup] ?? '') : undefined;
-          return { matched: true, artifact: `meta[generator]: "${content}"`, version };
+          return { matched: true, artifact: `meta[generator]: "${content}"`, version, name: 'generator', value: content.slice(0, 120) };
         }
       }
-      return { matched: false, artifact: '' };
+      return none;
     }
 
     case 'html-path':
     case 'html-regex': {
       const match = rx.exec(ctx.html);
       if (match) {
+        // Name is the concrete marker found (e.g. "data-astro-cid",
+        // "/_astro/"), not the regex — it reads cleanly in evidence
+        // rows and still dedupes identical markers across pages.
+        const marker = match[0].slice(0, 80);
+        const at = match.index ?? 0;
+        const from = Math.max(0, at - 24);
+        const context = ctx.html
+          .slice(from, at + 56)
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 80);
         return {
           matched: true,
-          artifact: `html: "${match[0].slice(0, 80)}"`,
+          artifact: `html: "${marker}"`,
+          name: marker,
+          value: context || marker,
         };
       }
-      return { matched: false, artifact: '' };
+      return none;
     }
 
     case 'script-host': {
@@ -165,10 +202,20 @@ function matchSignal(
       while ((m = scriptRx.exec(ctx.html)) !== null) {
         const src = m[1];
         if (rx.test(src)) {
-          return { matched: true, artifact: `script[src]: "${src.slice(0, 120)}"` };
+          // Name is the concrete host when the URL carries one,
+          // otherwise the matched pattern.
+          let host = signal.pattern;
+          if (/^https?:\/\//i.test(src) || src.startsWith('//')) {
+            try {
+              host = new URL(src.startsWith('//') ? `https:${src}` : src).hostname;
+            } catch {
+              /* keep pattern */
+            }
+          }
+          return { matched: true, artifact: `script[src]: "${src.slice(0, 120)}"`, name: host, value: src.slice(0, 120) };
         }
       }
-      return { matched: false, artifact: '' };
+      return none;
     }
 
     case 'header': {
@@ -176,7 +223,7 @@ function matchSignal(
       const value = ctx.headers[headerName] ?? '';
       // A missing/empty header must never match — patterns like ".*"
       // would otherwise match the empty string and false-positive.
-      if (!value.trim()) return { matched: false, artifact: '' };
+      if (!value.trim()) return none;
       const match = rx.exec(value);
       if (match) {
         const version = signal.versionGroup ? (match[signal.versionGroup] ?? '') : undefined;
@@ -184,18 +231,20 @@ function matchSignal(
           matched: true,
           artifact: `header[${headerName}]: "${value.slice(0, 120)}"`,
           version,
+          name: headerName,
+          value: value.slice(0, 120),
         };
       }
-      return { matched: false, artifact: '' };
+      return none;
     }
 
     case 'cookie-name': {
       for (const cookie of ctx.cookies) {
         if (rx.test(cookie)) {
-          return { matched: true, artifact: `cookie: "${cookie}"` };
+          return { matched: true, artifact: `cookie: "${cookie}"`, name: cookie, value: cookie };
         }
       }
-      return { matched: false, artifact: '' };
+      return none;
     }
 
     case 'probe': {
@@ -203,9 +252,9 @@ function matchSignal(
       const probeKey = signal.name ?? '';
       const body = ctx.probeResults?.[probeKey] ?? '';
       if (body && rx.test(body)) {
-        return { matched: true, artifact: `probe[${probeKey}]` };
+        return { matched: true, artifact: `probe[${probeKey}]`, name: probeKey, value: signal.pattern.slice(0, 120) };
       }
-      return { matched: false, artifact: '' };
+      return none;
     }
   }
 }
@@ -223,7 +272,7 @@ function matchTech(
   let version: string | undefined;
 
   for (const signal of sig.signals) {
-    const { matched, artifact, version: v } = matchSignal(signal, ctx);
+    const { matched, artifact, version: v, name, value } = matchSignal(signal, ctx);
     if (matched) {
       // Saturating add — each signal can contribute at most its weight,
       // but total won't exceed 100 via diminishing returns
@@ -231,7 +280,14 @@ function matchTech(
         signal.weight * (1 - totalWeight / 100)
       );
       totalWeight = Math.min(100, totalWeight + contribution);
-      evidenceList.push({ type: signal.type, artifact, weight: signal.weight });
+      evidenceList.push({
+        type: signal.type,
+        artifact,
+        weight: signal.weight,
+        name,
+        value,
+        strength: signal.strength ?? 'weak',
+      });
       if (v && !version) version = v;
     }
   }
@@ -247,6 +303,11 @@ function matchTech(
           type: 'probe',
           artifact: `probe[${probe.path}]: found "${probe.successSignal}"`,
           weight: probe.weight,
+          name: probe.path,
+          value: probe.successSignal,
+          // A probe hit (e.g. /wp-json/ answering, theme style.css)
+          // is product-specific: strong, not definitive on its own.
+          strength: 'strong',
         });
       }
     }

@@ -1,17 +1,19 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
 ---
 <Base
   title="Who Hosts This Website? — Free Hosting & CDN Detector"
   description="Find out who hosts any website — including CDN, server software, and cloud provider — in seconds. Free, evidence-based."
   pagePath="/who-hosts-this-website"
 >
-  <section class="section-dark" style="min-block-size: 60vh; display: flex; align-items: center;" aria-labelledby="hosting-h1">
+  <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="hosting-h1">
     <div class="container">
       <div style="max-inline-size: 860px;">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow">Hosting & CDN Detector</span>
+          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="hosting" size={16} />Hosting & CDN Detector</span>
           <h1 id="hosting-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
             Who Hosts This Website?
           </h1>
@@ -34,9 +36,11 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 <style>
+  .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
+  .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
   .url-input { flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg); padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06); border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); }
   .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
   .url-input::placeholder { color: var(--color-slate-soft); }

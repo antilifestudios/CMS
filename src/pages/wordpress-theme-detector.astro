@@ -1,6 +1,8 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
 ---
 <Base
   title="WordPress Theme Detector — Find Any WordPress Theme Free"
@@ -16,11 +18,11 @@ import Base from '../layouts/Base.astro';
     inLanguage: 'en',
   }}
 >
-  <section class="hero section-dark" aria-labelledby="wp-h1">
+  <Section theme="dark" class="hero" ariaLabelledby="wp-h1">
     <div class="container">
       <div style="max-inline-size: 860px;">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow">WordPress Theme Detector</span>
+          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="wordpress" size={16} />WordPress Theme Detector</span>
           <h1 id="wp-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
             What WordPress Theme<br />Is This Site Using?
           </h1>
@@ -60,9 +62,9 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-light" aria-labelledby="wp-how-h2">
+  <Section theme="light" ariaLabelledby="wp-how-h2">
     <div class="container">
       <h2 id="wp-how-h2" class="type-display-sm" style="color: var(--color-ink); margin-block-end: var(--spacing-lg);">
         How WordPress theme detection works
@@ -84,10 +86,12 @@ import Base from '../layouts/Base.astro';
         </p>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>
+  .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
+  .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
   .hero { padding-block: var(--spacing-section-lg); }
   .detect-form { display: flex; flex-direction: column; gap: var(--spacing-xs); }
   .input-row { display: flex; gap: var(--spacing-xs); }

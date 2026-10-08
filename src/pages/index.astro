@@ -7,6 +7,60 @@
 export const prerender = true;
 
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
+import { SCAN_CONFIG } from '../lib/scan/config';
+import en from '../i18n/en.json';
+
+// Page-limit popover copy comes from locale files; the number comes from
+// the same constant that caps the scan, so copy can't drift from behavior.
+const PAGE_LIMIT = SCAN_CONFIG.MAX_PAGES_PER_SCAN;
+const limitTitle = (en.scan.pageLimit.title as string).replace('{limit}', String(PAGE_LIMIT));
+const limitBody = (en.scan.pageLimit.body as string).replace('{limit}', String(PAGE_LIMIT));
+const limitLabel = en.scan.pageLimit.infoLabel as string;
+const multiPageLabel = en.scan.multiPageToggle as string;
+const advancedLabel = en.scan.advancedOptions as string;
+const inputHint = (en.hero as Record<string, string>).inputHint as string;
+const extraUrlsLabel = en.result.extraUrlsLabel as string;
+const extraUrlsHelp = en.scan.extraUrlsHelp as string;
+const extraUrlsPlaceholder = en.result.extraUrlsPlaceholder as string;
+const recentLabel = en.hero.recentLabel as string;
+const clearRecentLabel = en.hero.clearRecent as string;
+const submitLabel = en.hero.submitButton as string;
+// Scan summary + result-action copy for the JS island (no hardcoded strings).
+const scanCopy = {
+  verdictConsistent: en.scan.verdictConsistent as string,
+  verdictMixed: en.scan.verdictMixed as string,
+  verdictConsistentLine: en.scan.verdictConsistentLine as string,
+  verdictMixedLine: en.scan.verdictMixedLine as string,
+  coverageShort: (en.scan as Record<string, string>).coverageShort as string,
+  frontDoorShort: (en.scan as Record<string, string>).frontDoorShort as string,
+  viewUrls: (en.scan as Record<string, string>).viewUrls as string,
+  differsLabel: (en.scan as Record<string, string>).differsLabel as string,
+  differsFw: (en.scan as Record<string, string>).differsFrameworkWord as string,
+  differsPv: (en.scan as Record<string, string>).differsProviderWord as string,
+  oddRow: en.scan.oddRow as string,
+  noDifference: en.scan.noDifference as string,
+  crossDomain: en.scan.crossDomain as string,
+  frameworkCat: en.result.categories.framework as string,
+  hostingCat: en.result.categories.hosting as string,
+  evidenceLabel: en.result.evidence.label as string,
+  probeType: (en.result.evidence.types as Record<string, string>).probe as string,
+  detectedOnPages: (en.scan as Record<string, string>).detectedOnPages as string,
+  signalCount: (en.scan as Record<string, string>).signalCount as string,
+  signalOne: (en.scan as Record<string, string>).signalOne as string,
+  confidenceTooltip: (en.scan as Record<string, string>).confidenceTooltip as string,
+  confHigh: ((en.scan as Record<string, unknown>).confidenceLevels as Record<string, string>).High as string,
+  confMedium: ((en.scan as Record<string, unknown>).confidenceLevels as Record<string, string>).Medium as string,
+  confLow: ((en.scan as Record<string, unknown>).confidenceLevels as Record<string, string>).Low as string,
+  grpHeaders: ((en.result.evidence as Record<string, unknown>).groups as Record<string, string>).headers as string,
+  grpMarkers: ((en.result.evidence as Record<string, unknown>).groups as Record<string, string>).markers as string,
+  grpPaths: ((en.result.evidence as Record<string, unknown>).groups as Record<string, string>).paths as string,
+  checkAnother: en.result.checkAnother as string,
+  reportWrong: en.result.reportWrong as string,
+  copyLink: (en.result as Record<string, string>).copyLink as string,
+  copiedLabel: (en.result as Record<string, string>).copiedLabel as string,
+};
 
 // Shareable result views (/?url=...) must never be indexed: they are
 // thin, user-generated states, not content. Canonical stays on "/".
@@ -53,7 +107,7 @@ const breadcrumbJsonLd = {
   <!-- ============================================================
     HERO  (dark section)
     ============================================================ -->
-  <section class="hero section-dark" aria-labelledby="hero-h1">
+  <Section theme="dark" class="hero" ariaLabelledby="hero-h1">
     <div class="container">
       <div class="hero-inner">
         <div class="eyebrow-lockup">
@@ -68,7 +122,42 @@ const breadcrumbJsonLd = {
         </div>
 
         <!-- Detection form island -->
-        <div id="detector-root" class="detector-shell">
+        <div id="detector-root" class="detector-shell"
+          data-page-limit={PAGE_LIMIT}
+          data-limit-title={limitTitle}
+          data-limit-body={limitBody}
+          data-limit-label={limitLabel}
+          data-verdict-consistent={scanCopy.verdictConsistent}
+          data-verdict-mixed={scanCopy.verdictMixed}
+          data-verdict-consistent-line={scanCopy.verdictConsistentLine}
+          data-verdict-mixed-line={scanCopy.verdictMixedLine}
+          data-coverage-short={scanCopy.coverageShort}
+          data-frontdoor-short={scanCopy.frontDoorShort}
+          data-view-urls={scanCopy.viewUrls}
+          data-differs-label={scanCopy.differsLabel}
+          data-differs-fw={scanCopy.differsFw}
+          data-differs-pv={scanCopy.differsPv}
+          data-odd-row={scanCopy.oddRow}
+          data-no-difference={scanCopy.noDifference}
+          data-cross-domain={scanCopy.crossDomain}
+          data-framework-cat={scanCopy.frameworkCat}
+          data-hosting-cat={scanCopy.hostingCat}
+          data-evidence-label={scanCopy.evidenceLabel}
+          data-probe-type={scanCopy.probeType}
+          data-detected-on-pages={scanCopy.detectedOnPages}
+          data-signal-count={scanCopy.signalCount}
+          data-signal-one={scanCopy.signalOne}
+          data-confidence-tooltip={scanCopy.confidenceTooltip}
+          data-conf-high={scanCopy.confHigh}
+          data-conf-medium={scanCopy.confMedium}
+          data-conf-low={scanCopy.confLow}
+          data-grp-headers={scanCopy.grpHeaders}
+          data-grp-markers={scanCopy.grpMarkers}
+          data-grp-paths={scanCopy.grpPaths}
+          data-check-another={scanCopy.checkAnother}
+          data-report-wrong={scanCopy.reportWrong}
+          data-copy-link={scanCopy.copyLink}
+          data-copied-label={scanCopy.copiedLabel}>
           <form
             id="detect-form"
             class="detect-form"
@@ -99,18 +188,58 @@ const breadcrumbJsonLd = {
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
                   <path d="M6.5 1a5.5 5.5 0 1 0 3.457 9.82l3.362 3.361a.75.75 0 1 0 1.06-1.06L11.02 9.76A5.5 5.5 0 0 0 6.5 1zM2.5 6.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z" fill="currentColor"/>
                 </svg>
-                Detect
+                {submitLabel}
               </button>
             </div>
             <p id="url-hint" class="type-caption text-mute input-hint">
-              Accepts bare domains (e.g. <code>example.com</code>). No account needed.
+              {inputHint}
             </p>
+            <div class="scan-toggle-row">
+              <label class="scan-toggle type-caption text-mute" for="multipage-toggle">
+                <input type="checkbox" id="multipage-toggle" checked />
+                {multiPageLabel}
+              </label>
+              <span class="limit-info-wrap">
+                <button
+                  type="button"
+                  class="limit-info-btn"
+                  aria-expanded="false"
+                  aria-controls="page-limit-pop-scanner"
+                  aria-label={limitLabel}
+                >
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                    <circle cx="6" cy="6" r="5.25" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M6 5.4v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                    <circle cx="6" cy="3.6" r="0.8" fill="currentColor"/>
+                  </svg>
+                </button>
+                <span class="limit-pop" id="page-limit-pop-scanner" role="tooltip" hidden>
+                  <strong class="limit-pop-title">{limitTitle}</strong>
+                  <span class="limit-pop-body">{limitBody}</span>
+                </span>
+              </span>
+            </div>
+            <details class="advanced-opts">
+              <summary class="type-caption text-mute">{advancedLabel}</summary>
+              <div class="advanced-body">
+                <label for="extra-urls-input" class="type-caption text-mute">{extraUrlsLabel}</label>
+                <p class="type-caption text-mute advanced-help">{extraUrlsHelp}</p>
+                <textarea
+                  id="extra-urls-input"
+                  name="extraUrls"
+                  rows="2"
+                  class="input extra-urls-input"
+                  placeholder={extraUrlsPlaceholder}
+                ></textarea>
+              </div>
+            </details>
           </form>
 
           <!-- Recent checks (from localStorage) -->
-          <div id="recent-checks" class="recent-checks" hidden aria-label="Recent checks">
-            <span class="type-mono-caps text-mute">Recent:</span>
+          <div id="recent-checks" class="recent-checks" hidden>
+            <span class="type-mono-caps text-mute">{recentLabel}</span>
             <ul id="recent-list" role="list" class="recent-list"></ul>
+            <button type="button" id="recent-clear" class="recent-clear type-caption">{clearRecentLabel}</button>
           </div>
 
           <!-- Loading skeleton -->
@@ -133,12 +262,12 @@ const breadcrumbJsonLd = {
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 
   <!-- ============================================================
     HOW IT WORKS  (light section — polarity flip)
     ============================================================ -->
-  <section class="section-light" aria-labelledby="how-h2">
+  <Section theme="light" ariaLabelledby="how-h2">
     <div class="container">
       <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
         <span class="eyebrow" style="color: var(--color-mute);">How detection works</span>
@@ -194,12 +323,12 @@ const breadcrumbJsonLd = {
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 
   <!-- ============================================================
     TECHNOLOGY COVERAGE  (dark section)
     ============================================================ -->
-  <section class="section-dark" aria-labelledby="coverage-h2">
+  <Section theme="dark" ariaLabelledby="coverage-h2">
     <div class="container">
       <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
         <span class="eyebrow type-mono-eyebrow">What we detect</span>
@@ -229,34 +358,37 @@ const breadcrumbJsonLd = {
         ))}
       </div>
     </div>
-  </section>
+  </Section>
 
   <!-- ============================================================
     SPECIALISED TOOLS  (paper section)
     ============================================================ -->
-  <section class="section-paper" aria-labelledby="tools-h2">
+  <Section theme="light" ariaLabelledby="tools-h2">
     <div class="container">
       <h2 id="tools-h2" class="type-display-sm" style="color: var(--color-ink); margin-block-end: var(--spacing-xl);">
-        Specialised detectors
+        {(en.tools as Record<string, string>).heading}
       </h2>
       <div class="tool-link-grid">
         {[
-          { href: '/wordpress-theme-detector', title: 'WordPress Theme Detector', desc: 'Find any WordPress theme — name, author, version.' },
-          { href: '/shopify-theme-detector',   title: 'Shopify Theme Detector',   desc: 'Identify the Shopify theme powering any store.' },
-          { href: '/who-hosts-this-website',   title: 'Hosting & CDN Detector',   desc: 'Find out who hosts any website and what CDN they use.' },
-          { href: '/is-this-site-wordpress',   title: 'Is This Site WordPress?',  desc: 'Quick yes/no with evidence for any website.' },
-        ].map(({ href, title, desc }) => (
+          { href: '/wordpress-theme-detector', title: (en.tools as Record<string, string>).wpTitle, desc: (en.tools as Record<string, string>).wpDesc, icon: 'wordpress' as const },
+          { href: '/shopify-theme-detector',   title: (en.tools as Record<string, string>).shopifyTitle, desc: (en.tools as Record<string, string>).shopifyDesc, icon: 'shopify' as const },
+          { href: '/who-hosts-this-website',   title: (en.tools as Record<string, string>).hostingTitle, desc: (en.tools as Record<string, string>).hostingDesc, icon: 'hosting' as const },
+          { href: '/is-this-site-wordpress',   title: (en.tools as Record<string, string>).isWordpressTitle, desc: (en.tools as Record<string, string>).isWordpressDesc, icon: undefined },
+        ].map(({ href, title, desc, icon }) => (
           <a href={href} class="tool-card card-light">
-            <h3 class="type-heading-sm" style="color: var(--color-ink); margin: 0 0 8px 0;">{title}</h3>
+            <h3 class="type-heading-sm tool-card-title" style="color: var(--color-ink); margin: 0 0 8px 0;">
+              {icon && <NavIcon name={icon} size={16} />}
+              <span>{title}</span>
+            </h3>
             <p class="type-body-sm" style="color: var(--color-slate); margin: 0 0 16px 0;">{desc}</p>
             <span class="type-caption text-link-light" style="display: flex; align-items: center; gap: 4px;">
-              Try it →
+              {(en.tools as Record<string, string>).tryIt}
             </span>
           </a>
         ))}
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>
@@ -339,6 +471,50 @@ const breadcrumbJsonLd = {
     border-radius: var(--radius-app-sm);
   }
 
+  .scan-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    margin-block-start: 4px;
+    padding-inline-start: 4px;
+  }
+  .scan-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+  .scan-toggle input {
+    inline-size: 16px;
+    block-size: 16px;
+    accent-color: var(--color-canvas-light);
+  }
+  .advanced-opts { margin-block-start: 4px; }
+  .advanced-opts summary {
+    cursor: pointer;
+    padding: 4px;
+    display: inline-block;
+    border-radius: var(--radius-app-sm);
+  }
+  .advanced-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 4px 4px 4px;
+  }
+  .advanced-help { margin: 0; }
+  .extra-urls-input {
+    inline-size: 100%;
+    margin-block-start: 8px;
+    min-block-size: 56px;
+    font-size: 14px;
+    background-color: rgba(255,255,255,0.06);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-on-primary);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+
   /* Recent checks */
   .recent-checks {
     display: flex;
@@ -356,6 +532,15 @@ const breadcrumbJsonLd = {
     gap: 6px;
     flex-wrap: wrap;
   }
+  .recent-clear {
+    background: transparent;
+    border: none;
+    color: var(--color-mute);
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+  }
+  .recent-clear:hover { color: var(--color-ash); }
 
   /* Loading skeleton */
   .result-loading { margin-block-start: var(--spacing-xl); }
@@ -413,6 +598,17 @@ const breadcrumbJsonLd = {
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
 
+  .tool-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tool-card-title svg {
+    flex-shrink: 0;
+    display: block;
+  }
+
   .tool-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 32px rgba(0,0,0,0.08);
@@ -458,11 +654,36 @@ const ERROR_MESSAGES: Record<string, string> = {
   UNKNOWN:          'An unexpected error occurred. Please try again.',
 };
 
-const CONFIDENCE_LABELS: Record<string, string> = {
-  confirmed: 'Confirmed',
-  likely:    'Likely',
-  possible:  'Possible',
-};
+// Badge vocabulary is exactly three levels everywhere. Pipeline labels
+// are mapped display-only (the /api/detect shape is unchanged).
+function confLevel(label: string): 'High' | 'Medium' | 'Low' {
+  if (label === 'confirmed' || label === 'High') return 'High';
+  if (label === 'possible' || label === 'Low') return 'Low';
+  return 'Medium';
+}
+
+function confWord(level: string): string {
+  const t = getScanCopy();
+  return level === 'High' ? t.confHigh : level === 'Low' ? t.confLow : t.confMedium;
+}
+
+function confClass(level: string): string {
+  return level === 'High' ? 'conf-high' : level === 'Low' ? 'conf-low' : 'conf-medium';
+}
+
+// Badge text is just the level; the tooltip explains what confidence
+// means and shows on hover AND keyboard focus.
+function confBadge(level: string, tipId: string): string {
+  const t = getScanCopy();
+  return `<span class="badge ${confClass(level)} conf-badge" tabindex="0" aria-describedby="${tipId}">`
+    + `${esc(confWord(level))}`
+    + `<span class="conf-tip" role="tooltip" id="${tipId}">${esc(t.confidenceTooltip)}</span>`
+    + `</span>`;
+}
+
+function renderConfidenceChip(label: 'confirmed' | 'likely' | 'possible', tipId: string): string {
+  return confBadge(confLevel(label), tipId);
+}
 
 const CATEGORY_LABELS: Record<string, string> = {
   cms:        'CMS / Platform',
@@ -498,17 +719,46 @@ const recentEl   = document.getElementById('recent-checks')  as HTMLElement | nu
 const recentList = document.getElementById('recent-list')    as HTMLUListElement | null;
 
 // ----------------------------------------------------------------
-// Recent checks
+// Recent checks — localStorage only, stored on successful scans only.
+// Normalised form: trim, lowercase, strip protocol, strip leading
+// "www.", strip path/query/fragment and trailing slash.
 // ----------------------------------------------------------------
+function normalizeDomain(raw: string): string {
+  let s = raw.trim().toLowerCase();
+  if (!s) return '';
+  s = s.replace(/^https?:\/\//, '');
+  s = s.split(/[/?#]/)[0];
+  if (s.startsWith('www.')) s = s.slice(4);
+  s = s.replace(/:\d+$/, '');
+  s = s.replace(/\.+$/, '');
+  if (!/^[\w.-]+\.[a-z]{2,}$/i.test(s)) return '';
+  return s;
+}
+
 function loadRecent(): string[] {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+    const parsed: unknown = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((u): u is string => typeof u === 'string' && u.length > 0).slice(0, MAX_RECENT);
   } catch { return []; }
 }
 
-function saveRecent(url: string): void {
-  const list = [url, ...loadRecent().filter((u) => u !== url)].slice(0, MAX_RECENT);
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+function saveRecent(rawUrl: string): void {
+  const domain = normalizeDomain(rawUrl);
+  if (!domain) return;
+  const list = [domain, ...loadRecent().filter((u) => normalizeDomain(u) !== domain)].slice(0, MAX_RECENT);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* storage unavailable — page still works */ }
+}
+
+function clearRecent(): void {
+  try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
+  renderRecent();
+}
+
+function runCurrentMode(url: string): void {
+  const multi = (document.getElementById('multipage-toggle') as HTMLInputElement | null)?.checked ?? true;
+  if (multi) void runSiteScan(url);
+  else void runDetect(url);
 }
 
 function renderRecent(): void {
@@ -516,14 +766,17 @@ function renderRecent(): void {
   if (!recentList || !recentEl) return;
 
   recentList.innerHTML = '';
-  list.forEach((url) => {
+  list.forEach((domain) => {
     const li = document.createElement('li');
     const btn = document.createElement('button');
     btn.className = 'btn btn-secondary-dark recent-btn';
-    btn.textContent = url.replace(/^https?:\/\//, '');
-    btn.title = url;
+    btn.textContent = domain;
+    btn.title = domain;
     btn.type = 'button';
-    btn.addEventListener('click', () => runDetect(url));
+    btn.addEventListener('click', () => {
+      if (input) input.value = domain;
+      runCurrentMode(domain);
+    });
     li.appendChild(btn);
     recentList.appendChild(li);
   });
@@ -563,10 +816,6 @@ interface Detection {
   pageSlug?: string;
 }
 
-function renderConfidenceChip(label: 'confirmed' | 'likely' | 'possible'): string {
-  return `<span class="badge chip-${label}">${CONFIDENCE_LABELS[label] ?? label}</span>`;
-}
-
 function renderDetection(d: Detection): string {
   const slug = d.pageSlug ?? d.id;
   const versionStr = d.version ? ` <span class="text-mute type-caption">v${esc(d.version)}</span>` : '';
@@ -593,7 +842,7 @@ function renderDetection(d: Detection): string {
             }
             ${versionStr}
           </span>
-          ${renderConfidenceChip(d.confidenceLabel)}
+          ${renderConfidenceChip(d.confidenceLabel, `conf-tip-single-${esc(d.id)}`)}
         </div>
         <span class="type-mono-caps text-mute category-label">${esc(CATEGORY_LABELS[d.category] ?? d.category)}</span>
       </div>
@@ -647,6 +896,8 @@ function renderResults(data: {
   const noMatch = results.filter(
     (r) => r.confidenceLabel === 'confirmed' || r.confidenceLabel === 'likely'
   ).length === 0;
+  const t = getScanCopy();
+  const shareHref = `/?url=${encodeURIComponent(finalUrl)}`;
 
   return `
     <div class="result-card">
@@ -654,15 +905,6 @@ function renderResults(data: {
         <div>
           <p class="type-mono-caps text-mute" style="margin: 0 0 4px 0;">Detection results for</p>
           <h2 class="type-heading-md result-url">${esc(displayUrl)}</h2>
-        </div>
-        <div class="result-actions">
-          <a href="mailto:hello@cmsdetectorai.com?subject=Result+feedback&body=${mailtoBody}"
-             class="btn btn-ghost-dark result-action">
-             Result looks wrong?
-          </a>
-          <button type="button" class="btn btn-secondary-dark result-action" id="check-another">
-            Check another site
-          </button>
         </div>
       </div>
 
@@ -685,11 +927,11 @@ function renderResults(data: {
         : groupHtml
       }
 
-      <div class="result-footer">
-        <a href="/?url=${encodeURIComponent(finalUrl)}" class="type-caption text-mute">
-          Shareable link for this result
-        </a>
+      <div class="result-actions-row">
+        <button type="button" class="btn btn-secondary-dark result-action" data-check-another>${esc(t.checkAnother)}</button>
+        <button type="button" class="btn btn-secondary-dark result-action" data-copy-link data-url="${esc(shareHref)}">${esc(t.copyLink)}</button>
       </div>
+      <a href="mailto:hello@cmsdetectorai.com?subject=Result+feedback&body=${mailtoBody}" class="report-link type-caption">${esc(t.reportWrong)}</a>
     </div>`;
 }
 
@@ -761,13 +1003,7 @@ async function runDetect(rawUrl: string): Promise<void> {
       resultEl.hidden = false;
       resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-      // Wire "Check another site" button
-      document.getElementById('check-another')?.addEventListener('click', () => {
-        resultEl.hidden = true;
-        errorEl.hidden  = true;
-        if (input) { input.value = ''; input.focus(); }
-        window.history.replaceState({}, '', '/');
-      });
+      wireScanActions(resultEl);
     } else {
       const code = data.error?.code ?? 'UNKNOWN';
       const msg  = ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'];
@@ -810,11 +1046,446 @@ async function runDetect(rawUrl: string): Promise<void> {
   }
 }
 
+function parseExtraUrls(): string[] {
+  const ta = document.getElementById('extra-urls-input') as HTMLTextAreaElement | null;
+  if (!ta) return [];
+  return ta.value.split('\n').map((s) => s.trim()).filter(Boolean).slice(0, 5);
+}
+
+// ----------------------------------------------------------------
+// Result actions: secondary "check another" + compact copy link.
+// Single primary per screen (the Detect submit); everything here
+// is secondary or a text link.
+// ----------------------------------------------------------------
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+      return true;
+    } catch { return false; }
+  }
+}
+
+function wireScanActions(scope: ParentNode): void {
+  const t = getScanCopy();
+  scope.querySelectorAll('[data-check-another]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (resultEl) resultEl.hidden = true;
+      if (errorEl) errorEl.hidden = true;
+      if (input) { input.value = ''; input.focus(); }
+      try { window.history.replaceState({}, '', '/'); } catch { /* noop */ }
+    });
+  });
+  scope.querySelectorAll('[data-copy-link]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const b = btn as HTMLButtonElement;
+      const href = b.dataset.url ?? window.location.href;
+      const absolute = href.startsWith('http') ? href : `${window.location.origin}${href}`;
+      const ok = await copyText(absolute);
+      const original = b.textContent ?? t.copyLink;
+      b.textContent = ok ? t.copiedLabel : t.copyLink;
+      b.disabled = false;
+      window.setTimeout(() => { b.textContent = original; }, 1600);
+    });
+  });
+}
+
+// ----------------------------------------------------------------
+// Page-limit info popover (locale copy + live limit via #detector-root data-*)
+// ----------------------------------------------------------------
+function getLimitCopy(): { title: string; body: string; label: string } {
+  const root = document.getElementById('detector-root');
+  return {
+    title: root?.dataset.limitTitle ?? 'Why 15 pages?',
+    body: root?.dataset.limitBody ?? '',
+    label: root?.dataset.limitLabel ?? 'About the page limit',
+  };
+}
+
+function getScanCopy(): Record<string, string> {
+  const d = document.getElementById('detector-root')?.dataset ?? {};
+  return {
+    verdictConsistent: d.verdictConsistent ?? 'Consistent',
+    verdictMixed: d.verdictMixed ?? 'Mixed stack',
+    verdictConsistentLine: d.verdictConsistentLine ?? 'Consistent across {checked} pages: {framework} + {provider}',
+    verdictMixedLine: d.verdictMixedLine ?? 'Mixed stack: {odd} of {total} paths differ',
+    coverageShort: d.coverageShort ?? 'Checked {checked} of ~{found} pages found.',
+    frontDoorShort: d.frontDoorShort ?? 'All paths share the same CDN ({provider}).',
+    viewUrls: d.viewUrls ?? 'View {count} scanned URLs',
+    differsLabel: d.differsLabel ?? 'Differs: {what}',
+    differsFw: d.differsFw ?? 'framework',
+    differsPv: d.differsPv ?? 'provider',
+    oddRow: d.oddRow ?? 'Differs from site baseline',
+    noDifference: d.noDifference ?? 'Matches baseline',
+    crossDomain: d.crossDomain ?? 'Redirects off-domain',
+    frameworkCat: d.frameworkCat ?? 'Framework',
+    hostingCat: d.hostingCat ?? 'Hosting & CDN',
+    evidenceLabel: d.evidenceLabel ?? 'Why we think this',
+    probeType: d.probeType ?? 'Secondary probe',
+    detectedOnPages: d.detectedOnPages ?? 'Detected on {seen}/{checked} pages',
+    signalCount: d.signalCount ?? '{count} signals',
+    signalOne: d.signalOne ?? '1 signal',
+    confidenceTooltip: d.confidenceTooltip ?? 'Confidence reflects the strength and agreement of the signals found.',
+    confHigh: d.confHigh ?? 'High',
+    confMedium: d.confMedium ?? 'Medium',
+    confLow: d.confLow ?? 'Low',
+    grpHeaders: d.grpHeaders ?? 'Headers',
+    grpMarkers: d.grpMarkers ?? 'HTML markers',
+    grpPaths: d.grpPaths ?? 'Asset paths',
+    checkAnother: d.checkAnother ?? 'Check another site',
+    reportWrong: d.reportWrong ?? 'Report a wrong result',
+    copyLink: d.copyLink ?? 'Copy link',
+    copiedLabel: d.copiedLabel ?? 'Copied',
+  };
+}
+
+function fill(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`);
+}
+
+function limitInfoHTML(popId: string): string {
+  const c = getLimitCopy();
+  return `<span class="limit-info-wrap">`
+    + `<button type="button" class="limit-info-btn" aria-expanded="false" aria-controls="${popId}" aria-label="${esc(c.label)}">`
+    + `<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">`
+    + `<circle cx="6" cy="6" r="5.25" stroke="currentColor" stroke-width="1.2"/>`
+    + `<path d="M6 5.4v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>`
+    + `<circle cx="6" cy="3.6" r="0.8" fill="currentColor"/>`
+    + `</svg></button>`
+    + `<span class="limit-pop" id="${popId}" role="tooltip" hidden>`
+    + `<strong class="limit-pop-title">${esc(c.title)}</strong>`
+    + `<span class="limit-pop-body">${esc(c.body)}</span>`
+    + `</span></span>`;
+}
+
+function initLimitInfo(scope: ParentNode = document): void {
+  const hoverOK = window.matchMedia('(hover: hover)').matches;
+  scope.querySelectorAll('.limit-info-wrap').forEach((wrap) => {
+    const w = wrap as HTMLElement;
+    if (w.dataset.wired) return;
+    w.dataset.wired = 'true';
+    const btn = w.querySelector('.limit-info-btn') as HTMLButtonElement | null;
+    const pop = w.querySelector('.limit-pop') as HTMLElement | null;
+    if (!btn || !pop) return;
+    // Clamp the popover inside the viewport (375px safe): it is
+    // position:absolute under the icon, so nudge it when it would overflow.
+    const fit = (): void => {
+      pop.style.marginLeft = '0px';
+      const r = pop.getBoundingClientRect();
+      const overRight = r.right - (window.innerWidth - 8);
+      const overLeft = 8 - r.left;
+      if (overRight > 0) pop.style.marginLeft = `${-overRight}px`;
+      else if (overLeft > 0) pop.style.marginLeft = `${overLeft}px`;
+    };
+    const open = (): void => { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); fit(); };
+    const close = (): void => { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); pop.style.marginLeft = '0px'; };
+    let pinned = false;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (pop.hidden) { open(); pinned = true; } else { close(); pinned = false; }
+    });
+    if (hoverOK) {
+      w.addEventListener('mouseenter', () => { if (!pinned) open(); });
+      w.addEventListener('mouseleave', () => { if (!pinned) close(); });
+    }
+    window.addEventListener('resize', () => { if (!pop.hidden) fit(); });
+    document.addEventListener('pointerdown', (e) => {
+      if (!pop.hidden && !w.contains(e.target as Node)) { close(); pinned = false; }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !pop.hidden) { close(); pinned = false; btn.focus(); }
+    });
+  });
+}
+
+function renderScanSummary(data: {
+  rootHost: string;
+  verdict: string;
+  verdictLine: string;
+  baselineFramework: string;
+  baselineProvider: string;
+  coverage: { checked: number; foundApprox: number; truncated: boolean };
+  frontDoorNote: boolean;
+  techs?: Array<{
+    techId: string; name: string; kind: string; confidence: string;
+    detectedOn: number; checkedPages: number; pageSlug?: string;
+    evidence: Array<{ signalType: string; name: string; sampleValue: string; pagesSeen: number; strength?: string }>;
+  }>;
+  pages: Array<{
+    url: string; framework: string; provider: string; confidence: string;
+    evidence?: string[];
+    differsFramework?: boolean; differsProvider?: boolean; isOddOneOut?: boolean;
+    crossDomainRedirect?: boolean; error?: string;
+  }>;
+}): string {
+  const t = getScanCopy();
+  const isMixed = data.verdict !== 'consistent';
+  const total = data.pages.length;
+  const oddCount = data.pages.filter((p) => p.isOddOneOut).length;
+  // Label appears exactly once: templates carry the full sentence.
+  const verdictText = isMixed
+    ? fill(t.verdictMixedLine, { odd: String(oddCount), total: String(total) })
+    : fill(t.verdictConsistentLine, {
+        checked: String(data.coverage.checked),
+        framework: data.baselineFramework,
+        provider: data.baselineProvider,
+      });
+  const coverageText = fill(t.coverageShort, {
+    checked: String(data.coverage.checked),
+    found: String(data.coverage.foundApprox),
+  });
+  const frontDoorText = data.frontDoorNote
+    ? fill(t.frontDoorShort, { provider: data.baselineProvider })
+    : '';
+
+  // Confidence shown once in the summary when uniform across rows.
+  const confValues = data.pages.filter((p) => !p.error).map((p) => p.confidence);
+  const uniformConf = confValues.length > 0 && new Set(confValues).size === 1 ? confValues[0] : null;
+
+  // Mode confidence for the summary badges (detection unchanged — display only).
+  const modeOf = (vals: string[]): string => {
+    const counts = new Map<string, number>();
+    for (const v of vals) counts.set(v, (counts.get(v) ?? 0) + 1);
+    let best = vals[0] ?? '—';
+    let bestN = -1;
+    for (const [v, n] of counts) { if (n > bestN) { best = v; bestN = n; } }
+    return best;
+  };
+  const summaryConf = uniformConf ?? modeOf(confValues);
+
+  const collectEvidence = (match: (p: (typeof data.pages)[number]) => boolean): string[] => {
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const p of data.pages) {
+      if (!match(p) || !p.evidence) continue;
+      for (const e of p.evidence) {
+        if (!seen.has(e) && out.length < 6) { seen.add(e); out.push(e); }
+      }
+    }
+    return out;
+  };
+  const evList = (items: string[]): string => items.length > 0
+    ? `<ul class="evidence-list" role="list">${items.map((e) => `<li class="evidence-item"><code class="evidence-artifact">${esc(e)}</code></li>`).join('')}</ul>`
+    : '';
+
+  // One card template for every category. Top to bottom, always:
+  //   1. category eyebrow (above the name),
+  //   2. name + confidence badge row,
+  //   3. one muted summary line ("Detected on 15/15 pages · 3 signals"),
+  //   4. the "Why we think this" disclosure (collapsed by default).
+  // Each card shows ONLY its own techId's evidence, grouped by display
+  // group (strongest first) with its OWN confidence. Page coverage is a
+  // union across pages — one weak page never downgrades the tech.
+  type ScanTech = NonNullable<typeof data.techs>[number];
+  type ScanEvidence = ScanTech['evidence'][number];
+
+  // Display groups: Headers (header + cookie, both travel over HTTP),
+  // HTML markers (html-regex + generator tag), Asset paths (html-path
+  // + script URLs), Probes. Server pre-sorts evidence strongest-first,
+  // so groups below form in strongest-first order automatically.
+  const displayGroup = (signalType: string): 'headers' | 'markers' | 'paths' | 'probes' => {
+    if (signalType === 'header' || signalType === 'cookie-name') return 'headers';
+    if (signalType === 'html-regex' || signalType === 'meta-generator') return 'markers';
+    if (signalType === 'html-path' || signalType === 'script-host') return 'paths';
+    return 'probes';
+  };
+  const GROUP_LABELS: Record<string, string> = {
+    headers: t.grpHeaders,
+    markers: t.grpMarkers,
+    paths: t.grpPaths,
+    probes: t.probeType,
+  };
+
+  const techEvList = (tech: ScanTech): string => {
+    if (tech.evidence.length === 0) return '';
+    const groups = new Map<string, ScanEvidence[]>();
+    for (const e of tech.evidence) {
+      const g = displayGroup(e.signalType);
+      if (!groups.has(g)) groups.set(g, []);
+      groups.get(g)!.push(e);
+    }
+    return [...groups.entries()].map(([group, items]) => {
+      const lines = items.map((e) => `
+        <li class="evidence-row">
+          <span class="evidence-name" title="${esc(e.name)}">${esc(e.name)}</span>
+          <span class="evidence-value" title="${esc(e.sampleValue)}">${esc(e.sampleValue)}</span>
+          <span class="evidence-count">${esc(String(e.pagesSeen))}/${esc(String(tech.checkedPages))}</span>
+        </li>`).join('');
+      return `<li class="evidence-group"><span class="evidence-group-label type-mono-caps text-mute">${esc(GROUP_LABELS[group] ?? group)}</span><ul class="evidence-rows" role="list">${lines}</ul></li>`;
+    }).join('');
+  };
+
+  const cardName = (name: string, pageSlug?: string): string =>
+    pageSlug
+      ? `<a href="/cms/${esc(pageSlug)}" class="text-link-dark">${esc(name)}</a>`
+      : esc(name);
+
+  const catLabel = (kind: string): string =>
+    kind === 'hosting' ? t.hostingCat : t.frameworkCat;
+
+  const summaryLine = (tech: { detectedOn: number; checkedPages: number; evidence: { length: number } }): string => {
+    const signals = tech.evidence.length === 1
+      ? t.signalOne
+      : fill(t.signalCount, { count: String(tech.evidence.length) });
+    return `${esc(fill(t.detectedOnPages, { seen: String(tech.detectedOn), checked: String(tech.checkedPages) }))} · ${esc(signals)}`;
+  };
+
+  const disclosure = (body: string): string => `
+      <details class="evidence-section">
+        <summary class="evidence-toggle type-caption-tight">
+          <span>${esc(t.evidenceLabel)}</span>
+          <svg class="toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        ${body}
+      </details>`;
+
+  const techStackCard = (kind: 'framework' | 'hosting', tech: ScanTech): string => `
+    <div class="detection-card stack-card">
+      <p class="card-eyebrow type-mono-caps text-mute">${esc(catLabel(tech.kind))}</p>
+      <div class="detection-name-row">
+        <span class="type-heading-sm detection-name">${cardName(tech.name, tech.pageSlug)}</span>
+        ${confBadge(tech.confidence, `conf-tip-${esc(tech.techId)}`)}
+      </div>
+      <p class="type-caption text-mute card-summary">${summaryLine(tech)}</p>
+      ${disclosure(`<ul class="evidence-groups" role="list">${techEvList(tech)}</ul>`)}
+    </div>`;
+
+  // Legacy fallback for payloads that predate the per-technology
+  // rollup (e.g. a cached API response): same card anatomy, pooled
+  // evidence list, no per-signal page counts.
+  const stackCard = (kind: 'framework' | 'hosting', name: string, evidence: string[]): string => `
+    <div class="detection-card stack-card">
+      <p class="card-eyebrow type-mono-caps text-mute">${esc(catLabel(kind))}</p>
+      <div class="detection-name-row">
+        <span class="type-heading-sm detection-name">${esc(name)}</span>
+        ${confBadge(summaryConf, `conf-tip-legacy-${kind}`)}
+      </div>
+      ${disclosure(evList(evidence))}
+    </div>`;
+
+  // Prefer the per-technology rollup (evidence strictly separated by
+  // techId). Fall back to the legacy pooled list only for payloads
+  // that predate it (e.g. a cached API response).
+  const findTech = (name: string): ScanTech | undefined =>
+    (data.techs ?? []).find((x) => x.name === name);
+  const fwTech = findTech(data.baselineFramework);
+  const pvTech = findTech(data.baselineProvider);
+
+  // Mixed: differing rows pinned to the top and highlighted.
+  const ordered = [...data.pages].sort((a, b) => Number(b.isOddOneOut ?? false) - Number(a.isOddOneOut ?? false));
+  const differsWhat = (p: (typeof ordered)[number]): string => {
+    const parts: string[] = [];
+    if (p.differsFramework) parts.push(t.differsFw);
+    if (p.differsProvider || p.crossDomainRedirect) parts.push(t.differsPv);
+    if (parts.length === 0) return '';
+    return fill(t.differsLabel, { what: parts.join(' + ') });
+  };
+  const showConfCol = uniformConf === null;
+  const rows = ordered.map((p) => {
+    const shortUrl = p.url.replace(/^https?:\/\//, '');
+    const diffNote = p.isOddOneOut ? differsWhat(p) : '';
+    return `
+    <tr class="${p.isOddOneOut ? 'scan-odd' : ''}">
+      <td><span class="scan-url" title="${esc(p.url)}">${esc(shortUrl)}</span>${p.crossDomainRedirect ? ` <span class="type-caption text-mute">${esc(t.crossDomain)}</span>` : ''}${diffNote ? `<span class="scan-diff-note">${esc(diffNote)}</span>` : ''}</td>
+      <td>${esc(p.framework)}</td>
+      <td>${esc(p.provider)}</td>
+      ${showConfCol ? `<td>${esc(p.error ? '—' : p.confidence)}</td>` : ''}
+    </tr>`;
+  }).join('');
+  const viewLabel = fill(t.viewUrls, { count: String(total) });
+  const shareUrl = `/result/${encodeURIComponent(data.rootHost)}`;
+  const mailtoBody = encodeURIComponent(`URL: ${data.rootHost}\nDetected: ${data.baselineFramework} + ${data.baselineProvider}\nExpected: `);
+
+  return `
+    <div class="result-card scan-result">
+      <div class="verdict ${isMixed ? 'verdict-mixed' : 'verdict-ok'}" role="status">
+        ${esc(verdictText)}
+      </div>
+      <p class="type-caption text-mute coverage-line">
+        ${esc(coverageText)}
+        ${limitInfoHTML('page-limit-pop-coverage')}
+        ${frontDoorText ? `<span>${esc(frontDoorText)}</span>` : ''}
+      </p>
+      <div class="stack-summary">
+        ${pvTech ? techStackCard('hosting', pvTech) : stackCard('hosting', data.baselineProvider, collectEvidence((p) => !p.error && p.provider === data.baselineProvider))}
+        ${fwTech ? techStackCard('framework', fwTech) : stackCard('framework', data.baselineFramework, collectEvidence((p) => !p.error && p.framework === data.baselineFramework))}
+      </div>
+      <details class="scan-urls"${isMixed ? ' open' : ''}>
+        <summary class="scan-urls-toggle type-caption-tight">${esc(viewLabel)}</summary>
+        <div class="scan-table-wrap" role="region" aria-label="${esc(viewLabel)}" tabindex="0">
+          <table class="scan-table">
+            <thead><tr><th>URL</th><th>Framework</th><th>Provider</th>${showConfCol ? '<th>Conf.</th>' : ''}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </details>
+      <div class="result-actions-row">
+        <button type="button" class="btn btn-secondary-dark result-action" data-check-another>${esc(t.checkAnother)}</button>
+        <button type="button" class="btn btn-secondary-dark result-action" data-copy-link data-url="${esc(shareUrl)}">${esc(t.copyLink)}</button>
+      </div>
+      <a href="mailto:hello@cmsdetectorai.com?subject=Result+feedback&body=${mailtoBody}" class="report-link type-caption">${esc(t.reportWrong)}</a>
+    </div>`;
+}
+
+async function runSiteScan(rawUrl: string): Promise<void> {
+  if (!resultEl || !errorEl) return;
+  const url = rawUrl.trim();
+  if (!url) return;
+  setLoading(true);
+  if (submitBtn) submitBtn.textContent = 'Scanning paths…';
+  try {
+    const token = await getTurnstileToken();
+    const res = await fetch('/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, extraUrls: parseExtraUrls(), token }),
+    });
+    const data = await res.json() as
+      | { ok: true; data: Parameters<typeof renderScanSummary>[0] }
+      | { ok: false; error: { code: string } };
+    setLoading(false);
+    if (data.ok) {
+      saveRecent(url);
+      renderRecent();
+      resultEl.innerHTML = renderScanSummary(data.data);
+      resultEl.hidden = false;
+      initLimitInfo(resultEl);
+      wireScanActions(resultEl);
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      const code = data.error?.code ?? 'UNKNOWN';
+      errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Error</span>
+        <p class="type-body-sm text-ash">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'])}</p></div>`;
+      errorEl.hidden = false;
+    }
+  } catch {
+    setLoading(false);
+    if (errorEl) {
+      errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Network error</span>
+        <p class="type-body-sm text-ash">Could not reach the scan API.</p></div>`;
+      errorEl.hidden = false;
+    }
+  }
+}
+
 // ----------------------------------------------------------------
 // Auto-run from ?url= query param
 // ----------------------------------------------------------------
 function init(): void {
   renderRecent();
+  initLimitInfo(document);
 
   // Shareable result views are pre-rendered as "/" — mark them noindex at
   // runtime too (belt-and-braces next to the canonical pointing at "/").
@@ -836,11 +1507,19 @@ function init(): void {
     runDetect(urlParam);
   }
 
-  // Form submit
+  // Form submit — single primary action: multi-path scan by default.
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const url = input?.value.trim() ?? '';
-    if (url) runDetect(url);
+    if (!url) return;
+    const multi = (document.getElementById('multipage-toggle') as HTMLInputElement | null)?.checked ?? true;
+    if (multi) runSiteScan(url);
+    else runDetect(url);
+  });
+
+  document.getElementById('recent-clear')?.addEventListener('click', () => {
+    clearRecent();
+    input?.focus();
   });
 }
 
@@ -850,10 +1529,10 @@ init();
 <style is:global>
   /* Result card styles (injected by JS island) */
   .result-card {
-    margin-block-start: var(--spacing-xl);
+    margin-block-start: var(--spacing-xxl);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-lg);
   }
 
   .result-header {
@@ -944,12 +1623,26 @@ init();
     gap: 6px;
   }
 
+  .evidence-groups {
+    margin: var(--spacing-xs) 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .evidence-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
   .evidence-item {
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-xs);
   }
-
   .evidence-type {
     flex-shrink: 0;
     padding: 2px 6px;
@@ -969,10 +1662,129 @@ init();
     border-radius: var(--radius-app-sm);
   }
 
-  .result-footer {
-    padding-block-start: var(--spacing-sm);
-    border-block-start: 1px solid var(--color-hairline-soft);
+  /* ---- One card template (scan summary cards) ---- */
+  .stack-card {
+    display: flex;
+    flex-direction: column;
   }
+
+  .card-eyebrow {
+    margin: 0 0 4px 0;
+  }
+
+  .card-summary {
+    margin: 4px 0 0 0;
+  }
+
+  /* ---- Confidence badges: level text only, solid AA-safe colours ---- */
+  .conf-badge {
+    position: relative;
+    cursor: help;
+    font-weight: 600;
+  }
+  .conf-high   { background-color: #34d399; color: #052e16; }
+  .conf-medium { background-color: #fbbf24; color: #451a03; }
+  .conf-low    { background-color: #9ca3af; color: #111827; }
+
+  .conf-tip {
+    position: absolute;
+    inset-block-start: calc(100% + 8px);
+    inset-inline-end: 0;
+    inline-size: max-content;
+    max-inline-size: min(240px, calc(100vw - 48px));
+    background-color: #1a1a1a;
+    color: var(--color-ash);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-sm);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 8px 10px;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    white-space: normal;
+    z-index: 50;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+  }
+  .conf-badge:hover .conf-tip,
+  .conf-badge:focus .conf-tip,
+  .conf-badge:focus-visible .conf-tip {
+    visibility: visible;
+    opacity: 1;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .conf-tip { transition: none; }
+  }
+
+  /* ---- Evidence groups: plain headings, never chip-styled ---- */
+  .evidence-group-label {
+    display: block;
+  }
+
+  .evidence-rows {
+    margin: var(--spacing-xs) 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .evidence-row {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
+    gap: var(--spacing-xs);
+    align-items: baseline;
+    background-color: var(--color-canvas);
+    border-radius: var(--radius-app-sm);
+    padding: 6px 8px;
+    min-width: 0;
+  }
+
+  .evidence-name,
+  .evidence-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .evidence-name {
+    color: var(--color-on-primary);
+  }
+
+  .evidence-value {
+    color: var(--color-ash);
+    user-select: text;
+  }
+
+  .evidence-count {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--color-mute);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .result-actions-row {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    margin-block-start: var(--spacing-sm);
+  }
+  .report-link {
+    color: var(--color-mute);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    align-self: flex-start;
+    padding: 4px 0;
+  }
+  .report-link:hover { color: var(--color-ash); }
 
   .recent-btn {
     font-size: 12px;
@@ -984,4 +1796,109 @@ init();
   .error-card { margin-block-start: var(--spacing-lg); }
 
   .no-match-card { margin-block-start: var(--spacing-sm); }
+
+  /* Site-scan summary */
+  .verdict {
+    padding: 14px 18px;
+    border-radius: var(--radius-marketing);
+    font-size: 16px;
+  }
+  .verdict-ok { background: #123b2a; color: #b9f0d4; border: 1px solid #1e5c41; }
+  .verdict-mixed { background: #4a1c10; color: #ffd9c4; border: 1px solid #8a3a1c; }
+  .stack-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+  }
+  @media (max-width: 640px) {
+    .stack-summary { grid-template-columns: 1fr; }
+  }
+  .scan-urls {
+    margin-block-start: var(--spacing-xs);
+  }
+  .scan-urls-toggle {
+    cursor: pointer;
+    display: inline-block;
+    color: var(--color-mute);
+    padding: 8px 4px;
+    border-radius: var(--radius-app-sm);
+  }
+  .scan-urls-toggle:hover { color: var(--color-ash); }
+  .scan-table-wrap {
+    overflow-x: auto;
+    margin-block-start: 8px;
+    max-inline-size: 100%;
+  }
+  .scan-table { border-collapse: collapse; inline-size: 100%; min-inline-size: 520px; max-inline-size: 100%; font-size: 13px; background-color: var(--color-canvas-soft); }
+  .scan-table th, .scan-table td { text-align: start; padding: 8px 10px; border-block-end: 1px solid var(--color-hairline-soft); color: var(--color-ash); vertical-align: top; }
+  .scan-table thead th { color: var(--color-mute); font-size: 11px; text-transform: uppercase; }
+  .scan-odd td { background: rgba(243, 100, 88, 0.12); }
+  .scan-url {
+    display: block;
+    max-inline-size: 280px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .scan-diff-note {
+    display: block;
+    margin-block-start: 4px;
+    font-size: 12px;
+    color: var(--color-brand);
+  }
+
+  /* Page-limit info popover (shared by scanner block + coverage line) */
+  .coverage-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .limit-info-wrap { position: relative; display: inline-flex; align-items: center; }
+  .limit-info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: var(--radius-full);
+    border: 1px solid currentColor;
+    background: transparent;
+    color: var(--color-mute);
+    cursor: pointer;
+    padding: 0;
+  }
+  .limit-info-btn:hover { color: var(--color-ash); }
+  .limit-info-btn:focus-visible {
+    outline: 2px solid var(--color-link-blue-soft);
+    outline-offset: 2px;
+  }
+  .limit-pop {
+    position: absolute;
+    inset-block-start: calc(100% + 8px);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    inline-size: max-content;
+    max-inline-size: min(280px, calc(100vw - 32px));
+    background-color: #1a1a1a;
+    color: var(--color-ash);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 12px 14px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .limit-pop-title { color: #fff; font-size: 13px; }
+  .limit-pop-body { color: var(--color-ash); }
+  .section--light .limit-pop {
+    background-color: #fff;
+    color: var(--color-slate);
+    border-color: var(--color-hairline);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  }
+  .section--light .limit-pop-title { color: var(--color-ink); }
+  @media (prefers-reduced-motion: reduce) {
+    .limit-pop { transition: none; }
+  }
 </style>

@@ -3,6 +3,8 @@
  * Footer — dark terminal surface.
  * Follows DESIGN.md footer component spec.
  */
+import en from '../../i18n/en.json';
+
 const year = new Date().getFullYear();
 
 const columns = [
@@ -62,6 +64,11 @@ const columns = [
     </div>
 
     <hr class="divider" />
+
+    <!-- Temporary: keeps /methodology linked while header no longer includes it. Remove when full footer (About, Contact, Privacy, FAQ) is built. -->
+    <p class="type-meta" style="margin: 0 0 16px 0;">
+      <a href="/methodology" class="footer-link">{en.nav.methodology}</a>
+    </p>
 
     <!-- Bottom strip -->
     <div class="footer-bottom">

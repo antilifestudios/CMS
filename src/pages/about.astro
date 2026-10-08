@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 ---
 
 <Base
@@ -8,7 +9,7 @@ import Base from '../layouts/Base.astro';
   description="CMS Detector AI is a free tool for identifying website platforms. No sign-up, no ads, no data storage."
   pagePath="/about"
 >
-  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="a-h1">
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="a-h1">
     <div class="container">
       <div class="eyebrow-lockup">
         <span class="eyebrow type-mono-eyebrow">About</span>
@@ -17,8 +18,8 @@ import Base from '../layouts/Base.astro';
         </h1>
       </div>
     </div>
-  </section>
-  <section class="section-light">
+  </Section>
+  <Section theme="light">
     <div class="container">
       <div class="narrow">
         <p class="type-body" style="color: var(--color-slate);">CMS Detector AI answers one question — <em>what is this website built with?</em> — with proof attached. Every detection lists the exact artifacts matched and a confidence level. When we can’t tell, we say so and explain why, instead of guessing.</p>
@@ -26,7 +27,7 @@ import Base from '../layouts/Base.astro';
         <p class="type-body" style="color: var(--color-slate);">Read <a href="/methodology" class="text-link-light">how detection works</a>, learn <a href="/guides/how-to-find-what-cms-a-website-uses" class="text-link-light">the manual method</a>, or <a href="/contact" class="text-link-light">get in touch</a>.</p>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 <style>
   .narrow { max-inline-size: 720px; }

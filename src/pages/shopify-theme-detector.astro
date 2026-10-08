@@ -1,17 +1,28 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
 ---
 <Base
   title="Shopify Theme Detector — Identify Any Shopify Store's Theme"
   description="Find the Shopify theme powering any store, including theme name and store ID. Free CMS Detector AI tool."
   pagePath="/shopify-theme-detector"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Shopify Theme Detector',
+    url: 'https://cmsdetectorai.com/shopify-theme-detector',
+    applicationCategory: 'DeveloperApplication',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    inLanguage: 'en',
+  }}
 >
-  <section class="section-dark" style="min-block-size: 60vh; display: flex; align-items: center;" aria-labelledby="shopify-h1">
+  <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="shopify-h1">
     <div class="container">
       <div style="max-inline-size: 860px;">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow">Shopify Theme Detector</span>
+          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="shopify" size={16} />Shopify Theme Detector</span>
           <h1 id="shopify-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
             What Shopify Theme<br />Is This Store Using?
           </h1>
@@ -39,9 +50,11 @@ import Base from '../layouts/Base.astro';
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 <style>
+  .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
+  .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
   .url-input { flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg); padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06); border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); }
   .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
   .url-input::placeholder { color: var(--color-slate-soft); }

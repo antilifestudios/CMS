@@ -1,0 +1,298 @@
+---
+/**
+ * Shareable multi-path results page: /result/example.com
+ * Server-rendered (prerender: false). Runs the same budget-aware scan
+ * as POST /api/scan. Query: ?extra=<url>&extra=<url> (same-domain only).
+ */
+export const prerender = false;
+
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import { runMultiPathScan } from '../../lib/scan/scanner';
+import { SCAN_CONFIG } from '../../lib/scan/config';
+import en from '../../i18n/en.json';
+
+// Same constant that caps the scan — copy can't drift from behavior.
+const PAGE_LIMIT = SCAN_CONFIG.MAX_PAGES_PER_SCAN;
+const limitTitle = (en.scan.pageLimit.title as string).replace('{limit}', String(PAGE_LIMIT));
+const limitBody = (en.scan.pageLimit.body as string).replace('{limit}', String(PAGE_LIMIT));
+const limitLabel = en.scan.pageLimit.infoLabel as string;
+
+const rawDomain = Astro.params.domain ?? '';
+const extras = Astro.url.searchParams.getAll('extra').filter(Boolean);
+// Accept bare host or full URL in the path segment
+const rootInput = /^https?:\/\//i.test(rawDomain) ? rawDomain : `https://${rawDomain}`;
+
+const scan = /^[\w.-]+\.[a-z]{2,}$/i.test(rawDomain) || /^https?:\/\//i.test(rawDomain)
+  ? await runMultiPathScan(rootInput, extras)
+  : { ok: false as const, error: { code: 'INVALID_URL' as const, message: 'Invalid domain' } };
+
+const title = scan.ok
+  ? `${scan.data.verdict === 'consistent' ? 'Consistent' : 'Mixed stack'}: ${scan.data.rootHost} runs ${scan.data.baselineFramework} + ${scan.data.baselineProvider} | CMS Detector AI`
+  : 'Scan results | CMS Detector AI';
+
+const jsonLd = scan.ok
+  ? [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        name: title,
+        url: `https://cmsdetectorai.com/result/${scan.data.rootHost}`,
+        inLanguage: 'en',
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cmsdetectorai.com' },
+          { '@type': 'ListItem', position: 2, name: 'Site scan', item: `https://cmsdetectorai.com/result/${scan.data.rootHost}` },
+        ],
+      },
+    ]
+  : [];
+---
+
+<Base
+  title={title}
+  description={scan.ok ? scan.data.verdictLine + '. ' + `Checked ${scan.data.coverage.checked} of ~${scan.data.coverage.foundApprox} pages found.` : 'Site stack consistency scan.'}
+  pagePath={scan.ok ? `/result/${scan.data.rootHost}` : '/result'}
+  jsonLd={jsonLd}
+>
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="r-h1">
+    <div class="container">
+      {scan.ok ? (
+        <div>
+          <span class="eyebrow type-mono-eyebrow">Site stack consistency scan</span>
+          <h1 id="r-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 12px 0;">
+            {scan.data.rootHost}
+          </h1>
+          <div
+            role="status"
+            aria-live="polite"
+            class:list={['verdict-banner', scan.data.verdict === 'consistent' ? 'verdict-ok' : 'verdict-mixed']}
+          >
+            <strong>{scan.data.verdict === 'consistent' ? 'Consistent' : 'Mixed stack'}:</strong>
+            {' '}{scan.data.verdictLine}
+          </div>
+          <p class="type-body-sm text-ash coverage-line" style="margin-block-start: 12px;">
+            Checked {scan.data.coverage.checked} of ~{scan.data.coverage.foundApprox} pages found
+            {scan.data.coverage.truncated ? ' (page cap reached — showing first pages)' : ''}.
+            <span class="limit-info-wrap">
+              <button
+                type="button"
+                class="limit-info-btn"
+                aria-expanded="false"
+                aria-controls="page-limit-pop-result"
+                aria-label={limitLabel}
+              >
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                  <circle cx="6" cy="6" r="5.25" stroke="currentColor" stroke-width="1.2"/>
+                  <path d="M6 5.4v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                  <circle cx="6" cy="3.6" r="0.8" fill="currentColor"/>
+                </svg>
+              </button>
+              <span class="limit-pop" id="page-limit-pop-result" role="tooltip" hidden>
+                <strong class="limit-pop-title">{limitTitle}</strong>
+                <span class="limit-pop-body">{limitBody}</span>
+              </span>
+            </span>
+            Never a full-site crawl.
+          </p>
+          {scan.data.frontDoorNote && (
+            <p class="type-body-sm text-ash frontdoor">
+              All paths are served via {scan.data.baselineProvider}. We can only see the front door
+              (the CDN), not the origin server behind it.
+            </p>
+          )}
+        </div>
+      ) : (
+        <div>
+          <h1 id="r-h1" class="type-display-md" style="color: var(--color-on-primary);">Scan failed</h1>
+          <p class="type-body text-ash">We couldn't scan “{rawDomain}” ({scan.error.code}). Check the domain and try again.</p>
+          <p><a href="/" class="text-link-dark">Back to the detector</a></p>
+        </div>
+      )}
+    </div>
+  </Section>
+
+  {scan.ok && (
+    <Section theme="light" ariaLabelledby="matrix-h2">
+      <div class="container">
+        <h2 id="matrix-h2" class="type-display-sm" style="color: var(--color-ink);">Results matrix</h2>
+        <div class="table-wrap" role="region" aria-label="Per-path results" tabindex="0">
+          <table class="matrix">
+            <thead>
+              <tr>
+                <th scope="col">URL</th>
+                <th scope="col">Framework / CMS</th>
+                <th scope="col">Provider / CDN</th>
+                <th scope="col">Confidence</th>
+                <th scope="col">Finding</th>
+              </tr>
+            </thead>
+            <tbody>
+              {scan.data.pages.map((p) => (
+                <tr class:list={[{ 'odd-row': p.isOddOneOut }]}>
+                  <th scope="row" class="url-cell">
+                    <span class="url">{p.url.replace(/^https?:\/\//, '')}</span>
+                    {p.redirectChain.length > 0 && (
+                      <span class="type-caption hops" title={p.redirectChain.map((h) => `${h.status} ${h.url}`).join(' → ')}>
+                        ↳ {p.redirectChain.length} redirect{p.redirectChain.length === 1 ? '' : 's'} → {p.finalUrl.replace(/^https?:\/\//, '').slice(0, 60)}
+                      </span>
+                    )}
+                    {p.crossDomainRedirect && (
+                      <span class="badge badge-error">Redirects off-domain</span>
+                    )}
+                    {p.skippedByRobots && <span class="badge">Skipped (robots.txt)</span>}
+                  </th>
+                  <td>
+                    {p.framework}
+                    {p.differsFramework && <span class="badge badge-error">Framework differs</span>}
+                  </td>
+                  <td>
+                    {p.provider}
+                    {p.differsProvider && <span class="badge badge-error">Provider differs</span>}
+                  </td>
+                  <td>{p.error ? '—' : p.confidence}</td>
+                  <td class="evidence-cell">
+                    {p.isOddOneOut ? 'Differs from site baseline' : 'Matches baseline'}
+                    <details>
+                      <summary class="type-caption">Evidence</summary>
+                      <ul>
+                        {p.evidence.map((e) => (<li><code>{e}</code></li>))}
+                      </ul>
+                    </details>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="prose" style="margin-block-start: 32px; max-inline-size: 720px;">
+          <h3 class="type-heading-sm" style="color: var(--color-ink);">Why can paths run on different stacks?</h3>
+          <ul>
+            <li>A reverse proxy or rewrite rule sends one path (e.g. /blog) to another server.</li>
+            <li>A load balancer or CDN path rule routes by URL prefix.</li>
+            <li>A half-finished migration leaves old pages on one stack and new pages on another.</li>
+          </ul>
+          <p class="type-body-sm" style="color: var(--color-slate);">
+            Sampled from sitemap.xml (diverse path prefixes), homepage links, and any URLs you pasted.
+            Scanned <time datetime={scan.data.scannedAt}>{scan.data.scannedAt.slice(0, 10)}</time>.
+          </p>
+        </div>
+      </div>
+    </Section>
+  )}
+</Base>
+
+<style>
+  .verdict-banner {
+    padding: 16px 20px;
+    border-radius: 12px;
+    font-size: 18px;
+    max-inline-size: 760px;
+  }
+  .verdict-ok { background: #123b2a; color: #b9f0d4; border: 1px solid #1e5c41; }
+  .verdict-mixed { background: #4a1c10; color: #ffd9c4; border: 1px solid #8a3a1c; }
+  .frontdoor {
+    border-inline-start: 3px solid var(--color-mute);
+    padding-inline-start: 12px;
+    max-inline-size: 680px;
+  }
+  .table-wrap { overflow-x: auto; margin-block-start: 20px; }
+  .matrix { border-collapse: collapse; inline-size: 100%; min-inline-size: 720px; background: #fff; color: #0b0b0b; border-radius: 12px; overflow: hidden; }
+  .matrix th, .matrix td { text-align: start; padding: 12px 14px; border-block-end: 1px solid #ededed; vertical-align: top; font-size: 14px; }
+  .matrix thead th { background: #0b0b0b; color: #fff; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .odd-row { background: #fff4ec; }
+  .url-cell .url { display: block; word-break: break-all; font-weight: 600; }
+  .hops { display: block; color: #505b6c; margin-block-start: 4px; }
+  .evidence-cell ul { margin: 8px 0 0 0; padding-inline-start: 18px; }
+  .evidence-cell code { font-size: 11px; word-break: break-all; }
+  .badge-error { margin-inline-start: 6px; }
+  .prose ul { color: var(--color-slate); line-height: 1.6; }
+
+  /* Page-limit info popover (mirrors homepage island) */
+  .coverage-line { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .limit-info-wrap { position: relative; display: inline-flex; align-items: center; }
+  .limit-info-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 18px;
+    block-size: 18px;
+    border-radius: 9999px;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: var(--color-mute);
+    cursor: pointer;
+    padding: 0;
+  }
+  .limit-info-btn:hover { color: var(--color-ash); }
+  .limit-info-btn:focus-visible {
+    outline: 2px solid var(--color-link-blue-soft);
+    outline-offset: 2px;
+  }
+  .limit-pop {
+    position: absolute;
+    inset-block-start: calc(100% + 8px);
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+    inline-size: max-content;
+    max-inline-size: min(280px, calc(100vw - 32px));
+    background-color: #1a1a1a;
+    color: var(--color-ash);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: 6px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 12px 14px;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .limit-pop-title { color: #fff; font-size: 13px; }
+  .limit-pop-body { color: var(--color-ash); }
+  @media (prefers-reduced-motion: reduce) {
+    .limit-pop { transition: none; }
+  }
+</style>
+
+<script>
+(function () {
+  var wrap = document.querySelector('.limit-info-wrap');
+  if (!wrap) return;
+  var btn = wrap.querySelector('.limit-info-btn');
+  var pop = wrap.querySelector('.limit-pop');
+  if (!(btn instanceof HTMLButtonElement) || !pop) return;
+  function fit() {
+    pop.style.marginLeft = '0px';
+    var r = pop.getBoundingClientRect();
+    var overRight = r.right - (window.innerWidth - 8);
+    var overLeft = 8 - r.left;
+    if (overRight > 0) pop.style.marginLeft = (-overRight) + 'px';
+    else if (overLeft > 0) pop.style.marginLeft = overLeft + 'px';
+  }
+  function open() { pop.hidden = false; btn.setAttribute('aria-expanded', 'true'); fit(); }
+  function close() { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); pop.style.marginLeft = '0px'; }
+  var pinned = false;
+  btn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    if (pop.hidden) { open(); pinned = true; } else { close(); pinned = false; }
+  });
+  if (window.matchMedia('(hover: hover)').matches) {
+    wrap.addEventListener('mouseenter', function () { if (!pinned) open(); });
+    wrap.addEventListener('mouseleave', function () { if (!pinned) close(); });
+  }
+  window.addEventListener('resize', function () { if (!pop.hidden) fit(); });
+  document.addEventListener('pointerdown', function (e) {
+    if (!pop.hidden && !wrap.contains(e.target)) { close(); pinned = false; }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !pop.hidden) { close(); pinned = false; btn.focus(); }
+  });
+})();
+</script>

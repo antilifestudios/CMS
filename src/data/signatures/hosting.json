@@ -4,9 +4,9 @@
     "name": "Cloudflare",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "cf-ray",            "pattern": ".*", "weight": 95 },
-      { "type": "header", "name": "server",             "pattern": "cloudflare", "weight": 90 },
-      { "type": "header", "name": "cf-cache-status",   "pattern": ".*", "weight": 85 }
+      { "type": "header", "name": "cf-ray", "pattern": ".*", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "server", "pattern": "cloudflare", "weight": 90, "strength": "definitive" },
+      { "type": "header", "name": "cf-cache-status", "pattern": ".*", "weight": 85, "strength": "definitive" }
     ],
     "pageSlug": "cloudflare"
   },
@@ -15,9 +15,9 @@
     "name": "Vercel",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-vercel-id",         "pattern": ".*", "weight": 95 },
-      { "type": "header", "name": "x-vercel-cache",      "pattern": ".*", "weight": 85 },
-      { "type": "header", "name": "server",              "pattern": "Vercel",  "weight": 90 }
+      { "type": "header", "name": "x-vercel-id", "pattern": ".*", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "x-vercel-cache", "pattern": ".*", "weight": 85, "strength": "definitive" },
+      { "type": "header", "name": "server", "pattern": "Vercel", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "vercel"
   },
@@ -26,9 +26,9 @@
     "name": "Netlify",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-nf-request-id",    "pattern": ".*", "weight": 95 },
-      { "type": "header", "name": "x-netlify",          "pattern": ".*", "weight": 90 },
-      { "type": "header", "name": "server",              "pattern": "Netlify", "weight": 90 }
+      { "type": "header", "name": "x-nf-request-id", "pattern": ".*", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "x-netlify", "pattern": ".*", "weight": 90, "strength": "definitive" },
+      { "type": "header", "name": "server", "pattern": "Netlify", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "netlify"
   },
@@ -37,9 +37,9 @@
     "name": "AWS CloudFront",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-amz-cf-id",        "pattern": ".*", "weight": 95 },
-      { "type": "header", "name": "x-amz-cf-pop",       "pattern": ".*", "weight": 90 },
-      { "type": "header", "name": "via",                 "pattern": "CloudFront", "weight": 85 }
+      { "type": "header", "name": "x-amz-cf-id", "pattern": ".*", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "x-amz-cf-pop", "pattern": ".*", "weight": 90, "strength": "definitive" },
+      { "type": "header", "name": "via", "pattern": "CloudFront", "weight": 85, "strength": "strong" }
     ],
     "pageSlug": "aws-cloudfront"
   },
@@ -48,9 +48,9 @@
     "name": "Fastly",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-served-by",        "pattern": "cache-.*fastly", "weight": 90 },
-      { "type": "header", "name": "x-fastly-request-id","pattern": ".*", "weight": 95 },
-      { "type": "header", "name": "fastly-restarts",    "pattern": ".*", "weight": 85 }
+      { "type": "header", "name": "x-served-by", "pattern": "cache-.*fastly", "weight": 90, "strength": "definitive" },
+      { "type": "header", "name": "x-fastly-request-id", "pattern": ".*", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "fastly-restarts", "pattern": ".*", "weight": 85, "strength": "definitive" }
     ],
     "pageSlug": "fastly"
   },
@@ -59,9 +59,9 @@
     "name": "Akamai",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-check-cacheable",  "pattern": ".*", "weight": 75 },
-      { "type": "header", "name": "server",              "pattern": "AkamaiGHost|AkamaiNetStorage", "weight": 90 },
-      { "type": "header", "name": "x-akamai-request-id","pattern": ".*", "weight": 90 }
+      { "type": "header", "name": "x-check-cacheable", "pattern": ".*", "weight": 75, "strength": "definitive" },
+      { "type": "header", "name": "server", "pattern": "AkamaiGHost|AkamaiNetStorage", "weight": 90, "strength": "definitive" },
+      { "type": "header", "name": "x-akamai-request-id", "pattern": ".*", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "akamai"
   },
@@ -70,9 +70,9 @@
     "name": "WP Engine",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-powered-by",       "pattern": "WP Engine", "weight": 95 },
-      { "type": "cookie-name", "pattern": "^wpe_|^wpengine",  "weight": 80 },
-      { "type": "header", "name": "x-wpe-backend",            "pattern": ".*", "weight": 90 }
+      { "type": "header", "name": "x-powered-by", "pattern": "WP Engine", "weight": 95, "strength": "definitive" },
+      { "type": "cookie-name", "pattern": "^wpe_|^wpengine", "weight": 80, "strength": "strong" },
+      { "type": "header", "name": "x-wpe-backend", "pattern": ".*", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "wp-engine"
   },
@@ -81,8 +81,8 @@
     "name": "Kinsta",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "x-kinsta-cache",     "pattern": ".*", "weight": 95 },
-      { "type": "header", "name": "x-edge-location",    "pattern": "kinsta", "weight": 85 }
+      { "type": "header", "name": "x-kinsta-cache", "pattern": ".*", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "x-edge-location", "pattern": "kinsta", "weight": 85, "strength": "definitive" }
     ],
     "pageSlug": "kinsta"
   },
@@ -91,8 +91,8 @@
     "name": "GitHub Pages",
     "category": "hosting",
     "signals": [
-      { "type": "header", "name": "server",              "pattern": "GitHub\\.com", "weight": 95 },
-      { "type": "header", "name": "x-github-request-id","pattern": ".*", "weight": 90 }
+      { "type": "header", "name": "server", "pattern": "GitHub\\.com", "weight": 95, "strength": "definitive" },
+      { "type": "header", "name": "x-github-request-id", "pattern": ".*", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "github-pages"
   }

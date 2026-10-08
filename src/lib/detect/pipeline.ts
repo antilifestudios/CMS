@@ -528,6 +528,9 @@ export async function runDetectionPipeline(
               type: 'probe' as const,
               artifact: `theme: "${wpThemeMeta.themeName}"${wpThemeMeta.themeVersion ? ` v${wpThemeMeta.themeVersion}` : ''}${wpThemeMeta.themeAuthor ? ` by ${wpThemeMeta.themeAuthor}` : ''}`,
               weight: 85,
+              name: 'theme',
+              value: wpThemeMeta.themeName ?? '',
+              strength: 'strong' as const,
             },
           ],
         };
@@ -545,7 +548,7 @@ export async function runDetectionPipeline(
           ...r,
           evidence: [
             ...r.evidence,
-            { type: 'probe' as const, artifact: label, weight: 80 },
+            { type: 'probe' as const, artifact: label, weight: 80, name: 'theme', value: shopifyTheme.name ?? shopifyTheme.id ?? '', strength: 'strong' as const },
           ],
         };
       }
@@ -565,6 +568,9 @@ export async function runDetectionPipeline(
         type: 'html-path' as const,
         artifact: `html: "/wp-content/plugins/${slug}/"`,
         weight: 90,
+        name: `/wp-content/plugins/${slug}/`,
+        value: `/wp-content/plugins/${slug}/`,
+        strength: 'strong' as const,
       })),
     });
   }
@@ -579,7 +585,7 @@ export async function runDetectionPipeline(
       confidence: 70,
       confidenceLabel: 'likely',
       evidence: [
-        { type: 'probe' as const, artifact: `dns[cname]: "${dnsHint.cname}"`, weight: 70 },
+        { type: 'probe' as const, artifact: `dns[cname]: "${dnsHint.cname}"`, weight: 70, name: 'cname', value: dnsHint.cname, strength: 'weak' as const },
       ],
     });
   }

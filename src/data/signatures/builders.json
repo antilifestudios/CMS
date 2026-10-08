@@ -4,10 +4,10 @@
     "name": "Wix",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "Wix\\.com Website Builder", "weight": 95 },
-      { "type": "html-regex",     "pattern": "wix\\.com/.*\\.js|X-Wix-Published-Version|wixstatic\\.com", "weight": 80 },
-      { "type": "script-host",    "pattern": "static\\.parastorage\\.com|static\\.wixstatic\\.com", "weight": 85 },
-      { "type": "header",         "name": "x-wix-request-id", "pattern": ".*", "weight": 90 }
+      { "type": "meta-generator", "pattern": "Wix\\.com Website Builder", "weight": 95, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "wix\\.com/.*\\.js|X-Wix-Published-Version|wixstatic\\.com", "weight": 80, "strength": "strong" },
+      { "type": "script-host", "pattern": "static\\.parastorage\\.com|static\\.wixstatic\\.com", "weight": 85, "strength": "strong" },
+      { "type": "header", "name": "x-wix-request-id", "pattern": ".*", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "wix"
   },
@@ -16,10 +16,10 @@
     "name": "Squarespace",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "Squarespace", "weight": 95 },
-      { "type": "html-regex",     "pattern": "squarespace\\.com|squarespace-cdn\\.com", "weight": 80 },
-      { "type": "script-host",    "pattern": "static1\\.squarespace\\.com", "weight": 85 },
-      { "type": "cookie-name",    "pattern": "^SQspaceCookie$|^ss-", "weight": 70 }
+      { "type": "meta-generator", "pattern": "Squarespace", "weight": 95, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "squarespace\\.com|squarespace-cdn\\.com", "weight": 80, "strength": "strong" },
+      { "type": "script-host", "pattern": "static1\\.squarespace\\.com", "weight": 85, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^SQspaceCookie$|^ss-", "weight": 70, "strength": "strong" }
     ],
     "pageSlug": "squarespace"
   },
@@ -28,10 +28,10 @@
     "name": "Webflow",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "Webflow", "weight": 95 },
-      { "type": "html-regex",     "pattern": "webflow\\.com|assets\\.website-files\\.com", "weight": 80 },
-      { "type": "script-host",    "pattern": "assets\\.website-files\\.com|uploads-ssl\\.webflow\\.com", "weight": 85 },
-      { "type": "header",         "name": "x-wf-request-id", "pattern": ".*", "weight": 88 }
+      { "type": "meta-generator", "pattern": "Webflow", "weight": 95, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "webflow\\.com|assets\\.website-files\\.com", "weight": 80, "strength": "strong" },
+      { "type": "script-host", "pattern": "assets\\.website-files\\.com|uploads-ssl\\.webflow\\.com", "weight": 85, "strength": "strong" },
+      { "type": "header", "name": "x-wf-request-id", "pattern": ".*", "weight": 88, "strength": "definitive" }
     ],
     "pageSlug": "webflow"
   },
@@ -40,10 +40,10 @@
     "name": "Framer",
     "category": "builder",
     "signals": [
-      { "type": "html-regex",     "pattern": "framer\\.com|framerusercontent\\.com", "weight": 80 },
-      { "type": "script-host",    "pattern": "framerusercontent\\.com", "weight": 85 },
-      { "type": "meta-generator", "pattern": "Framer", "weight": 90 },
-      { "type": "header",         "name": "x-framer-version", "pattern": ".*", "weight": 90 }
+      { "type": "html-regex", "pattern": "framer\\.com|framerusercontent\\.com", "weight": 80, "strength": "strong" },
+      { "type": "script-host", "pattern": "framerusercontent\\.com", "weight": 85, "strength": "strong" },
+      { "type": "meta-generator", "pattern": "Framer", "weight": 90, "strength": "definitive" },
+      { "type": "header", "name": "x-framer-version", "pattern": ".*", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "framer"
   },
@@ -52,9 +52,9 @@
     "name": "Weebly",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "Weebly", "weight": 90 },
-      { "type": "html-regex",     "pattern": "weebly\\.com|editmysite\\.com", "weight": 75 },
-      { "type": "script-host",    "pattern": "cdn\\.editmysite\\.com|weebly\\.com", "weight": 70 }
+      { "type": "meta-generator", "pattern": "Weebly", "weight": 90, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "weebly\\.com|editmysite\\.com", "weight": 75, "strength": "strong" },
+      { "type": "script-host", "pattern": "cdn\\.editmysite\\.com|weebly\\.com", "weight": 70, "strength": "strong" }
     ],
     "pageSlug": "weebly"
   },
@@ -63,9 +63,9 @@
     "name": "GoDaddy Website Builder",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "GoDaddy Website Builder|SitePad|Olitt", "weight": 90 },
-      { "type": "html-regex",     "pattern": "godaddy\\.com/website-builder|ols\\.env", "weight": 70 },
-      { "type": "header",         "name": "server", "pattern": "SITEPAD", "weight": 85 }
+      { "type": "meta-generator", "pattern": "GoDaddy Website Builder|SitePad|Olitt", "weight": 90, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "godaddy\\.com/website-builder|ols\\.env", "weight": 70, "strength": "strong" },
+      { "type": "header", "name": "server", "pattern": "SITEPAD", "weight": 85, "strength": "definitive" }
     ],
     "pageSlug": "godaddy-builder"
   },
@@ -74,8 +74,8 @@
     "name": "Jimdo",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "Jimdo", "weight": 95 },
-      { "type": "html-regex",     "pattern": "jimdocdn\\.com|static\\.jimdo\\.com", "weight": 80 }
+      { "type": "meta-generator", "pattern": "Jimdo", "weight": 95, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "jimdocdn\\.com|static\\.jimdo\\.com", "weight": 80, "strength": "strong" }
     ],
     "pageSlug": "jimdo"
   },
@@ -84,8 +84,8 @@
     "name": "Strikingly",
     "category": "builder",
     "signals": [
-      { "type": "html-regex",     "pattern": "strikinglycdn\\.com|s\\.strikingly\\.com", "weight": 85 },
-      { "type": "meta-generator", "pattern": "Strikingly", "weight": 95 }
+      { "type": "html-regex", "pattern": "strikinglycdn\\.com|s\\.strikingly\\.com", "weight": 85, "strength": "strong" },
+      { "type": "meta-generator", "pattern": "Strikingly", "weight": 95, "strength": "definitive" }
     ],
     "pageSlug": "strikingly"
   },
@@ -94,8 +94,8 @@
     "name": "Google Sites",
     "category": "builder",
     "signals": [
-      { "type": "html-regex",   "pattern": "sites\\.google\\.com|gstatic\\.com/sites/|sites\\.googleusercontent\\.com", "weight": 85 },
-      { "type": "script-host",  "pattern": "sites\\.google\\.com", "weight": 80 }
+      { "type": "html-regex", "pattern": "sites\\.google\\.com|gstatic\\.com/sites/|sites\\.googleusercontent\\.com", "weight": 85, "strength": "strong" },
+      { "type": "script-host", "pattern": "sites\\.google\\.com", "weight": 80, "strength": "strong" }
     ],
     "pageSlug": "google-sites"
   },
@@ -104,8 +104,8 @@
     "name": "Carrd",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "Carrd", "weight": 95 },
-      { "type": "html-regex",     "pattern": "assets\\.carrd\\.co|carrd-static", "weight": 85 }
+      { "type": "meta-generator", "pattern": "Carrd", "weight": 95, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "assets\\.carrd\\.co|carrd-static", "weight": 85, "strength": "strong" }
     ],
     "pageSlug": "carrd"
   },
@@ -114,8 +114,8 @@
     "name": "SITE123",
     "category": "builder",
     "signals": [
-      { "type": "meta-generator", "pattern": "SITE123", "weight": 95 },
-      { "type": "html-regex",     "pattern": "site123static\\.com|s123-cdn-static", "weight": 80 }
+      { "type": "meta-generator", "pattern": "SITE123", "weight": 95, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "site123static\\.com|s123-cdn-static", "weight": 80, "strength": "strong" }
     ],
     "pageSlug": "site123"
   }

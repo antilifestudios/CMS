@@ -8,6 +8,7 @@
 export const prerender = true;
 
 import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
 import { TECHNOLOGIES, CATEGORY_LABELS } from '../../data/technologies';
 
 export function getStaticPaths() {
@@ -51,7 +52,7 @@ const categoryLabel =
   jsonLd={[faqJsonLd, breadcrumbJsonLd]}
 >
   <!-- Hero (dark) -->
-  <section class="section-dark" aria-labelledby="tech-h1" style="padding-block: var(--spacing-section);">
+  <Section theme="dark" ariaLabelledby="tech-h1" style="padding-block: var(--spacing-section);">
     <div class="container">
       <nav aria-label="Breadcrumb" class="crumbs type-mono-micro text-mute">
         <a href="/" class="text-link-dark">Home</a>
@@ -88,10 +89,10 @@ const categoryLabel =
       <div id="mini-result" hidden aria-live="polite" style="margin-block-start: 16px;"></div>
       <div id="mini-error" hidden role="alert" style="margin-block-start: 16px;"></div>
     </div>
-  </section>
+  </Section>
 
   <!-- About (light) -->
-  <section class="section-light" aria-labelledby="about-h2">
+  <Section theme="light" ariaLabelledby="about-h2">
     <div class="container">
       <div class="prose">
         <h2 id="about-h2" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 16px 0;">
@@ -102,10 +103,10 @@ const categoryLabel =
         ))}
       </div>
     </div>
-  </section>
+  </Section>
 
   <!-- Detection + verify (paper) -->
-  <section class="section-paper" aria-labelledby="detect-h2">
+  <Section theme="light" ariaLabelledby="detect-h2">
     <div class="container">
       <div class="two-col">
         <div class="card-light">
@@ -140,10 +141,10 @@ const categoryLabel =
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 
   <!-- Alternatives (dark) -->
-  <section class="section-dark" aria-labelledby="alts-h2">
+  <Section theme="dark" ariaLabelledby="alts-h2">
     <div class="container">
       <h2 id="alts-h2" class="type-display-sm" style="margin: 0 0 24px 0;">Common alternatives</h2>
       <div class="alt-grid">
@@ -159,10 +160,10 @@ const categoryLabel =
         </a>
       </div>
     </div>
-  </section>
+  </Section>
 
   <!-- FAQ (light) -->
-  <section class="section-light" aria-labelledby="faq-h2">
+  <Section theme="light" ariaLabelledby="faq-h2">
     <div class="container">
       <div class="prose">
         <h2 id="faq-h2" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 24px 0;">
@@ -186,7 +187,7 @@ const categoryLabel =
         </ul>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>

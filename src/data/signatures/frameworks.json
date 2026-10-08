@@ -4,9 +4,9 @@
     "name": "Next.js",
     "category": "framework",
     "signals": [
-      { "type": "header",       "name": "x-powered-by", "pattern": "Next\\.js", "weight": 90 },
-      { "type": "html-regex",   "pattern": "__NEXT_DATA__|/_next/static/", "weight": 85 },
-      { "type": "html-path",    "pattern": "/_next/static/chunks/|/_next/image", "weight": 80 }
+      { "type": "header", "name": "x-powered-by", "pattern": "Next\\.js", "weight": 90, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "__NEXT_DATA__|/_next/static/", "weight": 85, "strength": "strong" },
+      { "type": "html-path", "pattern": "/_next/static/chunks/|/_next/image", "weight": 80, "strength": "strong" }
     ],
     "pageSlug": "nextjs"
   },
@@ -15,9 +15,9 @@
     "name": "Nuxt",
     "category": "framework",
     "signals": [
-      { "type": "header",       "name": "x-nuxt-version", "pattern": ".*", "weight": 90 },
-      { "type": "html-regex",   "pattern": "__nuxt|__NUXT_DATA__|/_nuxt/", "weight": 85 },
-      { "type": "html-path",    "pattern": "/_nuxt/builds/", "weight": 80 }
+      { "type": "header", "name": "x-nuxt-version", "pattern": ".*", "weight": 90, "strength": "definitive" },
+      { "type": "html-regex", "pattern": "__nuxt|__NUXT_DATA__|/_nuxt/", "weight": 85, "strength": "strong" },
+      { "type": "html-path", "pattern": "/_nuxt/builds/", "weight": 80, "strength": "strong" }
     ],
     "pageSlug": "nuxt"
   },
@@ -26,8 +26,8 @@
     "name": "Gatsby",
     "category": "framework",
     "signals": [
-      { "type": "html-regex",   "pattern": "___gatsby|page-data\\.json|gatsby-chunk", "weight": 85 },
-      { "type": "html-path",    "pattern": "/static/[a-f0-9]{8}/", "weight": 55 }
+      { "type": "html-regex", "pattern": "___gatsby|page-data\\.json|gatsby-chunk", "weight": 85, "strength": "strong" },
+      { "type": "html-path", "pattern": "/static/[a-f0-9]{8}/", "weight": 55, "strength": "weak" }
     ],
     "pageSlug": "gatsby"
   },
@@ -36,8 +36,9 @@
     "name": "Astro",
     "category": "framework",
     "signals": [
-      { "type": "html-regex",   "pattern": "astro-island|astro-root|data-astro-cid", "weight": 85 },
-      { "type": "header",       "name": "x-astro-version", "pattern": ".*", "weight": 90 }
+      { "type": "html-regex", "pattern": "astro-island|astro-root|data-astro-cid", "weight": 85, "strength": "strong" },
+      { "type": "html-path", "pattern": "/_astro/", "weight": 80, "strength": "strong" },
+      { "type": "header", "name": "x-astro-version", "pattern": ".*", "weight": 90, "strength": "definitive" }
     ],
     "pageSlug": "astro"
   },
@@ -46,9 +47,9 @@
     "name": "Laravel",
     "category": "framework",
     "signals": [
-      { "type": "header",       "name": "x-powered-by", "pattern": "PHP", "weight": 30 },
-      { "type": "cookie-name",  "pattern": "^laravel_session$|^XSRF-TOKEN$", "weight": 75 },
-      { "type": "html-regex",   "pattern": "laravel\\.js|/vendor/livewire", "weight": 65 }
+      { "type": "header", "name": "x-powered-by", "pattern": "PHP", "weight": 30, "strength": "weak" },
+      { "type": "cookie-name", "pattern": "^laravel_session$|^XSRF-TOKEN$", "weight": 75, "strength": "weak" },
+      { "type": "html-regex", "pattern": "laravel\\.js|/vendor/livewire", "weight": 65, "strength": "strong" }
     ],
     "pageSlug": "laravel"
   },
@@ -57,8 +58,8 @@
     "name": "Django",
     "category": "framework",
     "signals": [
-      { "type": "cookie-name",  "pattern": "^csrftoken$|^sessionid$", "weight": 60 },
-      { "type": "html-regex",   "pattern": "csrfmiddlewaretoken|django\\.contrib|__admin_media_prefix__", "weight": 70 }
+      { "type": "cookie-name", "pattern": "^csrftoken$|^sessionid$", "weight": 60, "strength": "weak" },
+      { "type": "html-regex", "pattern": "csrfmiddlewaretoken|django\\.contrib|__admin_media_prefix__", "weight": 70, "strength": "strong" }
     ],
     "pageSlug": "django"
   },
@@ -67,9 +68,9 @@
     "name": "Ruby on Rails",
     "category": "framework",
     "signals": [
-      { "type": "header",       "name": "x-powered-by", "pattern": "Phusion Passenger", "weight": 55 },
-      { "type": "cookie-name",  "pattern": "^_session_id$|^_.*_session$", "weight": 60 },
-      { "type": "html-regex",   "pattern": "csrf-token.*rails|data-turbolinks|data-turbo-", "weight": 70 }
+      { "type": "header", "name": "x-powered-by", "pattern": "Phusion Passenger", "weight": 55, "strength": "weak" },
+      { "type": "cookie-name", "pattern": "^_session_id$|^_.*_session$", "weight": 60, "strength": "weak" },
+      { "type": "html-regex", "pattern": "csrf-token.*rails|data-turbolinks|data-turbo-", "weight": 70, "strength": "weak" }
     ],
     "pageSlug": "rails"
   }

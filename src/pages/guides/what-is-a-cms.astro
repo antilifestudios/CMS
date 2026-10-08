@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
@@ -41,7 +42,7 @@ const faqJsonLd = {
   pagePath="/guides/what-is-a-cms"
   jsonLd={faqJsonLd}
 >
-  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="c-h1">
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="c-h1">
     <div class="container">
       <div class="eyebrow-lockup">
         <span class="eyebrow type-mono-eyebrow">Guide · Explainer</span>
@@ -53,9 +54,9 @@ const faqJsonLd = {
         </p>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-light">
+  <Section theme="light">
     <div class="container">
       <div class="prose">
         <p class="type-body" style="color: var(--color-slate);">A <strong style="color: var(--color-ink);">content management system (CMS)</strong> is software for creating, organising, and publishing digital content without hand-coding every page. It separates <em>content</em> (your words, images, products) from <em>presentation</em> (themes, templates), so editors can publish while developers control the design.</p>
@@ -96,7 +97,7 @@ const faqJsonLd = {
         </details>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>

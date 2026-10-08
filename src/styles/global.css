@@ -217,6 +217,51 @@ img, video { max-inline-size: 100%; block-size: auto; }
 /* ============================================================
    Sections  (polarity-flip rhythm)
    ============================================================ */
+:root {
+  --coral: #f36458;
+  --grid-size: 32px;
+}
+
+.section {
+  position: relative;
+  isolation: isolate;
+  padding-block: var(--spacing-section-lg);
+}
+
+.section--dark {
+  --grid-line: color-mix(in srgb, var(--coral) 12%, transparent);
+  background-color: #0a0a0a;
+  color: var(--color-on-primary);
+}
+
+.section--light {
+  --grid-line: color-mix(in srgb, #000 5%, transparent);
+  background-color: #fff;
+  color: var(--color-ink);
+}
+
+/* Decorative grid: above section bg, below content. No fixed positioning. */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: var(--grid-size) var(--grid-size);
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+}
+
+/* Hero: empty right side of layout holds the visible grid. */
+.section.hero::before {
+  -webkit-mask-image: radial-gradient(ellipse at 75% 40%, #000 20%, transparent 70%);
+  mask-image: radial-gradient(ellipse at 75% 40%, #000 20%, transparent 70%);
+}
+
+/* Legacy aliases (pre-Section component). New code uses .section--dark/light. */
 .section-dark {
   background-color: var(--color-canvas);
   color: var(--color-on-primary);
@@ -236,6 +281,7 @@ img, video { max-inline-size: 100%; block-size: auto; }
 }
 
 @media (max-width: 768px) {
+  .section,
   .section-dark,
   .section-light,
   .section-paper {

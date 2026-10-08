@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 ---
 
 <Base
@@ -8,7 +9,7 @@ import Base from '../layouts/Base.astro';
   description="Get in touch with the CMS Detector AI team: wrong results, missed platforms, or general feedback."
   pagePath="/contact"
 >
-  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="c-h1">
+  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="c-h1">
     <div class="container">
       <div class="eyebrow-lockup">
         <span class="eyebrow type-mono-eyebrow">Contact</span>
@@ -20,8 +21,8 @@ import Base from '../layouts/Base.astro';
         </p>
       </div>
     </div>
-  </section>
-  <section class="section-light">
+  </Section>
+  <Section theme="light">
     <div class="container">
       <div class="narrow card-light">
         <p class="type-body" style="color: var(--color-slate); margin: 0 0 12px 0;">Email us at:</p>
@@ -29,7 +30,7 @@ import Base from '../layouts/Base.astro';
         <p class="type-body-sm" style="color: var(--color-slate); margin: 0;">Reporting a wrong result? Include the checked domain, what we detected, and what you expected — the “Result looks wrong?” link on every answer pre-fills this for you. There are no accounts or contact forms; email keeps it simple and private.</p>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 <style>
   .narrow { max-inline-size: 720px; }

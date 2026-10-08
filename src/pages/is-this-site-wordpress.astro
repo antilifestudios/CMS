@@ -1,6 +1,7 @@
 ---
 export const prerender = true;
 import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
 
 const webAppJsonLd = {
   '@context': 'https://schema.org',
@@ -66,7 +67,7 @@ const breadcrumbJsonLd = {
   pagePath="/is-this-site-wordpress"
   jsonLd={[webAppJsonLd, faqJsonLd, breadcrumbJsonLd]}
 >
-  <section class="section-dark" style="min-block-size: 60vh; display: flex; align-items: center;" aria-labelledby="wp-h1">
+  <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="wp-h1">
     <div class="container">
       <div style="max-inline-size: 860px;">
         <div class="eyebrow-lockup">
@@ -101,9 +102,9 @@ const breadcrumbJsonLd = {
         </div>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-light" aria-labelledby="iswp-how">
+  <Section theme="light" ariaLabelledby="iswp-how">
     <div class="container">
       <div style="max-inline-size: 680px;">
         <h2 id="iswp-how" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 16px 0;">
@@ -123,9 +124,9 @@ const breadcrumbJsonLd = {
         </p>
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section class="section-paper" aria-labelledby="iswp-faq">
+  <Section theme="light" ariaLabelledby="iswp-faq">
     <div class="container">
       <div style="max-inline-size: 680px;">
         <h2 id="iswp-faq" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 24px 0;">
@@ -145,7 +146,7 @@ const breadcrumbJsonLd = {
         </details>
       </div>
     </div>
-  </section>
+  </Section>
 </Base>
 
 <style>
