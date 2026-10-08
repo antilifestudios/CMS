@@ -4,7 +4,6 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
-import FamilyDetector from '../components/detectors/FamilyDetector.astro';
 
 const groups = [
   {
@@ -13,7 +12,7 @@ const groups = [
     items: ['OneTrust', 'Cookiebot', 'Usercentrics', 'TrustArc', 'iubenda', 'Complianz', 'Didomi', 'Osano', 'CookieYes', 'Termly', 'Quantcast Choice'],
   },
   {
-    label: 'Security',
+    label: 'Security & Monitoring',
     blurb: 'Bot protection and error tracking matched by SDK, init calls, and cookies.',
     items: ['reCAPTCHA', 'hCaptcha', 'Sentry', 'Cloudflare Turnstile', 'Fingerprint', 'Datadog', 'New Relic', 'Bugsnag', 'Rollbar'],
   },
@@ -70,7 +69,14 @@ const groups = [
         <div class="eyebrow-lockup">
           <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="security" size={16} />Security & Privacy Detector</span>
           <h1 id="sec-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
-            Is This Site<br />Secure & Private?
+            Is This Site<br />Secure &amp; Private?
+            <span
+              class="sp-info"
+              tabindex="0"
+              role="img"
+              aria-label="Static scan only: tools loaded later via tag managers may not be detected. Coverage keeps improving."
+              data-tip="Static scan only: tools loaded later via tag managers may not be detected. Coverage keeps improving."
+            ><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 8.2v3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="5.4" r="1" fill="currentColor"/></svg></span>
           </h1>
           <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 580px;">
             Detect consent platforms, security technologies, and embedded
@@ -79,17 +85,44 @@ const groups = [
           </p>
         </div>
         <div style="margin-block-start: var(--spacing-xxl);">
-          <FamilyDetector
-            detector="security"
-            detectorEyebrow="Security & Privacy Detector"
-            resultEyebrow="Security & privacy signals for"
-            categories={['privacy', 'security', 'other']}
-            categoryLabels={{ privacy: 'Privacy / Consent', security: 'Security', other: 'Other technologies' }}
-            emptyTitle="No security & privacy technologies detected"
-            emptyBody="We found no confident consent, security, or embedded-service signals on this site. This means no supported technical signals were found — not that these technologies are definitely absent."
-            storageKey="sec_recent"
-            submitLabel="Detect Stack"
-          />
+          <div class="sp-detector" id="sp-root">
+            <form id="sp-form" class="sp-form" novalidate aria-label="Security & Privacy Detector">
+              <div class="sp-input-row">
+                <label for="sp-input" class="sr-only">Website URL</label>
+                <input
+                  id="sp-input"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="url"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  class="input sp-url-input"
+                  placeholder="https://example.com"
+                  required
+                />
+                <button type="submit" class="btn btn-primary sp-detect-btn" id="sp-submit">Detect Stack</button>
+              </div>
+            </form>
+
+            <div id="sp-recent" class="sp-recent" hidden>
+              <span class="type-mono-caps text-mute">Recent:</span>
+              <ul id="sp-recent-list" role="list" class="sp-recent-list"></ul>
+              <button type="button" id="sp-recent-clear" class="sp-recent-clear type-caption">Clear</button>
+            </div>
+
+            <div id="sp-loading" class="sp-loading" hidden aria-live="polite" aria-busy="true">
+              <div class="sp-skeleton-card">
+                <div class="skeleton sp-sk-head"></div>
+                <div class="skeleton sp-sk-body"></div>
+                <div class="skeleton sp-sk-body sp-sk-short"></div>
+              </div>
+              <p class="type-caption text-mute" style="margin-block-start: 12px;">Analysing scripts, cookies &amp; embeds — this usually takes under 10 seconds…</p>
+            </div>
+
+            <div id="sp-result" class="sp-result" hidden aria-live="polite"></div>
+            <div id="sp-error" class="sp-error" hidden aria-live="assertive" role="alert"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -117,4 +150,339 @@ const groups = [
 <style>
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
+  .sp-info {
+    position: relative; display: inline-flex; vertical-align: middle;
+    margin-inline-start: 10px; color: var(--color-mute); cursor: help;
+    outline-offset: 4px;
+  }
+  .sp-info:hover, .sp-info:focus-visible { color: var(--color-on-primary); }
+  .sp-info::after {
+    content: attr(data-tip);
+    position: absolute; inset-block-end: calc(100% + 10px); inset-inline-start: 50%;
+    transform: translateX(-50%); inline-size: max-content; max-inline-size: 260px;
+    background-color: var(--color-canvas-light); color: var(--color-ink);
+    font-size: 13px; font-weight: 400; line-height: 1.5; letter-spacing: normal;
+    border-radius: var(--radius-app-lg); padding: 10px 12px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+    opacity: 0; visibility: hidden; transition: opacity 0.15s ease; z-index: 50;
+    pointer-events: none; white-space: normal;
+  }
+  .sp-info:hover::after, .sp-info:focus-visible::after { opacity: 1; visibility: visible; }
 </style>
+
+<style is:global>
+  /* Scoped to .sp-detector — same token language as FamilyDetector. */
+  .sp-detector { display: flex; flex-direction: column; gap: 8px; min-inline-size: 0; }
+  .sp-form { display: flex; flex-direction: column; gap: 8px; }
+  .sp-input-row { display: flex; gap: 8px; align-items: stretch; }
+  .sp-url-input {
+    flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg);
+    padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06);
+    border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); min-inline-size: 0;
+  }
+  .sp-url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); background-color: rgba(255,255,255,0.09); box-shadow: 0 0 0 3px rgba(255,255,255,0.08); }
+  .sp-url-input::placeholder { color: var(--color-slate-soft); }
+  .sp-detect-btn { flex-shrink: 0; block-size: 56px; font-size: 16px; }
+  .sp-recent { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sp-recent-list { list-style: none; padding: 0; margin: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .sp-recent-btn { font-size: 12px; block-size: 28px; padding-inline: 10px; border-radius: var(--radius-full); }
+  .sp-recent-clear { background: transparent; border: none; color: var(--color-mute); cursor: pointer; text-decoration: underline; padding: 4px; }
+  .sp-recent-clear:hover { color: var(--color-ash); }
+  .sp-loading { margin-block-start: 16px; }
+  .sp-skeleton-card { background-color: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
+  .sp-sk-head { block-size: 32px; inline-size: 60%; }
+  .sp-sk-body { block-size: 20px; inline-size: 85%; }
+  .sp-sk-short { inline-size: 50%; }
+
+  .sp-result { margin-block-start: 16px; min-inline-size: 0; }
+  .sp-report { display: flex; flex-direction: column; gap: var(--spacing-lg); min-inline-size: 0; }
+  .sp-report-head { display: flex; flex-direction: column; gap: 8px; }
+  .sp-eyebrow { margin: 0; }
+  .sp-domain { margin: 0; color: var(--color-on-primary); font-size: clamp(26px, 3vw, 34px); font-weight: 425; line-height: 1.15; letter-spacing: -0.01em; overflow-wrap: anywhere; word-break: break-word; }
+  .sp-notice {
+    margin: 0; font-size: 13px; line-height: 1.5; color: var(--color-ink);
+    background-color: var(--color-surface-blue-bg); border-radius: var(--radius-app-lg);
+    padding: 10px 14px; max-inline-size: 640px;
+  }
+  .sp-cat { display: flex; flex-direction: column; gap: 12px; }
+  .sp-cat + .sp-cat { margin-block-start: 8px; }
+  .sp-cat-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; border-block-end: 1px solid var(--color-hairline-soft); padding-block-end: 8px; }
+  .sp-cat-index { color: var(--color-mute); font-family: var(--font-mono); font-size: 11px; flex-shrink: 0; }
+  .sp-cat-title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-on-primary); font-family: var(--font-sans); }
+  .sp-cat-count { color: var(--color-mute); }
+  .sp-cat-note { margin: 0; font-size: 12px; color: var(--color-mute); font-family: var(--font-mono); border-inline-start: 2px solid var(--color-hairline-soft); padding-inline-start: 8px; }
+  .sp-cat-staticnote { margin: 0; font-size: 12px; color: var(--color-mute); font-family: var(--font-mono); }
+  .sp-tech-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-md); align-items: start; }
+  .sp-card { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-lg); display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; overflow: hidden; }
+  .sp-card:hover { border-color: var(--color-graphite); }
+  .sp-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .sp-tech-name { color: var(--color-on-primary); font-size: 19px; font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; margin: 0; overflow-wrap: break-word; min-inline-size: 0; }
+  .sp-score { font-size: 12px; color: var(--color-mute); font-variant-numeric: tabular-nums; }
+  .sp-conf { flex-shrink: 0; font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .sp-conf-high { background-color: #34d399; color: #052e16; }
+  .sp-conf-medium { background-color: #fbbf24; color: #451a03; }
+  .sp-conf-low { background-color: #9ca3af; color: #111827; }
+  .sp-variant { margin: 0; font-size: 13px; color: var(--color-ash); line-height: 1.5; }
+  .sp-low-hint { margin: 6px 0 0 0; font-size: 13px; color: var(--color-ash); background: rgba(255,255,255,0.04); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-app-sm); padding: 8px 10px; line-height: 1.5; }
+  .sp-ev { margin-block-start: 6px; }
+  .sp-ev-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--color-mute); list-style: none; padding: 6px 0; font-size: 13px; font-weight: 500; }
+  .sp-ev-toggle::-webkit-details-marker { display: none; }
+  .sp-ev-toggle:hover { color: var(--color-ash); }
+  details[open] > summary .sp-toggle-icon { transform: rotate(180deg); }
+  .sp-toggle-icon { transition: transform 0.15s ease; }
+  .sp-why-label { margin: 8px 0 0 0; }
+  .sp-ev-rows { margin: 8px 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .sp-ev-row { display: flex; align-items: flex-start; gap: 8px; background-color: var(--color-canvas); border-radius: var(--radius-app-sm); padding: 7px 8px; min-inline-size: 0; }
+  .sp-ev-main { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
+  .sp-ev-type { font-family: var(--font-mono); font-size: 10px; color: var(--color-mute); text-transform: uppercase; letter-spacing: 0.06em; }
+  .sp-ev-desc { font-size: 12px; line-height: 1.5; color: var(--color-ash); overflow-wrap: anywhere; word-break: break-word; }
+  .sp-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 4px; }
+  .sp-action-btn { font-size: 12px; block-size: 32px; }
+  .sp-report-link { color: var(--color-mute); text-decoration: underline; text-underline-offset: 2px; align-self: flex-start; padding: 4px 0; font-size: 13px; }
+  .sp-report-link:hover { color: var(--color-ash); }
+  .sp-empty { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
+  .sp-empty-title { margin: 0 0 8px 0; color: var(--color-on-primary); font-size: 20px; font-weight: 500; }
+  .sp-empty-body { margin: 0; font-size: 14px; color: var(--color-ash); line-height: 1.6; }
+  .sp-error-card { margin-block-start: 16px; background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
+
+  @media (max-width: 760px) {
+    .sp-tech-grid { grid-template-columns: 1fr; }
+    .sp-card { padding: var(--spacing-md); }
+    .sp-domain { font-size: 24px; }
+  }
+  @media (max-width: 480px) {
+    .sp-input-row { flex-direction: column; }
+    .sp-detect-btn { inline-size: 100%; }
+    .sp-tech-name { font-size: 17px; }
+  }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('sp-root');
+  if (!root) return;
+
+  const form = document.getElementById('sp-form');
+  const input = document.getElementById('sp-input');
+  const btn = document.getElementById('sp-submit');
+  const loadEl = document.getElementById('sp-loading');
+  const resEl = document.getElementById('sp-result');
+  const errEl = document.getElementById('sp-error');
+  const recentEl = document.getElementById('sp-recent');
+  const recentList = document.getElementById('sp-recent-list');
+  const recentClear = document.getElementById('sp-recent-clear');
+
+  const STORAGE_KEY = 'sec_recent';
+  const MAX_RECENT = 5;
+
+  const ERROR_MESSAGES = {
+    INVALID_URL: 'Please enter a valid website URL (e.g. https://example.com).',
+    PRIVATE_IP: "Private or internal addresses can't be checked for security reasons.",
+    FETCH_FAILED: 'Could not fetch the site. It may be slow, down, or blocking automated access.',
+    TIMEOUT: 'The request timed out. The site may be slow or blocking automated access.',
+    NON_HTML: 'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
+    RATE_LIMITED: 'Too many requests — please wait a minute and try again.',
+    UNKNOWN: 'An unexpected error occurred. Please try again.',
+  };
+
+  function esc(s) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function badgeClass(conf) {
+    if (conf === 'high') return 'sp-conf-high';
+    if (conf === 'medium') return 'sp-conf-medium';
+    return 'sp-conf-low';
+  }
+
+  function capLabel(conf) {
+    return conf === 'high' ? 'High' : conf === 'medium' ? 'Medium' : 'Low';
+  }
+
+  function normalizeDomain(raw) {
+    let s = String(raw ?? '').trim().toLowerCase();
+    if (!s) return '';
+    s = s.replace(/^https?:\/\//, '');
+    s = s.split(/[/?#]/)[0];
+    if (s.startsWith('www.')) s = s.slice(4);
+    s = s.replace(/:\d+$/, '').replace(/\.+$/, '');
+    if (!/^[\w.-]+\.[a-z]{2,}$/i.test(s)) return '';
+    return s;
+  }
+
+  function loadRecent() {
+    try {
+      const p = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+      if (!Array.isArray(p)) return [];
+      return p.filter((u) => typeof u === 'string' && u.length > 0).slice(0, MAX_RECENT);
+    } catch { return []; }
+  }
+  function saveRecent(rawUrl) {
+    const domain = normalizeDomain(rawUrl);
+    if (!domain) return;
+    const list = [domain, ...loadRecent().filter((u) => normalizeDomain(u) !== domain)].slice(0, MAX_RECENT);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+  }
+  function renderRecent() {
+    if (!recentList || !recentEl) return;
+    recentList.innerHTML = '';
+    const list = loadRecent();
+    list.forEach((domain) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.className = 'btn btn-secondary-dark sp-recent-btn';
+      b.textContent = domain;
+      b.title = domain;
+      b.type = 'button';
+      b.addEventListener('click', () => { if (input) input.value = domain; run(domain); });
+      li.appendChild(b);
+      recentList.appendChild(li);
+    });
+    recentEl.hidden = list.length === 0;
+  }
+
+  function setLoading(on) {
+    if (!btn || !loadEl || !resEl || !errEl) return;
+    if (on) {
+      btn.disabled = true;
+      btn.textContent = 'Detecting…';
+      loadEl.hidden = false;
+      resEl.hidden = true;
+      errEl.hidden = true;
+    } else {
+      btn.disabled = false;
+      btn.textContent = 'Detect Stack';
+      loadEl.hidden = true;
+    }
+  }
+
+  function showError(err) {
+    if (!errEl) return;
+    const code = err?.code ?? 'UNKNOWN';
+    const msg = err?.message ?? ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN;
+    errEl.innerHTML = '<div class="sp-error-card"><span class="badge badge-error">Error</span>'
+      + '<p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">' + esc(msg) + '</p></div>';
+    errEl.hidden = false;
+  }
+
+  function renderCard(t) {
+    const ev = Array.isArray(t.evidence) ? t.evidence : [];
+    const rows = ev.map((e) =>
+      '<li class="sp-ev-row"><span class="sp-ev-main">'
+      + '<span class="sp-ev-type">' + esc(e.type) + '</span>'
+      + '<span class="sp-ev-desc">' + esc(e.detail) + '</span>'
+      + '</span></li>'
+    ).join('');
+    return '<article class="sp-card">'
+      + '<div class="sp-card-top"><h4 class="sp-tech-name">' + esc(t.name) + '</h4>'
+      + '<span class="badge sp-conf ' + badgeClass(t.confidence) + '">' + esc(capLabel(t.confidence)) + '</span></div>'
+      + '<p class="sp-score">Confidence ' + esc(String(Math.round((t.score ?? 0) * 100))) + '% · ' + esc(String(ev.length)) + ' evidence type' + (ev.length === 1 ? '' : 's') + '</p>'
+      + (t.variantNote ? '<p class="sp-variant">' + esc(t.variantNote) + '</p>' : '')
+      + (t.confidence === 'low' ? '<p class="sp-low-hint">Limited supporting evidence. Treat as a hint, not a confirmation.</p>' : '')
+      + '<details class="sp-ev"><summary class="sp-ev-toggle"><span>Why we think this</span>'
+      + '<svg class="sp-toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      + '</summary><p class="type-mono-caps text-mute sp-why-label">Why we think this</p>'
+      + '<ul class="sp-ev-rows" role="list">' + rows + '</ul></details>'
+      + '</article>';
+  }
+
+  function renderReport(data, url) {
+    const cats = Array.isArray(data.categories) ? data.categories : [];
+    const total = cats.reduce((n, c) => n + (c.count ?? (c.technologies ?? []).length), 0);
+    const displayUrl = String(data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+    const modeNote = data.mode === 'static'
+      ? '<p class="sp-notice">Static scan only: tools injected via tag managers may be missed.</p>' : '';
+    const warningHtml = warnings
+      .filter((w) => w !== 'Static scan only: tools injected via tag managers may be missed.')
+      .map((w) => '<p class="sp-notice">' + esc(w) + '</p>').join('');
+
+    let body;
+    if (total === 0) {
+      body = '<div class="sp-empty"><h3 class="sp-empty-title">No supported technologies detected</h3>'
+        + '<p class="sp-empty-body">We found no confident consent, security, or embedded-service signals on this site. '
+        + 'This means no supported technical signals were found — not that these technologies are definitely absent.</p></div>';
+    } else {
+      body = cats.map((c, i) => {
+        const techs = c.technologies ?? [];
+        const num = String(i + 1).padStart(2, '0');
+        const note = c.id === 'other'
+          ? '<p class="sp-cat-note">Controlled fallback — only reported with identifiable integration evidence, never a weak guess.</p>' : '';
+        const grid = techs.length
+          ? '<div class="sp-tech-grid">' + techs.map(renderCard).join('') + '</div>'
+          : '<div class="sp-empty"><p class="sp-empty-body">No supported technologies detected in this category.</p></div>';
+        const allLow = techs.length > 0 && techs.every((t) => t.confidence === 'low');
+        const staticNote = (techs.length === 0 || allLow)
+          ? '<p class="sp-cat-staticnote">Not detected (static scan; tag-manager-loaded tools may be missed)</p>' : '';
+        return '<section class="sp-cat" aria-label="' + esc(c.name) + '">'
+          + '<div class="sp-cat-head"><span class="sp-cat-index" aria-hidden="true">' + num + '</span>'
+          + '<h3 class="sp-cat-title">' + esc(c.name) + '</h3>'
+          + '<span class="type-mono-caps text-mute sp-cat-count">' + esc(String(c.count ?? techs.length)) + ' TECHNOLOGIES</span></div>'
+          + note + grid + staticNote + '</section>';
+      }).join('');
+    }
+
+    return '<div class="sp-report"><div class="sp-report-head">'
+      + '<p class="type-mono-caps text-mute sp-eyebrow">Security &amp; privacy signals for</p>'
+      + '<h2 class="sp-domain">' + esc(displayUrl) + '</h2>'
+      + modeNote + warningHtml + '</div>' + body
+      + '<div class="sp-actions"><button type="button" class="btn btn-secondary-dark sp-action-btn" data-sp-another>Check another site</button></div>'
+      + '<a class="sp-report-link" href="mailto:hello@cmsdetectorai.com?subject=Result+feedback">Report a wrong result</a></div>';
+  }
+
+  function wireActions(scope) {
+    scope.querySelectorAll('[data-sp-another]').forEach((b) => {
+      b.addEventListener('click', () => {
+        if (resEl) resEl.hidden = true;
+        if (errEl) errEl.hidden = true;
+        if (input) { input.value = ''; input.focus(); }
+      });
+    });
+  }
+
+  async function runDetect(url) {
+    const res = await fetch('/api/security-privacy-detect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json();
+    if (loadEl) loadEl.hidden = true;
+    setLoading(false);
+    if (data.ok) {
+      saveRecent(url); renderRecent();
+      if (resEl) {
+        resEl.innerHTML = renderReport(data, url);
+        resEl.hidden = false;
+        wireActions(resEl);
+        resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      showError(data.error ?? { code: 'UNKNOWN' });
+    }
+  }
+
+  async function run(url) {
+    const clean = String(url ?? '').trim();
+    if (!clean) return;
+    setLoading(true);
+    try {
+      await runDetect(clean);
+    } catch {
+      if (loadEl) loadEl.hidden = true;
+      setLoading(false);
+      if (errEl) {
+        errEl.innerHTML = '<div class="sp-error-card"><span class="badge badge-error">Network error</span>'
+          + '<p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your connection and try again.</p></div>';
+        errEl.hidden = false;
+      }
+    }
+  }
+
+  form?.addEventListener('submit', (e) => { e.preventDefault(); run(input?.value ?? ''); });
+  recentClear?.addEventListener('click', () => { try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ } renderRecent(); input?.focus(); });
+  renderRecent();
+})();
+</script>
