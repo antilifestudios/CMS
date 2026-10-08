@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0b0b0b"/>
+  <circle cx="96" cy="96" r="12" fill="#f36458"/>
+  <text x="120" y="106" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="600" fill="#ffffff">CMS Detector AI</text>
+  <text x="88" y="300" font-family="Inter, Arial, sans-serif" font-size="84" font-weight="400" letter-spacing="-3" fill="#ffffff">What CMS Is This</text>
+  <text x="88" y="392" font-family="Inter, Arial, sans-serif" font-size="84" font-weight="400" letter-spacing="-3" fill="#ffffff">Website Using?</text>
+  <text x="88" y="452" font-family="monospace" font-size="24" fill="#797979">FREE · INSTANT · EVIDENCE-BASED</text>
+  <rect x="88" y="492" width="340" height="56" rx="28" fill="#ffffff"/>
+  <text x="128" y="528" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="500" fill="#0b0b0b">cmsdetectorai.com</text>
+</svg>

@@ -1,16 +1,987 @@
 ---
+/**
+ * Homepage — CMS Detector AI
+ * Target: "What CMS Is This Website Using?"
+ * prerender: true (static shell, JS island handles the detector)
+ */
+export const prerender = true;
+
+import Base from '../layouts/Base.astro';
+
+// Shareable result views (/?url=...) must never be indexed: they are
+// thin, user-generated states, not content. Canonical stays on "/".
+const isShareView = Astro.url.searchParams.has('url');
+
+const webAppJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'CMS Detector AI',
+  url: 'https://cmsdetectorai.com',
+  applicationCategory: 'DeveloperApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+  description:
+    'Free, instant CMS detection. Discover the platform, theme, and hosting of any website with evidence-based results.',
+  inLanguage: 'en',
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://cmsdetectorai.com',
+    },
+  ],
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base
+  title="CMS Detector: What CMS Is This Website Using? | CMS Detector AI"
+  description="Free, instant CMS detection — discover the platform, theme, and hosting of any website with evidence-based results. No sign-up needed."
+  pagePath="/"
+  noindex={isShareView}
+  jsonLd={[webAppJsonLd, breadcrumbJsonLd]}
+>
+  <!-- ============================================================
+    HERO  (dark section)
+    ============================================================ -->
+  <section class="hero section-dark" aria-labelledby="hero-h1">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="eyebrow-lockup">
+          <span class="eyebrow type-mono-eyebrow">Free · Instant · Evidence-based</span>
+          <h1 id="hero-h1" class="type-display-xl hero-headline">
+            What CMS Is This<br />Website Using?
+          </h1>
+          <p class="type-subtitle hero-sub text-ash">
+            Paste any URL and we'll identify the platform, theme, framework,
+            and hosting — with proof, not guesses.
+          </p>
+        </div>
+
+        <!-- Detection form island -->
+        <div id="detector-root" class="detector-shell">
+          <form
+            id="detect-form"
+            class="detect-form"
+            aria-label="CMS detection"
+            novalidate
+          >
+            <div class="input-row">
+              <label for="url-input" class="sr-only">Website URL</label>
+              <input
+                id="url-input"
+                name="url"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                class="input url-input"
+                placeholder="https://example.com"
+                aria-describedby="url-hint"
+                required
+              />
+              <button
+                type="submit"
+                class="btn btn-primary detect-btn"
+                id="detect-submit"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M6.5 1a5.5 5.5 0 1 0 3.457 9.82l3.362 3.361a.75.75 0 1 0 1.06-1.06L11.02 9.76A5.5 5.5 0 0 0 6.5 1zM2.5 6.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z" fill="currentColor"/>
+                </svg>
+                Detect
+              </button>
+            </div>
+            <p id="url-hint" class="type-caption text-mute input-hint">
+              Accepts bare domains (e.g. <code>example.com</code>). No account needed.
+            </p>
+          </form>
+
+          <!-- Recent checks (from localStorage) -->
+          <div id="recent-checks" class="recent-checks" hidden aria-label="Recent checks">
+            <span class="type-mono-caps text-mute">Recent:</span>
+            <ul id="recent-list" role="list" class="recent-list"></ul>
+          </div>
+
+          <!-- Loading skeleton -->
+          <div id="result-loading" class="result-loading" hidden aria-live="polite" aria-busy="true">
+            <div class="skeleton-card">
+              <div class="skeleton sk-row sk-headline"></div>
+              <div class="skeleton sk-row sk-body"></div>
+              <div class="skeleton sk-row sk-body sk-body--short"></div>
+            </div>
+            <p class="type-caption text-mute" style="margin-block-start: 12px;">
+              Analysing — this usually takes under 3 seconds…
+            </p>
+          </div>
+
+          <!-- Result panel -->
+          <div id="result-panel" class="result-panel" hidden aria-live="polite"></div>
+
+          <!-- Error panel -->
+          <div id="error-panel" class="error-panel" hidden aria-live="assertive" role="alert"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+    HOW IT WORKS  (light section — polarity flip)
+    ============================================================ -->
+  <section class="section-light" aria-labelledby="how-h2">
+    <div class="container">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+        <span class="eyebrow" style="color: var(--color-mute);">How detection works</span>
+        <h2 id="how-h2" class="type-display-sm" style="color: var(--color-ink);">
+          Evidence-based results, every time
+        </h2>
+        <p class="type-subtitle" style="color: var(--color-slate); max-width: 580px;">
+          Every detection shows <em>why</em> — the exact artifact matched and a confidence level.
+          We never guess. If we can't tell, we say so.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="card-light feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="color: var(--color-ink); margin-block: 12px 8px;">Signals, not guesses</h3>
+          <p class="type-body-sm" style="color: var(--color-slate);">
+            We match against HTTP headers, HTML paths, generator tags, cookie names,
+            and script hostnames — not heuristics or keyword stuffing.
+          </p>
+        </div>
+        <div class="card-light feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="color: var(--color-ink); margin-block: 12px 8px;">Under 3 seconds</h3>
+          <p class="type-body-sm" style="color: var(--color-slate);">
+            Results arrive in under 3 seconds for most sites — fetching, matching,
+            and probing all run inside a Cloudflare Worker on the edge.
+          </p>
+        </div>
+        <div class="card-brand feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="margin-block: 12px 8px;">One unified answer</h3>
+          <p class="type-body-sm">
+            CMS, theme, plugins, hosting, and framework in a single result — instead of
+            sending you across several different sites.
+          </p>
+        </div>
+        <div class="card-light feature-card">
+          <div class="feature-icon" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="color: var(--color-ink); margin-block: 12px 8px;">Zero friction</h3>
+          <p class="type-body-sm" style="color: var(--color-slate);">
+            No sign-up, no account, no API keys, no popups. The URLs you check are
+            never stored on our servers.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+    TECHNOLOGY COVERAGE  (dark section)
+    ============================================================ -->
+  <section class="section-dark" aria-labelledby="coverage-h2">
+    <div class="container">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+        <span class="eyebrow type-mono-eyebrow">What we detect</span>
+        <h2 id="coverage-h2" class="type-display-sm">40+ technologies detected</h2>
+        <p class="type-subtitle text-ash" style="max-width: 520px;">
+          From the most popular CMS to niche frameworks — with confidence ratings
+          and links to learn more about each platform.
+        </p>
+      </div>
+
+      <div class="tech-category-grid">
+        {[
+          { label: 'CMS', items: ['WordPress', 'Drupal', 'Joomla', 'Ghost', 'TYPO3', 'Craft CMS', 'Umbraco', 'HubSpot CMS', 'Sitecore'] },
+          { label: 'Site Builders', items: ['Wix', 'Squarespace', 'Webflow', 'Framer', 'Weebly', 'GoDaddy', 'Jimdo', 'Carrd', 'SITE123'] },
+          { label: 'E-commerce', items: ['Shopify', 'WooCommerce', 'Magento', 'BigCommerce', 'PrestaShop', 'OpenCart'] },
+          { label: 'Frameworks', items: ['Next.js', 'Nuxt', 'Gatsby', 'Astro', 'Laravel', 'Django', 'Rails'] },
+          { label: 'Hosting & CDN', items: ['Cloudflare', 'Vercel', 'Netlify', 'CloudFront', 'Fastly', 'Akamai', 'WP Engine', 'Kinsta', 'GitHub Pages'] },
+        ].map(({ label, items }) => (
+          <div class="tech-category">
+            <p class="type-mono-caps text-mute" style="margin-block-end: 12px;">{label}</p>
+            <div class="tech-chips">
+              {items.map((item) => (
+                <span class="badge badge-filled">{item}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+    SPECIALISED TOOLS  (paper section)
+    ============================================================ -->
+  <section class="section-paper" aria-labelledby="tools-h2">
+    <div class="container">
+      <h2 id="tools-h2" class="type-display-sm" style="color: var(--color-ink); margin-block-end: var(--spacing-xl);">
+        Specialised detectors
+      </h2>
+      <div class="tool-link-grid">
+        {[
+          { href: '/wordpress-theme-detector', title: 'WordPress Theme Detector', desc: 'Find any WordPress theme — name, author, version.' },
+          { href: '/shopify-theme-detector',   title: 'Shopify Theme Detector',   desc: 'Identify the Shopify theme powering any store.' },
+          { href: '/who-hosts-this-website',   title: 'Hosting & CDN Detector',   desc: 'Find out who hosts any website and what CDN they use.' },
+          { href: '/is-this-site-wordpress',   title: 'Is This Site WordPress?',  desc: 'Quick yes/no with evidence for any website.' },
+        ].map(({ href, title, desc }) => (
+          <a href={href} class="tool-card card-light">
+            <h3 class="type-heading-sm" style="color: var(--color-ink); margin: 0 0 8px 0;">{title}</h3>
+            <p class="type-body-sm" style="color: var(--color-slate); margin: 0 0 16px 0;">{desc}</p>
+            <span class="type-caption text-link-light" style="display: flex; align-items: center; gap: 4px;">
+              Try it →
+            </span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Hero */
+  .hero {
+    min-block-size: 80vh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--spacing-section-lg);
+  }
+
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+    max-inline-size: 860px;
+  }
+
+  .hero-headline {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .hero-sub {
+    margin: 0;
+    max-inline-size: 540px;
+  }
+
+  /* Detect form */
+  .detect-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .input-row {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: stretch;
+  }
+
+  .url-input {
+    flex: 1;
+    block-size: 56px;
+    font-size: 17px;
+    border-radius: var(--radius-app-lg);
+    padding-inline: var(--spacing-lg);
+    background-color: rgba(255,255,255,0.06);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-on-primary);
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .url-input:focus {
+    outline: none;
+    border-color: rgba(255,255,255,0.5);
+    background-color: rgba(255,255,255,0.09);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.08);
+  }
+
+  .url-input::placeholder { color: var(--color-slate-soft); }
+
+  .detect-btn {
+    flex-shrink: 0;
+    block-size: 56px;
+    gap: var(--spacing-xs);
+    font-size: 16px;
+  }
+
+  .input-hint {
+    margin: 0;
+    padding-inline-start: 4px;
+  }
+
+  .input-hint code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background-color: var(--color-canvas-soft);
+    padding: 1px 5px;
+    border-radius: var(--radius-app-sm);
+  }
+
+  /* Recent checks */
+  .recent-checks {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+    margin-block-start: var(--spacing-xs);
+  }
+
+  .recent-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  /* Loading skeleton */
+  .result-loading { margin-block-start: var(--spacing-xl); }
+
+  .skeleton-card {
+    background-color: var(--color-canvas-soft);
+    border-radius: var(--radius-marketing);
+    padding: var(--spacing-xl);
+    border: 1px solid var(--color-hairline-soft);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .sk-row { block-size: 20px; }
+  .sk-headline { inline-size: 60%; block-size: 32px; border-radius: var(--radius-app-sm); }
+  .sk-body { inline-size: 85%; }
+  .sk-body--short { inline-size: 50%; }
+
+  /* Feature grid */
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  .feature-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+  .feature-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
+  .feature-icon { display: flex; color: var(--color-ink); }
+  .card-brand .feature-icon { color: var(--color-ink); }
+
+  /* Tech coverage */
+  .tech-category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-xl);
+  }
+
+  .tech-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  /* Tools grid */
+  .tool-link-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+  }
+
+  .tool-card {
+    text-decoration: none;
+    display: block;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .tool-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  }
+
+  @media (max-width: 960px) {
+    .tech-category-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .feature-grid   { grid-template-columns: 1fr; }
+    .tool-link-grid { grid-template-columns: 1fr; }
+    .tech-category-grid { grid-template-columns: 1fr; }
+    .hero { min-block-size: 60vh; }
+  }
+
+  @media (max-width: 480px) {
+    .input-row { flex-direction: column; }
+    .detect-btn { inline-size: 100%; }
+  }
+</style>
+
+<script>
+// ----------------------------------------------------------------
+// Client-side detection UI island
+// ----------------------------------------------------------------
+
+const STORAGE_KEY = 'cmsdetector_recent';
+const MAX_RECENT  = 5;
+
+// Error messages (client-side translation)
+const ERROR_MESSAGES: Record<string, string> = {
+  INVALID_URL:      'Please enter a valid website URL (e.g. https://example.com).',
+  PRIVATE_IP:       'Private or internal addresses can\'t be checked for security reasons.',
+  BLOCKED:          'This site returned a bot-protection response. We collected header data below.',
+  TIMEOUT:          'The request timed out (8s). The site may be slow or blocking automated access.',
+  DNS_FAILURE:      'We couldn\'t resolve the domain. Double-check the URL and try again.',
+  INVALID_TLS:      'The site has a TLS certificate error. We can\'t safely connect to it.',
+  NON_HTML:         'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
+  CLIENT_RENDERED:  'The page appears to be a client-rendered shell. We detected some hints:',
+  REDIRECT_LOOP:    'We detected a redirect loop and stopped following redirects.',
+  TURNSTILE_FAILED: 'Bot verification failed. Please try again.',
+  UNKNOWN:          'An unexpected error occurred. Please try again.',
+};
+
+const CONFIDENCE_LABELS: Record<string, string> = {
+  confirmed: 'Confirmed',
+  likely:    'Likely',
+  possible:  'Possible',
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  cms:        'CMS / Platform',
+  builder:    'Site Builder',
+  ecommerce:  'E-commerce',
+  framework:  'Framework',
+  hosting:    'Hosting & CDN',
+  theme:      'Theme',
+  plugin:     'Plugins',
+  other:      'Other',
+};
+
+const SIGNAL_LABELS: Record<string, string> = {
+  'meta-generator': 'Generator meta tag',
+  'html-path':      'HTML asset path',
+  'html-regex':     'HTML pattern',
+  'script-host':    'Script hostname',
+  'header':         'HTTP header',
+  'cookie-name':    'Cookie name',
+  'probe':          'Secondary probe',
+};
+
+// ----------------------------------------------------------------
+// DOM refs
+// ----------------------------------------------------------------
+const form       = document.getElementById('detect-form') as HTMLFormElement | null;
+const input      = document.getElementById('url-input')   as HTMLInputElement | null;
+const submitBtn  = document.getElementById('detect-submit') as HTMLButtonElement | null;
+const loadingEl  = document.getElementById('result-loading') as HTMLElement | null;
+const resultEl   = document.getElementById('result-panel')   as HTMLElement | null;
+const errorEl    = document.getElementById('error-panel')    as HTMLElement | null;
+const recentEl   = document.getElementById('recent-checks')  as HTMLElement | null;
+const recentList = document.getElementById('recent-list')    as HTMLUListElement | null;
+
+// ----------------------------------------------------------------
+// Recent checks
+// ----------------------------------------------------------------
+function loadRecent(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+  } catch { return []; }
+}
+
+function saveRecent(url: string): void {
+  const list = [url, ...loadRecent().filter((u) => u !== url)].slice(0, MAX_RECENT);
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+}
+
+function renderRecent(): void {
+  const list = loadRecent();
+  if (!recentList || !recentEl) return;
+
+  recentList.innerHTML = '';
+  list.forEach((url) => {
+    const li = document.createElement('li');
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-secondary-dark recent-btn';
+    btn.textContent = url.replace(/^https?:\/\//, '');
+    btn.title = url;
+    btn.type = 'button';
+    btn.addEventListener('click', () => runDetect(url));
+    li.appendChild(btn);
+    recentList.appendChild(li);
+  });
+
+  recentEl.hidden = list.length === 0;
+}
+
+// ----------------------------------------------------------------
+// HTML sanitiser (for evidence artifacts from the page)
+// ----------------------------------------------------------------
+function esc(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+// ----------------------------------------------------------------
+// Result rendering
+// ----------------------------------------------------------------
+interface Evidence {
+  type: string;
+  artifact: string;
+  weight: number;
+}
+
+interface Detection {
+  id: string;
+  name: string;
+  category: string;
+  confidence: number;
+  confidenceLabel: 'confirmed' | 'likely' | 'possible';
+  version?: string;
+  evidence: Evidence[];
+  pageSlug?: string;
+}
+
+function renderConfidenceChip(label: 'confirmed' | 'likely' | 'possible'): string {
+  return `<span class="badge chip-${label}">${CONFIDENCE_LABELS[label] ?? label}</span>`;
+}
+
+function renderDetection(d: Detection): string {
+  const slug = d.pageSlug ?? d.id;
+  const versionStr = d.version ? ` <span class="text-mute type-caption">v${esc(d.version)}</span>` : '';
+  const showInHeadline = d.confidenceLabel === 'confirmed' || d.confidenceLabel === 'likely';
+
+  if (!showInHeadline) return '';
+
+  const evidenceHtml = d.evidence
+    .map((e) => `
+      <li class="evidence-item">
+        <span class="type-mono-micro evidence-type">${esc(SIGNAL_LABELS[e.type] ?? e.type)}</span>
+        <code class="evidence-artifact">${esc(e.artifact)}</code>
+      </li>`)
+    .join('');
+
+  return `
+    <div class="detection-card" data-id="${esc(d.id)}">
+      <div class="detection-header">
+        <div class="detection-name-row">
+          <span class="type-heading-sm detection-name">
+            ${d.pageSlug
+              ? `<a href="/cms/${esc(slug)}" class="text-link-dark">${esc(d.name)}</a>`
+              : esc(d.name)
+            }
+            ${versionStr}
+          </span>
+          ${renderConfidenceChip(d.confidenceLabel)}
+        </div>
+        <span class="type-mono-caps text-mute category-label">${esc(CATEGORY_LABELS[d.category] ?? d.category)}</span>
+      </div>
+
+      <details class="evidence-section">
+        <summary class="evidence-toggle type-caption-tight">
+          <span>Why we think this</span>
+          <svg class="toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </summary>
+        <ul class="evidence-list" role="list">
+          ${evidenceHtml}
+        </ul>
+      </details>
+    </div>`;
+}
+
+function groupByCategory(results: Detection[]): Map<string, Detection[]> {
+  const map = new Map<string, Detection[]>();
+  for (const r of results) {
+    const cat = r.category;
+    if (!map.has(cat)) map.set(cat, []);
+    map.get(cat)!.push(r);
+  }
+  return map;
+}
+
+function renderResults(data: {
+  finalUrl: string;
+  results: Detection[];
+  isClientRendered: boolean;
+}): string {
+  const { finalUrl, results, isClientRendered } = data;
+
+  const headlineResult = results.find(
+    (r) => (r.confidenceLabel === 'confirmed' || r.confidenceLabel === 'likely') &&
+           (r.category === 'cms' || r.category === 'builder' || r.category === 'ecommerce')
+  );
+
+  const displayUrl = finalUrl.replace(/^https?:\/\//, '').replace(/\/$/, '');
+  const mailtoBody = encodeURIComponent(
+    `URL: ${finalUrl}\nDetected: ${results.map((r) => r.name).join(', ') || 'nothing'}\nExpected: `
+  );
+
+  const groups = groupByCategory(results);
+  const groupHtml = [...groups.entries()]
+    .map(([_cat, items]) => items.map(renderDetection).join(''))
+    .join('');
+
+  const noMatch = results.filter(
+    (r) => r.confidenceLabel === 'confirmed' || r.confidenceLabel === 'likely'
+  ).length === 0;
+
+  return `
+    <div class="result-card">
+      <div class="result-header">
+        <div>
+          <p class="type-mono-caps text-mute" style="margin: 0 0 4px 0;">Detection results for</p>
+          <h2 class="type-heading-md result-url">${esc(displayUrl)}</h2>
+        </div>
+        <div class="result-actions">
+          <a href="mailto:hello@cmsdetectorai.com?subject=Result+feedback&body=${mailtoBody}"
+             class="btn btn-ghost-dark result-action">
+             Result looks wrong?
+          </a>
+          <button type="button" class="btn btn-secondary-dark result-action" id="check-another">
+            Check another site
+          </button>
+        </div>
+      </div>
+
+      ${isClientRendered
+        ? `<div class="alert-blue" style="margin-block: 16px;">
+             <strong>Client-rendered site:</strong> This page returned an empty HTML shell.
+             The site likely uses a JavaScript framework. We detected some technology hints below.
+           </div>`
+        : ''
+      }
+
+      ${noMatch
+        ? `<div class="no-match-card card-dark" style="margin-block-start: 16px;">
+             <p class="type-heading-sm" style="margin: 0 0 8px 0;">No known platform detected</p>
+             <p class="type-body-sm text-ash" style="margin: 0 0 16px 0;">
+               This site may be custom-built. Try <a href="/guides/how-to-find-what-cms-a-website-uses"
+               class="text-link-dark">these manual methods</a> to investigate further.
+             </p>
+           </div>`
+        : groupHtml
+      }
+
+      <div class="result-footer">
+        <a href="/?url=${encodeURIComponent(finalUrl)}" class="type-caption text-mute">
+          Shareable link for this result
+        </a>
+      </div>
+    </div>`;
+}
+
+// ----------------------------------------------------------------
+// Turnstile token (empty string when the challenge is not configured)
+// ----------------------------------------------------------------
+async function getTurnstileToken(): Promise<string> {
+  try {
+    const key = (document.querySelector('meta[name="turnstile-sitekey"]') as HTMLMetaElement | null)?.content ?? '';
+    const t = (window as unknown as { turnstile?: { execute: (k: string, o: unknown) => Promise<string> } }).turnstile;
+    if (key && t) return await t.execute(key, { action: 'detect' });
+  } catch { /* challenge unavailable — server decides */ }
+  return '';
+}
+
+// ----------------------------------------------------------------
+// Detection runner
+// ----------------------------------------------------------------
+function setLoading(loading: boolean): void {
+  if (!submitBtn || !loadingEl || !resultEl || !errorEl) return;
+  if (loading) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Detecting…';
+    loadingEl.hidden = false;
+    resultEl.hidden  = true;
+    errorEl.hidden   = true;
+  } else {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = `
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path d="M6.5 1a5.5 5.5 0 1 0 3.457 9.82l3.362 3.361a.75.75 0 1 0 1.06-1.06L11.02 9.76A5.5 5.5 0 0 0 6.5 1zM2.5 6.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z" fill="currentColor"/>
+      </svg>
+      Detect`;
+    loadingEl.hidden = true;
+  }
+}
+
+async function runDetect(rawUrl: string): Promise<void> {
+  if (!resultEl || !errorEl) return;
+
+  const url = rawUrl.trim();
+  if (!url) return;
+
+  setLoading(true);
+
+  // Update URL bar for shareability
+  const shareUrl = new URL(window.location.href);
+  shareUrl.searchParams.set('url', url);
+  window.history.replaceState({}, '', shareUrl.toString());
+
+  try {
+    const token = await getTurnstileToken();
+    const res = await fetch('/api/detect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, token }),
+    });
+
+    const data = await res.json() as
+      | { ok: true; data: { finalUrl: string; results: Detection[]; isClientRendered: boolean } }
+      | { ok: false; error: { code: string; partialResults: Detection[] } };
+
+    setLoading(false);
+
+    if (data.ok) {
+      saveRecent(url);
+      renderRecent();
+      resultEl.innerHTML = renderResults(data.data);
+      resultEl.hidden = false;
+      resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Wire "Check another site" button
+      document.getElementById('check-another')?.addEventListener('click', () => {
+        resultEl.hidden = true;
+        errorEl.hidden  = true;
+        if (input) { input.value = ''; input.focus(); }
+        window.history.replaceState({}, '', '/');
+      });
+    } else {
+      const code = data.error?.code ?? 'UNKNOWN';
+      const msg  = ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'];
+      const partial = data.error?.partialResults ?? [];
+
+      let partialHtml = '';
+      if (partial.length > 0) {
+        partialHtml = `
+          <div style="margin-block-start: 16px;">
+            <p class="type-caption-tight text-mute" style="margin-block-end: 8px;">
+              Despite the error, we detected:
+            </p>
+            ${partial.map(renderDetection).join('')}
+          </div>`;
+      }
+
+      errorEl.innerHTML = `
+        <div class="error-card card-dark">
+          <div style="display: flex; align-items: center; gap: 8px; margin-block-end: 8px;">
+            <span class="badge badge-error">Error</span>
+            <span class="type-caption-tight text-mute">${esc(code)}</span>
+          </div>
+          <p class="type-body-sm text-ash" style="margin: 0;">${esc(msg)}</p>
+          ${partialHtml}
+        </div>`;
+      errorEl.hidden = false;
+    }
+  } catch (e) {
+    setLoading(false);
+    if (errorEl) {
+      errorEl.innerHTML = `
+        <div class="error-card card-dark">
+          <span class="badge badge-error">Network error</span>
+          <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">
+            Could not reach the detection API. Check your connection and try again.
+          </p>
+        </div>`;
+      errorEl.hidden = false;
+    }
+  }
+}
+
+// ----------------------------------------------------------------
+// Auto-run from ?url= query param
+// ----------------------------------------------------------------
+function init(): void {
+  renderRecent();
+
+  // Shareable result views are pre-rendered as "/" — mark them noindex at
+  // runtime too (belt-and-braces next to the canonical pointing at "/").
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('url') && !document.querySelector('meta[name="robots"]')) {
+    const meta = document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex, nofollow';
+    document.head.appendChild(meta);
+  }
+
+  // Auto-focus input
+  input?.focus();
+
+  // Handle ?url=... for shareable links
+  const urlParam = params.get('url');
+  if (urlParam && input) {
+    input.value = urlParam;
+    runDetect(urlParam);
+  }
+
+  // Form submit
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const url = input?.value.trim() ?? '';
+    if (url) runDetect(url);
+  });
+}
+
+init();
+</script>
+
+<style is:global>
+  /* Result card styles (injected by JS island) */
+  .result-card {
+    margin-block-start: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .result-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    margin-block-end: var(--spacing-sm);
+  }
+
+  .result-url {
+    margin: 0;
+    word-break: break-all;
+    color: var(--color-on-primary);
+  }
+
+  .result-actions {
+    display: flex;
+    gap: var(--spacing-xs);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  .result-action { font-size: 12px; block-size: 32px; }
+
+  .detection-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    padding: var(--spacing-xl);
+    transition: border-color 0.15s ease;
+  }
+
+  .detection-card:hover { border-color: var(--color-graphite); }
+
+  .detection-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    margin-block-end: var(--spacing-xs);
+  }
+
+  .detection-name-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  .detection-name {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .detection-name a { color: var(--color-link-blue-soft); text-decoration: underline; }
+
+  .category-label { display: block; }
+
+  /* Evidence */
+  .evidence-section { margin-block-start: var(--spacing-sm); }
+
+  .evidence-toggle {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-mute);
+    list-style: none;
+    padding: 4px 0;
+    transition: color 0.15s ease;
+  }
+
+  .evidence-toggle::-webkit-details-marker { display: none; }
+  .evidence-toggle:hover { color: var(--color-ash); }
+
+  details[open] .toggle-icon { transform: rotate(180deg); }
+  .toggle-icon { transition: transform 0.15s ease; }
+
+  .evidence-list {
+    margin: var(--spacing-xs) 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .evidence-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-xs);
+  }
+
+  .evidence-type {
+    flex-shrink: 0;
+    padding: 2px 6px;
+    background-color: var(--color-canvas);
+    border-radius: var(--radius-app-sm);
+    color: var(--color-mute);
+    min-inline-size: 110px;
+  }
+
+  .evidence-artifact {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ash);
+    word-break: break-all;
+    background-color: var(--color-canvas);
+    padding: 2px 6px;
+    border-radius: var(--radius-app-sm);
+  }
+
+  .result-footer {
+    padding-block-start: var(--spacing-sm);
+    border-block-start: 1px solid var(--color-hairline-soft);
+  }
+
+  .recent-btn {
+    font-size: 12px;
+    block-size: 28px;
+    padding-inline: 10px;
+    border-radius: var(--radius-full);
+  }
+
+  .error-card { margin-block-start: var(--spacing-lg); }
+
+  .no-match-card { margin-block-start: var(--spacing-sm); }
+</style>

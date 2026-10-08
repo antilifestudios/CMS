@@ -1,0 +1,200 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="WordPress Theme Detector — Find Any WordPress Theme Free"
+  description="Instantly detect the WordPress theme and child theme of any site — including theme name, author, and version. Free, no sign-up."
+  pagePath="/wordpress-theme-detector"
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'WordPress Theme Detector',
+    url: 'https://cmsdetectorai.com/wordpress-theme-detector',
+    applicationCategory: 'DeveloperApplication',
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    inLanguage: 'en',
+  }}
+>
+  <section class="hero section-dark" aria-labelledby="wp-h1">
+    <div class="container">
+      <div style="max-inline-size: 860px;">
+        <div class="eyebrow-lockup">
+          <span class="eyebrow type-mono-eyebrow">WordPress Theme Detector</span>
+          <h1 id="wp-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
+            What WordPress Theme<br />Is This Site Using?
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 540px;">
+            Paste any WordPress site URL and we'll identify the active theme — name, author,
+            and version — from the theme stylesheet. No sign-up needed.
+          </p>
+        </div>
+
+        <div style="margin-block-start: var(--spacing-xxl);">
+          <form id="wp-detect-form" class="detect-form" aria-label="WordPress theme detection" novalidate>
+            <div class="input-row">
+              <label for="wp-url-input" class="sr-only">WordPress site URL</label>
+              <input
+                id="wp-url-input"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                autocorrect="off"
+                class="input url-input"
+                placeholder="https://example.com"
+                required
+              />
+              <button type="submit" class="btn btn-primary detect-btn" id="wp-detect-submit">
+                Find Theme
+              </button>
+            </div>
+          </form>
+          <div id="wp-result"  hidden aria-live="polite"  style="margin-block-start: var(--spacing-xl);"></div>
+          <div id="wp-loading" hidden aria-live="polite"  aria-busy="true" style="margin-block-start: var(--spacing-xl);">
+            <div class="skeleton-card">
+              <div class="skeleton sk-row sk-headline"></div>
+              <div class="skeleton sk-row sk-body"></div>
+            </div>
+          </div>
+          <div id="wp-error"   hidden aria-live="assertive" role="alert" style="margin-block-start: var(--spacing-xl);"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-light" aria-labelledby="wp-how-h2">
+    <div class="container">
+      <h2 id="wp-how-h2" class="type-display-sm" style="color: var(--color-ink); margin-block-end: var(--spacing-lg);">
+        How WordPress theme detection works
+      </h2>
+      <div style="max-inline-size: 680px;">
+        <p class="type-body" style="color: var(--color-slate); margin-block-end: var(--spacing-md);">
+          Every WordPress theme ships with a <code style="font-family: var(--font-mono); background: var(--color-hairline); padding: 2px 6px; border-radius: 3px;">style.css</code>
+          file that declares the theme name, author, version, and description in a standard comment block.
+          We fetch this file directly after identifying the active theme slug from the page's HTML.
+        </p>
+        <p class="type-body" style="color: var(--color-slate); margin-block-end: var(--spacing-md);">
+          We also look for child theme references — many sites customise a parent theme. We'll
+          show both where detected.
+        </p>
+        <p class="type-body" style="color: var(--color-slate);">
+          <strong style="color: var(--color-ink);">Can't find a theme?</strong> Heavily customised installations,
+          headless WordPress setups, or sites that obfuscate asset paths may not expose a detectable theme slug.
+          We'll say so clearly rather than guess.
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: var(--spacing-section-lg); }
+  .detect-form { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+  .input-row { display: flex; gap: var(--spacing-xs); }
+  .url-input {
+    flex: 1;
+    block-size: 56px;
+    font-size: 17px;
+    border-radius: var(--radius-app-lg);
+    padding-inline: var(--spacing-lg);
+    background-color: rgba(255,255,255,0.06);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-on-primary);
+    transition: border-color 0.2s ease;
+  }
+  .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
+  .url-input::placeholder { color: var(--color-slate-soft); }
+  .detect-btn { block-size: 56px; }
+  .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: var(--spacing-sm); }
+  .sk-row { block-size: 20px; border-radius: var(--radius-app-sm); }
+  .sk-headline { inline-size: 60%; block-size: 32px; }
+  .sk-body { inline-size: 85%; }
+
+  @media (max-width: 480px) {
+    .input-row { flex-direction: column; }
+    .detect-btn { inline-size: 100%; }
+  }
+</style>
+
+<script>
+// Reuse the homepage detect API but focus on WordPress theme results
+const form      = document.getElementById('wp-detect-form') as HTMLFormElement | null;
+const urlInput  = document.getElementById('wp-url-input')   as HTMLInputElement | null;
+const resultEl  = document.getElementById('wp-result')      as HTMLElement | null;
+const loadingEl = document.getElementById('wp-loading')     as HTMLElement | null;
+const errorEl   = document.getElementById('wp-error')       as HTMLElement | null;
+const submitBtn = document.getElementById('wp-detect-submit') as HTMLButtonElement | null;
+
+function esc(s: string) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function detect(url: string) {
+  if (!resultEl || !loadingEl || !errorEl || !submitBtn) return;
+  loadingEl.hidden = false; resultEl.hidden = true; errorEl.hidden = true;
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Detecting…'; }
+
+  try {
+    const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
+    const res = await fetch('/api/detect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, token }),
+    });
+    const data = await res.json() as any;
+    loadingEl.hidden = true;
+    submitBtn.disabled = false; submitBtn.textContent = 'Find Theme';
+
+    if (data.ok) {
+      const results: any[] = data.data.results ?? [];
+      const wp = results.find((r: any) => r.id === 'wordpress');
+      const themeEvidence = wp?.evidence?.find((e: any) => e.type === 'probe' && e.artifact?.includes('theme:'));
+
+      if (!wp) {
+        resultEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">This doesn't appear to be a WordPress site.</p></div>`;
+      } else if (!themeEvidence) {
+        resultEl.innerHTML = `
+          <div class="card-dark">
+            <p class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+              WordPress detected, but theme not identifiable
+            </p>
+            <p class="type-body-sm text-ash" style="margin: 0;">
+              The site runs WordPress but the active theme couldn't be read from the stylesheet
+              (it may be obfuscated or a headless setup).
+            </p>
+          </div>`;
+      } else {
+        const raw = themeEvidence.artifact.replace('theme: ', '');
+        resultEl.innerHTML = `
+          <div class="card-dark">
+            <p class="type-mono-caps text-mute" style="margin: 0 0 4px 0;">WordPress theme</p>
+            <h2 class="type-heading-md" style="color: var(--color-on-primary); margin: 0 0 8px 0;">${esc(raw)}</h2>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 12px;">
+              <span class="badge chip-confirmed">Confirmed</span>
+              <a href="/cms/wordpress" class="badge badge-filled">Learn about WordPress →</a>
+            </div>
+          </div>`;
+      }
+      resultEl.hidden = false;
+    } else {
+      const code = data.error?.code ?? 'UNKNOWN';
+      errorEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">${esc(code)}: Detection failed. Please check the URL.</p></div>`;
+      errorEl.hidden = false;
+    }
+  } catch {
+    loadingEl.hidden = true;
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Find Theme'; }
+    if (errorEl) {
+      errorEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Network error. Please try again.</p></div>`;
+      errorEl.hidden = false;
+    }
+  }
+}
+
+urlInput?.focus();
+form?.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const url = urlInput?.value.trim() ?? '';
+  if (url) detect(url);
+});
+</script>

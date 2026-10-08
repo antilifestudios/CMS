@@ -1,0 +1,65 @@
+---
+/**
+ * Base layout — wraps every page.
+ * Applies BaseHead, Header, Footer, skip-link.
+ */
+import BaseHead from '../components/layout/BaseHead.astro';
+import Header   from '../components/layout/Header.astro';
+import Footer   from '../components/layout/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  pagePath?: string;
+  noindex?: boolean;
+  ogImage?: string;
+  locale?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  canonical?: string;
+}
+
+const props = Astro.props;
+const locale = props.locale ?? 'en';
+---
+
+<!doctype html>
+<html lang={locale} dir="ltr">
+  <head>
+    <BaseHead {...props} locale={locale} />
+  </head>
+  <body>
+    <!-- Skip link for keyboard / screen reader users -->
+    <a href="#main-content" class="skip-link sr-only" id="skip-link">
+      Skip to main content
+    </a>
+
+    <Header locale={locale} />
+
+    <main id="main-content" tabindex="-1">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>
+
+<style is:global>
+  /* Skip link — visible only on focus */
+  .skip-link:focus {
+    position: fixed;
+    inset-block-start: 16px;
+    inset-inline-start: 16px;
+    padding: 8px 16px;
+    background-color: var(--color-canvas-light);
+    color: var(--color-ink);
+    border-radius: var(--radius-app-md);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 9999;
+    clip: auto;
+    inline-size: auto;
+    block-size: auto;
+    white-space: nowrap;
+  }
+</style>

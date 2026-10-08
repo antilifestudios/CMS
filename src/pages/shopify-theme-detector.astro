@@ -1,0 +1,95 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+<Base
+  title="Shopify Theme Detector — Identify Any Shopify Store's Theme"
+  description="Find the Shopify theme powering any store, including theme name and store ID. Free CMS Detector AI tool."
+  pagePath="/shopify-theme-detector"
+>
+  <section class="section-dark" style="min-block-size: 60vh; display: flex; align-items: center;" aria-labelledby="shopify-h1">
+    <div class="container">
+      <div style="max-inline-size: 860px;">
+        <div class="eyebrow-lockup">
+          <span class="eyebrow type-mono-eyebrow">Shopify Theme Detector</span>
+          <h1 id="shopify-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
+            What Shopify Theme<br />Is This Store Using?
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 540px;">
+            Identify the theme of any Shopify store — name and theme ID — extracted from the
+            store's own page data. Free, instant, no sign-up.
+          </p>
+        </div>
+        <div style="margin-block-start: var(--spacing-xxl);">
+          <form id="shopify-form" novalidate>
+            <div style="display: flex; gap: 8px;">
+              <label for="shopify-input" class="sr-only">Shopify store URL</label>
+              <input id="shopify-input" type="url" class="input url-input" placeholder="https://store.myshopify.com" required />
+              <button type="submit" class="btn btn-primary detect-btn" id="shopify-submit">Find Theme</button>
+            </div>
+          </form>
+          <div id="shopify-loading" hidden style="margin-block-start: 24px;">
+            <div class="skeleton-card">
+              <div class="skeleton sk-row" style="block-size: 32px; inline-size: 60%; border-radius: 4px;"></div>
+              <div class="skeleton sk-row" style="block-size: 20px; inline-size: 80%; border-radius: 4px;"></div>
+            </div>
+          </div>
+          <div id="shopify-result" hidden style="margin-block-start: 24px;"></div>
+          <div id="shopify-error"  hidden style="margin-block-start: 24px;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .url-input { flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg); padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06); border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); }
+  .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
+  .url-input::placeholder { color: var(--color-slate-soft); }
+  .detect-btn { block-size: 56px; }
+  .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
+</style>
+<script>
+const form   = document.getElementById('shopify-form')   as HTMLFormElement | null;
+const input  = document.getElementById('shopify-input')  as HTMLInputElement | null;
+const btn    = document.getElementById('shopify-submit') as HTMLButtonElement | null;
+const loadEl = document.getElementById('shopify-loading') as HTMLElement | null;
+const resEl  = document.getElementById('shopify-result') as HTMLElement | null;
+const errEl  = document.getElementById('shopify-error')  as HTMLElement | null;
+function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+input?.focus();
+form?.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const url = input?.value.trim() ?? '';
+  if (!url) return;
+  if (loadEl) loadEl.hidden = false;
+  if (resEl)  resEl.hidden = true;
+  if (errEl)  errEl.hidden = true;
+  if (btn)    { btn.disabled = true; btn.textContent = 'Detecting…'; }
+  try {
+    const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
+    const res = await fetch('/api/detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, token }) });
+    const data = await res.json() as any;
+    if (loadEl) loadEl.hidden = true;
+    if (btn) { btn.disabled = false; btn.textContent = 'Find Theme'; }
+    if (data.ok) {
+      const shopify = (data.data.results ?? []).find((r: any) => r.id === 'shopify');
+      const structured = data.data.shopifyTheme as { name?: string; id?: string } | undefined;
+      const themeName = structured?.name;
+      if (!shopify) {
+        if (resEl) { resEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">This doesn't appear to be a Shopify store.</p></div>`; resEl.hidden = false; }
+      } else if (!themeName) {
+        if (resEl) { resEl.innerHTML = `<div class="card-dark"><p class="type-heading-sm" style="color:var(--color-on-primary);margin:0 0 8px 0;">Shopify detected, theme not identified</p><p class="type-body-sm text-ash" style="margin:0;">The store runs Shopify but the theme name wasn't embedded in the page.</p></div>`; resEl.hidden = false; }
+      } else {
+        const idLine = structured?.id ? ` <span class="type-caption text-mute">(theme ID ${esc(structured.id)})</span>` : '';
+        if (resEl) { resEl.innerHTML = `<div class="card-dark"><p class="type-mono-caps text-mute" style="margin:0 0 4px 0;">Shopify theme</p><h2 class="type-heading-md" style="color:var(--color-on-primary);margin:0 0 12px 0;">${esc(themeName)}${idLine}</h2><span class="badge chip-confirmed">Confirmed</span></div>`; resEl.hidden = false; }
+      }
+    } else {
+      if (errEl) { errEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Detection failed: ${esc(data.error?.code ?? 'UNKNOWN')}</p></div>`; errEl.hidden = false; }
+    }
+  } catch {
+    if (loadEl) loadEl.hidden = true;
+    if (btn) { btn.disabled = false; btn.textContent = 'Find Theme'; }
+    if (errEl) { errEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Network error. Please try again.</p></div>`; errEl.hidden = false; }
+  }
+});
+</script>

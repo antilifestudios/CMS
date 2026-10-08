@@ -1,0 +1,122 @@
+[
+  {
+    "id": "wordpress",
+    "name": "WordPress",
+    "category": "cms",
+    "signals": [
+      { "type": "meta-generator", "pattern": "WordPress\\s*([\\d.]+)?", "weight": 95, "versionGroup": 1 },
+      { "type": "html-path",    "pattern": "/wp-content/|/wp-includes/", "weight": 75 },
+      { "type": "header",       "name": "link", "pattern": "api\\.w\\.org", "weight": 80 },
+      { "type": "cookie-name",  "pattern": "^wordpress_|^wp-settings-", "weight": 70 },
+      { "type": "html-regex",   "pattern": "wp-emoji-release\\.min\\.js", "weight": 60 }
+    ],
+    "probes": [
+      { "path": "/wp-json/", "successSignal": "\"namespaces\"", "weight": 90 }
+    ],
+    "pageSlug": "wordpress"
+  },
+  {
+    "id": "drupal",
+    "name": "Drupal",
+    "category": "cms",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Drupal\\s*([\\d.]+)?", "weight": 95, "versionGroup": 1 },
+      { "type": "html-path",      "pattern": "/sites/default/files/|/modules/|/themes/", "weight": 60 },
+      { "type": "header",         "name": "x-generator", "pattern": "Drupal", "weight": 95 },
+      { "type": "header",         "name": "x-drupal-cache", "pattern": ".*", "weight": 90 },
+      { "type": "cookie-name",    "pattern": "^SESS[a-f0-9]{32}$|^Drupal\\.visitor", "weight": 75 },
+      { "type": "html-regex",     "pattern": "Drupal\\.settings|drupal\\.js", "weight": 65 }
+    ],
+    "pageSlug": "drupal"
+  },
+  {
+    "id": "joomla",
+    "name": "Joomla",
+    "category": "cms",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Joomla!\\s*-?\\s*Open Source Content Management", "weight": 95 },
+      { "type": "html-path",      "pattern": "/media/jui/|/media/system/js/|/components/com_", "weight": 70 },
+      { "type": "cookie-name",    "pattern": "^[a-f0-9]{32}$", "weight": 40 },
+      { "type": "html-regex",     "pattern": "joomla\\.js|/media/com_", "weight": 55 }
+    ],
+    "pageSlug": "joomla"
+  },
+  {
+    "id": "ghost",
+    "name": "Ghost",
+    "category": "cms",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Ghost\\s*([\\d.]+)?", "weight": 95, "versionGroup": 1 },
+      { "type": "html-path",      "pattern": "/ghost/|/content/images/", "weight": 65 },
+      { "type": "header",         "name": "x-ghost-cache-status", "pattern": ".*", "weight": 90 },
+      { "type": "html-regex",     "pattern": "ghost\\.io|ghost-url", "weight": 60 }
+    ],
+    "pageSlug": "ghost"
+  },
+  {
+    "id": "typo3",
+    "name": "TYPO3",
+    "category": "cms",
+    "signals": [
+      { "type": "meta-generator", "pattern": "TYPO3", "weight": 95 },
+      { "type": "html-path",      "pattern": "/typo3/|/typo3conf/|/typo3temp/", "weight": 80 },
+      { "type": "html-regex",     "pattern": "typo3\\.js|TYPO3\\.lang", "weight": 65 }
+    ],
+    "pageSlug": "typo3"
+  },
+  {
+    "id": "craft-cms",
+    "name": "Craft CMS",
+    "category": "cms",
+    "signals": [
+      { "type": "header",       "name": "x-powered-by", "pattern": "Craft CMS", "weight": 95 },
+      { "type": "cookie-name",  "pattern": "^CraftSessionId$|^CRAFT_CSRF_TOKEN$", "weight": 85 },
+      { "type": "html-regex",   "pattern": "siteId.*craft|craftcms\\.com", "weight": 55 }
+    ],
+    "pageSlug": "craft-cms"
+  },
+  {
+    "id": "umbraco",
+    "name": "Umbraco",
+    "category": "cms",
+    "signals": [
+      { "type": "header",       "name": "x-umbraco-version", "pattern": ".*", "weight": 95 },
+      { "type": "cookie-name",  "pattern": "^UMB_UCONTEXT$|^UMB-XSRF-TOKEN$", "weight": 85 },
+      { "type": "html-path",    "pattern": "/umbraco/", "weight": 75 },
+      { "type": "html-regex",   "pattern": "umbraco\\.js|UmbracoBookmarklets", "weight": 60 }
+    ],
+    "pageSlug": "umbraco"
+  },
+  {
+    "id": "hubspot-cms",
+    "name": "HubSpot CMS",
+    "category": "cms",
+    "signals": [
+      { "type": "header",     "name": "x-hs-cf-cache-status", "pattern": ".*", "weight": 85 },
+      { "type": "script-host","pattern": "js\\.hs-scripts\\.com|js\\.hsforms\\.net|hs-analytics\\.net", "weight": 80 },
+      { "type": "html-regex", "pattern": "hbspt\\.|hubspot\\.com/hs/", "weight": 70 }
+    ],
+    "pageSlug": "hubspot-cms"
+  },
+  {
+    "id": "sitecore",
+    "name": "Sitecore",
+    "category": "cms",
+    "signals": [
+      { "type": "cookie-name",  "pattern": "^SC_ANALYTICS_GLOBAL_COOKIE$|^sitecore_", "weight": 85 },
+      { "type": "html-regex",   "pattern": "sitecore/shell|sitecore\\.js", "weight": 70 },
+      { "type": "header",       "name": "x-sitecore-page-mode", "pattern": ".*", "weight": 90 }
+    ],
+    "pageSlug": "sitecore"
+  },
+  {
+    "id": "contentful",
+    "name": "Contentful-backed site",
+    "category": "cms",
+    "signals": [
+      { "type": "html-regex",   "pattern": "cdn\\.contentful\\.com|images\\.ctfassets\\.net|assets\\.ctfassets\\.net", "weight": 80 },
+      { "type": "script-host",  "pattern": "cdn\\.contentful\\.com|unpkg\\.com/contentful", "weight": 75 }
+    ],
+    "pageSlug": "contentful"
+  }
+]

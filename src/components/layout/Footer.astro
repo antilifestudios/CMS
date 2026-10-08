@@ -1,0 +1,149 @@
+---
+/**
+ * Footer — dark terminal surface.
+ * Follows DESIGN.md footer component spec.
+ */
+const year = new Date().getFullYear();
+
+const columns = [
+  {
+    eyebrow: 'Tools',
+    links: [
+      { href: '/', label: 'CMS Detector' },
+      { href: '/wordpress-theme-detector', label: 'WordPress Theme Detector' },
+      { href: '/shopify-theme-detector',   label: 'Shopify Theme Detector' },
+      { href: '/who-hosts-this-website',   label: 'Who Hosts This Website?' },
+      { href: '/is-this-site-wordpress',   label: 'Is This WordPress?' },
+    ],
+  },
+  {
+    eyebrow: 'Learn',
+    links: [
+      { href: '/guides/how-to-find-what-cms-a-website-uses', label: 'How to Find a Site\'s CMS' },
+      { href: '/guides/what-is-a-cms',                       label: 'What Is a CMS?' },
+      { href: '/methodology',                                 label: 'Methodology' },
+      { href: '/cms/wordpress',                               label: 'WordPress Detection' },
+      { href: '/cms/shopify',                                 label: 'Shopify Detection' },
+    ],
+  },
+  {
+    eyebrow: 'Company',
+    links: [
+      { href: '/about',   label: 'About' },
+      { href: '/contact', label: 'Contact' },
+    ],
+  },
+  {
+    eyebrow: 'Legal',
+    links: [
+      { href: '/privacy', label: 'Privacy Policy' },
+      { href: '/terms',   label: 'Terms of Use' },
+    ],
+  },
+];
+---
+
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <!-- Link grid -->
+    <div class="footer-grid">
+      {columns.map(({ eyebrow, links }) => (
+        <div class="footer-col">
+          <p class="type-mono-caps footer-eyebrow">{eyebrow}</p>
+          <ul role="list" class="footer-link-list">
+            {links.map(({ href, label }) => (
+              <li>
+                <a href={href} class="footer-link">{label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <hr class="divider" />
+
+    <!-- Bottom strip -->
+    <div class="footer-bottom">
+      <p class="type-meta text-mute">
+        © {year} CMS Detector AI. All rights reserved. Free, evidence-based CMS detection. No sign-up required.
+      </p>
+      <a href="/" class="wordmark-footer" aria-label="CMS Detector AI home">
+        <span class="brand-dot" style="inline-size:10px; block-size:10px;" aria-hidden="true"></span>
+        <span style="font-size:14px; font-weight:600; color:var(--color-ash);">CMS Detector AI</span>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<!-- Reserved collapsed ad container — no layout shift, zero size until ads are enabled -->
+<div id="ad-footer-container" aria-hidden="true" style="display:none; overflow:hidden; block-size:0;"></div>
+
+<style>
+  .footer {
+    background-color: var(--color-canvas);
+    color: var(--color-on-primary);
+    padding-block: var(--spacing-section);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-xl);
+    margin-block-end: var(--spacing-section);
+  }
+
+  .footer-eyebrow {
+    color: var(--color-mute);
+    margin: 0 0 16px 0;
+  }
+
+  .footer-link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-link {
+    font-size: 13px;
+    color: var(--color-ash);
+    transition: color 0.15s ease;
+  }
+
+  .footer-link:hover { color: var(--color-on-primary); }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block-start: var(--spacing-lg);
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+  }
+
+  .wordmark-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 376px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+    }
+    .footer-bottom {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>

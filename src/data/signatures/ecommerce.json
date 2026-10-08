@@ -1,0 +1,72 @@
+[
+  {
+    "id": "shopify",
+    "name": "Shopify",
+    "category": "ecommerce",
+    "signals": [
+      { "type": "html-regex",   "pattern": "cdn\\.shopify\\.com|Shopify\\.theme|myshopify\\.com", "weight": 85 },
+      { "type": "header",       "name": "x-shopify-stage", "pattern": ".*", "weight": 95 },
+      { "type": "cookie-name",  "pattern": "^_shopify_|^cart$", "weight": 70 },
+      { "type": "script-host",  "pattern": "cdn\\.shopify\\.com", "weight": 80 }
+    ],
+    "pageSlug": "shopify"
+  },
+  {
+    "id": "woocommerce",
+    "name": "WooCommerce",
+    "category": "ecommerce",
+    "signals": [
+      { "type": "html-path",   "pattern": "/wp-content/plugins/woocommerce/", "weight": 90 },
+      { "type": "cookie-name", "pattern": "^woocommerce_|^wc_session_cookie_", "weight": 80 },
+      { "type": "html-regex",  "pattern": "woocommerce\\.min\\.js|wc-add-to-cart", "weight": 70 }
+    ],
+    "excludes": ["wordpress-com"],
+    "pageSlug": "woocommerce"
+  },
+  {
+    "id": "magento",
+    "name": "Magento / Adobe Commerce",
+    "category": "ecommerce",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Magento", "weight": 90 },
+      { "type": "html-path",      "pattern": "/skin/frontend/|/js/mage/|/pub/static/", "weight": 75 },
+      { "type": "cookie-name",    "pattern": "^frontend$", "weight": 45 },
+      { "type": "html-regex",     "pattern": "Mage\\.Cookies|Magento_|/mage/", "weight": 70 }
+    ],
+    "pageSlug": "magento"
+  },
+  {
+    "id": "bigcommerce",
+    "name": "BigCommerce",
+    "category": "ecommerce",
+    "signals": [
+      { "type": "html-regex",   "pattern": "cdn[0-9]+\\.bigcommerce\\.com|BigCommerce", "weight": 85 },
+      { "type": "header",       "name": "x-bc-sid", "pattern": ".*", "weight": 90 },
+      { "type": "script-host",  "pattern": "cdn[0-9]+\\.bigcommerce\\.com", "weight": 80 }
+    ],
+    "pageSlug": "bigcommerce"
+  },
+  {
+    "id": "prestashop",
+    "name": "PrestaShop",
+    "category": "ecommerce",
+    "signals": [
+      { "type": "meta-generator", "pattern": "PrestaShop", "weight": 90 },
+      { "type": "html-path",      "pattern": "/modules/|/themes/.*prestashop", "weight": 60 },
+      { "type": "html-regex",     "pattern": "prestashop|window\\.prestashop", "weight": 70 },
+      { "type": "cookie-name",    "pattern": "^PrestaShop-", "weight": 80 }
+    ],
+    "pageSlug": "prestashop"
+  },
+  {
+    "id": "opencart",
+    "name": "OpenCart",
+    "category": "ecommerce",
+    "signals": [
+      { "type": "html-path",   "pattern": "/catalog/view/theme/|/image/catalog/", "weight": 75 },
+      { "type": "html-regex",  "pattern": "route=common/home|opencart", "weight": 65 },
+      { "type": "cookie-name", "pattern": "^OCSESSID$", "weight": 85 }
+    ],
+    "pageSlug": "opencart"
+  }
+]

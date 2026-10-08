@@ -1,0 +1,132 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'How accurate is CMS Detector AI?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'We optimise for precision over coverage: every headline answer carries Confirmed (90+) or Likely (70–89) confidence backed by listed evidence. When evidence is weak we label it Possible or say we cannot tell.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Do you store the URLs I check?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'No. Results are cached anonymously for one hour to reduce load; submitted URLs are never logged or stored.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'Why do some sites return no result?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'Custom-built sites expose no known fingerprints, bot protection blocks automated fetches, and client-rendered apps may serve empty HTML shells. We explain which case applies.',
+      },
+    },
+  ],
+  inLanguage: 'en',
+};
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cmsdetectorai.com' },
+    { '@type': 'ListItem', position: 2, name: 'Methodology', item: 'https://cmsdetectorai.com/methodology' },
+  ],
+};
+---
+
+<Base
+  title="How CMS Detection Works — Methodology | CMS Detector AI"
+  description="Learn exactly how CMS Detector AI identifies website technologies — signals, confidence scoring, and our commitment to accuracy."
+  pagePath="/methodology"
+  jsonLd={[faqJsonLd, breadcrumbJsonLd]}
+>
+  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="m-h1">
+    <div class="container">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow">Methodology</span>
+        <h1 id="m-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0; max-inline-size: 800px;">
+          How detection works — and what we refuse to guess
+        </h1>
+        <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 620px;">
+          Every answer shows its evidence. This page documents the pipeline,
+          the scoring, and the limits — so you can trust the result or reproduce it.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-light" aria-labelledby="pipeline-h2">
+    <div class="container">
+      <div class="prose">
+        <h2 id="pipeline-h2" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 16px 0;">The pipeline</h2>
+        <ol class="steps">
+          <li><strong>Normalise and validate.</strong> We add <code>https://</code> when missing, accept only <code>http/https</code> on ports 80/443, and reject localhost, literal IPs (including decimal, octal, and hex encodings), private suffixes (<code>.local</code>, <code>.internal</code>), and cloud-metadata hosts. Every redirect hop is re-validated.</li>
+          <li><strong>Fetch the page.</strong> Up to 5 redirects, an 8-second timeout, and at most 400&nbsp;KB of HTML streamed with a hard cap, using an honest crawler user agent. We collect the final URL, status code, response headers, cookie <em>names</em> (never values), and HTML.</li>
+          <li><strong>Match signatures.</strong> Data-driven JSON signatures match generator tags, asset paths, script hosts, headers, and cookie names with precompiled patterns — no full DOM parser, no JavaScript execution.</li>
+          <li><strong>Probe selectively.</strong> At most 4 extra requests: the WordPress REST API and theme stylesheet, plus a best-effort DNS check for CDN hostnames. Probes corroborate; they never invent a detection alone.</li>
+          <li><strong>Score and rank.</strong> Independent signals combine with diminishing returns up to 100; results group by category (CMS, builder, e-commerce, framework, hosting).</li>
+        </ol>
+
+        <h2 class="type-display-sm" style="color: var(--color-ink); margin: 32px 0 16px 0;">Confidence levels</h2>
+        <ul class="levels">
+          <li><strong>Confirmed (90+)</strong> — a unique fingerprint: a generator tag, a platform-only header, or the REST API responding.</li>
+          <li><strong>Likely (70–89)</strong> — multiple independent strong signals, or one strong asset-host signal.</li>
+          <li><strong>Possible (below 70)</strong> — a single weak heuristic. Shown labelled as such, never as the headline answer.</li>
+        </ul>
+        <p class="type-body" style="color: var(--color-slate);">The headline verdict appears only for Confirmed or Likely results. When nothing reaches that bar, we say the site may be custom-built and show what we <em>could</em> determine — headers, CDN, server software — with manual-check tips.</p>
+
+        <h2 class="type-display-sm" style="color: var(--color-ink); margin: 32px 0 16px 0;">Accuracy policy</h2>
+        <p class="type-body" style="color: var(--color-slate);">We optimise for precision over breadth (around 40 technologies in v1). Signatures that fire on generic markers — a bare <code>server: nginx</code> header, a common cookie, a ubiquitous security header — are removed or weighted so they can never confirm a detection alone. If you spot a wrong result, the “Result looks wrong?” link on every answer opens a pre-addressed email with the domain and verdict included.</p>
+
+        <h2 class="type-display-sm" style="color: var(--color-ink); margin: 32px 0 16px 0;">Limits we disclose</h2>
+        <ul class="levels">
+          <li><strong>Bot-protected sites</strong> (Cloudflare challenges, WAF blocks, 403/429/503) can’t be fetched; we report the block and any header evidence.</li>
+          <li><strong>Client-rendered apps</strong> serve near-empty HTML shells; we flag this and report framework hints only.</li>
+          <li><strong>Hardened or headless setups</strong> strip generator tags and remap paths; confidence drops accordingly instead of guessing.</li>
+          <li><strong>DNS pre-resolution isn’t possible</strong> inside the Workers runtime, so SSRF defence is hostname/policy-based plus Cloudflare’s own egress guards; redirect targets are re-validated.</li>
+        </ul>
+
+        <h2 class="type-display-sm" style="color: var(--color-ink); margin: 32px 0 16px 0;">Privacy</h2>
+        <p class="type-body" style="color: var(--color-slate);">Submitted URLs are never logged or stored. Successful results are cached anonymously for one hour to reduce load; page-derived strings are escaped before display. See the <a href="/privacy" class="text-link-light">privacy policy</a>.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-paper" aria-labelledby="m-faq">
+    <div class="container">
+      <div class="prose">
+        <h2 id="m-faq" class="type-display-sm" style="color: var(--color-ink); margin: 0 0 24px 0;">FAQ</h2>
+        <details class="card-light" style="margin-block-end: 12px;">
+          <summary class="type-heading-sm" style="color: var(--color-ink); cursor: pointer;">How accurate is CMS Detector AI?</summary>
+          <p class="type-body" style="color: var(--color-slate);">We optimise for precision over coverage: every headline answer carries Confirmed or Likely confidence backed by listed evidence. Weak evidence is labelled Possible or omitted.</p>
+        </details>
+        <details class="card-light" style="margin-block-end: 12px;">
+          <summary class="type-heading-sm" style="color: var(--color-ink); cursor: pointer;">Do you store the URLs I check?</summary>
+          <p class="type-body" style="color: var(--color-slate);">No. Results are cached anonymously for one hour; submitted URLs are never logged or stored.</p>
+        </details>
+        <details class="card-light">
+          <summary class="type-heading-sm" style="color: var(--color-ink); cursor: pointer;">Why do some sites return no result?</summary>
+          <p class="type-body" style="color: var(--color-slate);">Custom builds expose no known fingerprints, bot protection blocks automated fetches, and client-rendered apps may serve empty shells. We explain which case applies.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .prose { max-inline-size: 720px; }
+  .prose p { margin: 0 0 16px 0; }
+  .steps, .levels { margin: 0 0 16px 0; padding-inline-start: 22px; display: flex; flex-direction: column; gap: 10px; }
+  .steps li, .levels li { color: var(--color-slate); font-size: 16px; line-height: 1.5; }
+  .steps li strong, .levels li strong { color: var(--color-ink); }
+  .prose code { font-family: var(--font-mono); font-size: 13px; background: var(--color-hairline); padding: 2px 6px; border-radius: 3px; }
+</style>

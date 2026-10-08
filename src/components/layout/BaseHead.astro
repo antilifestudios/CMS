@@ -1,0 +1,136 @@
+---
+/**
+ * BaseHead — shared <head> content for every page.
+ * Handles: title, meta, canonical, OG, Twitter, hreflang, JSON-LD.
+ */
+import { buildHreflangLinks } from '../../i18n/index';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Relative path of the current page, e.g. "/" or "/methodology" */
+  pagePath?: string;
+  /** Whether this page should be excluded from search engines */
+  noindex?: boolean;
+  /** OG image URL (absolute) */
+  ogImage?: string;
+  /** Locale code, e.g. "en" */
+  locale?: string;
+  /** Extra JSON-LD object(s) to inject */
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Canonical URL override (absolute) */
+  canonical?: string;
+}
+
+const {
+  title,
+  description,
+  pagePath = '/',
+  noindex = false,
+  ogImage = 'https://cmsdetectorai.com/og-default.svg',
+  locale = 'en',
+  jsonLd,
+  canonical: canonicalOverride,
+} = Astro.props;
+
+const siteUrl = 'https://cmsdetectorai.com';
+const canonical = canonicalOverride ?? `${siteUrl}${pagePath}`;
+const hreflangLinks = buildHreflangLinks(pagePath, siteUrl);
+
+// Turnstile site key (PUBLIC_ prefix exposes it to the client safely —
+// it is a public site key, not a secret). Empty = challenge disabled.
+const turnstileSiteKey = (import.meta.env?.PUBLIC_TURNSTILE_SITEKEY as string | undefined) ?? '';
+
+// Base JSON-LD (WebSite + Organization on homepage)
+const isHome = pagePath === '/';
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'CMS Detector AI',
+  alternateName: 'CMS Detector',
+  url: siteUrl,
+  inLanguage: locale,
+};
+const orgJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'CMS Detector AI',
+  url: siteUrl,
+};
+
+const allJsonLd: Record<string, unknown>[] = isHome
+  ? [websiteJsonLd, orgJsonLd]
+  : [];
+
+if (jsonLd) {
+  if (Array.isArray(jsonLd)) allJsonLd.push(...jsonLd);
+  else allJsonLd.push(jsonLd);
+}
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<!-- Primary meta -->
+<title>{title}</title>
+<meta name="description" content={description} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Canonical -->
+<link rel="canonical" href={canonical} />
+
+<!-- hreflang (only when there are published translations) -->
+{hreflangLinks.map(({ hreflang, href }) => (
+  <link rel="alternate" hreflang={hreflang} href={href} />
+))}
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:site_name" content="CMS Detector AI" />
+<meta property="og:locale" content={locale === 'en' ? 'en_US' : locale} />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+<!-- Webmaster verification placeholders -->
+<!-- <meta name="google-site-verification" content="REPLACE_ME" /> -->
+<!-- <meta name="msvalidate.01" content="REPLACE_ME" /> -->
+
+<!-- GA placeholder -->
+<!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->
+
+<!-- Turnstile (enabled only when PUBLIC_TURNSTILE_SITEKEY is set).
+     Invisible managed challenge on the detect request; no accounts. -->
+{turnstileSiteKey && (
+  <meta name="turnstile-sitekey" content={turnstileSiteKey} />
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer />
+)}
+
+<!-- Fonts (Inter substitutes waldenburgNormal per DESIGN.md; IBM Plex Mono for eyebrows) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap"
+  rel="stylesheet"
+/>
+
+<!-- Shared Turnstile token helper (tiny, deferred, no dependencies) -->
+<script src="/js/detect-token.js" defer></script>
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="manifest" href="/site.webmanifest" />
+
+<!-- JSON-LD -->
+{allJsonLd.map((ld) => (
+  <script type="application/ld+json" set:html={JSON.stringify(ld)} />
+))}

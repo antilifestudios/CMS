@@ -1,0 +1,195 @@
+---
+/**
+ * Header — sticky dark nav bar.
+ * Follows DESIGN.md nav-bar-dark component spec.
+ */
+interface Props {
+  locale?: string;
+}
+const { locale = 'en' } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+const navLinks = [
+  { href: '/wordpress-theme-detector', label: 'WP Theme Detector' },
+  { href: '/shopify-theme-detector',   label: 'Shopify Detector' },
+  { href: '/who-hosts-this-website',   label: 'Hosting Detector' },
+  { href: '/methodology',              label: 'How It Works' },
+];
+---
+
+<header class="nav-bar" role="banner">
+  <div class="container">
+    <nav
+      class="nav-inner"
+      aria-label="Main navigation"
+    >
+      <!-- Wordmark -->
+      <a href="/" class="wordmark" aria-label="CMS Detector AI home">
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="wordmark-text">CMS Detector AI</span>
+      </a>
+
+      <!-- Desktop nav links -->
+      <ul class="nav-links" role="list" id="nav-links">
+        {navLinks.map(({ href, label }) => (
+          <li>
+            <a
+              href={href}
+              class={`nav-link${currentPath.startsWith(href) ? ' nav-link--active' : ''}`}
+              aria-current={currentPath.startsWith(href) ? 'page' : undefined}
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Right cluster -->
+      <div class="nav-actions">
+        <!-- Language switcher — only shown when multiple locales are published -->
+        <!-- Placeholder, extended in i18n expansion -->
+
+        <a href="/" class="btn btn-primary" id="nav-cta">
+          Detect a Site
+        </a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button
+        class="hamburger btn-ghost-dark"
+        id="hamburger"
+        aria-expanded="false"
+        aria-controls="nav-links"
+        aria-label="Toggle navigation"
+      >
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <rect y="3"  width="20" height="2" rx="1" fill="currentColor"/>
+          <rect y="9"  width="20" height="2" rx="1" fill="currentColor"/>
+          <rect y="15" width="20" height="2" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+  }
+
+  .wordmark {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .wordmark-text {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    margin-inline-start: auto;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-ash);
+    border-radius: var(--radius-app-md);
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link--active {
+    color: var(--color-on-primary);
+    background-color: var(--color-canvas-soft);
+  }
+
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    margin-inline-start: 16px;
+  }
+
+  .hamburger {
+    display: none;
+    margin-inline-start: auto;
+  }
+
+  /* Mobile */
+  @media (max-width: 960px) {
+    .nav-links {
+      display: none;
+      position: fixed;
+      inset: 64px 0 0 0;
+      background-color: var(--color-canvas);
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      padding: 16px;
+      margin: 0;
+      border-block-start: 1px solid var(--color-hairline-soft);
+      z-index: 99;
+      overflow-y: auto;
+    }
+
+    .nav-links.is-open {
+      display: flex;
+    }
+
+    .nav-links li { width: 100%; }
+
+    .nav-link {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 16px;
+      border-radius: var(--radius-app-md);
+    }
+
+    .hamburger { display: flex; }
+    .nav-actions { margin-inline-start: auto; }
+    #nav-cta { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .wordmark-text {
+      font-size: 14px;
+    }
+  }
+</style>
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.getElementById('nav-links');
+
+  hamburger?.addEventListener('click', () => {
+    const isOpen = navLinks?.classList.toggle('is-open');
+    hamburger.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!hamburger?.contains(e.target as Node) &&
+        !navLinks?.contains(e.target as Node)) {
+      navLinks?.classList.remove('is-open');
+      hamburger?.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>

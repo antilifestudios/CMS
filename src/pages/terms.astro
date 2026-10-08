@@ -1,0 +1,41 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Terms of Use — CMS Detector AI"
+  description="Terms of service for using CMS Detector AI: fair use, no guarantees, and acceptable use."
+  pagePath="/terms"
+>
+  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="t-h1">
+    <div class="container">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow">Legal</span>
+        <h1 id="t-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0;">Terms of use</h1>
+      </div>
+    </div>
+  </section>
+  <section class="section-light">
+    <div class="container">
+      <div class="narrow">
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">The service</h2>
+        <p class="type-body" style="color: var(--color-slate);">CMS Detector AI is a free tool that analyses publicly accessible web pages and reports which technologies they appear to use. It is provided “as is”, without warranties of any kind.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">No guarantees</h2>
+        <p class="type-body" style="color: var(--color-slate);">Detections are best-effort interpretations of public signals with stated confidence levels — not certifications. Do not base security, legal, or purchasing decisions solely on a result without independent verification (see our <a href="/guides/how-to-find-what-cms-a-website-uses" class="text-link-light">manual verification guide</a>).</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Fair use</h2>
+        <p class="type-body" style="color: var(--color-slate);">You may use the tool for any lawful purpose. Automated bulk querying that degrades the service for others is not permitted; rate limiting and bot verification may apply to protect availability.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Acceptable use</h2>
+        <p class="type-body" style="color: var(--color-slate);">Do not submit URLs intended to probe non-public infrastructure, and do not attempt to bypass the tool’s SSRF protections. We block private, internal, and literal-IP targets by design.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Changes</h2>
+        <p class="type-body" style="color: var(--color-slate);">These terms may be updated as the service evolves. Continued use constitutes acceptance. Contact: <a href="mailto:hello@cmsdetectorai.com" class="text-link-light">hello@cmsdetectorai.com</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .narrow { max-inline-size: 720px; }
+  .narrow p { margin: 0 0 20px 0; }
+  .narrow h2 { margin: 28px 0 8px 0; }
+  .narrow h2:first-child { margin-block-start: 0; }
+</style>

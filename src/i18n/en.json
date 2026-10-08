@@ -1,0 +1,151 @@
+{
+  "site": {
+    "name": "CMS Detector AI",
+    "tagline": "What CMS Is This Website Using?",
+    "description": "Instantly detect what CMS, framework, or platform any website uses — free, no sign-up, evidence-based results in under 3 seconds.",
+    "url": "https://cmsdetectorai.com"
+  },
+  "nav": {
+    "home": "CMS Detector",
+    "wpDetector": "WordPress Theme Detector",
+    "shopifyDetector": "Shopify Theme Detector",
+    "hostingDetector": "Who Hosts This Website",
+    "guides": "Guides",
+    "methodology": "How It Works",
+    "about": "About"
+  },
+  "hero": {
+    "eyebrow": "Free · Instant · Evidence-based",
+    "h1": "What CMS Is This Website Using?",
+    "subtitle": "Paste any URL and we'll identify the platform, theme, framework, and hosting — with proof, not guesses.",
+    "inputPlaceholder": "https://example.com",
+    "inputLabel": "Website URL",
+    "submitButton": "Detect",
+    "detectingLabel": "Detecting…",
+    "recentLabel": "Recent checks:",
+    "clearRecent": "Clear"
+  },
+  "result": {
+    "headline": "Detection results for",
+    "confidence": {
+      "confirmed": "Confirmed",
+      "likely": "Likely",
+      "possible": "Possible"
+    },
+    "categories": {
+      "cms": "CMS / Platform",
+      "builder": "Site Builder",
+      "ecommerce": "E-commerce",
+      "framework": "Framework",
+      "hosting": "Hosting & CDN",
+      "theme": "Theme",
+      "plugin": "Plugins Detected",
+      "other": "Other"
+    },
+    "evidence": {
+      "label": "Why we think this",
+      "types": {
+        "meta-generator": "Generator meta tag",
+        "html-path": "HTML asset path",
+        "html-regex": "HTML pattern",
+        "script-host": "Script hostname",
+        "header": "HTTP header",
+        "cookie-name": "Cookie name",
+        "probe": "Secondary probe"
+      }
+    },
+    "checkAnother": "Check another site",
+    "reportWrong": "Result looks wrong?",
+    "learnMore": "Learn about",
+    "noMatch": "No known platform detected",
+    "noMatchExplain": "This site may be custom-built. Here's what we could determine:",
+    "manualTips": "How to check manually",
+    "shareableLink": "Shareable link"
+  },
+  "errors": {
+    "INVALID_URL": "Please enter a valid website URL (e.g. https://example.com).",
+    "PRIVATE_IP": "Private or internal addresses cannot be checked for security reasons.",
+    "BLOCKED": "This site returned a bot-protection response. We can't analyse it, but we did collect some header information.",
+    "TIMEOUT": "The request timed out after 8 seconds. The site may be slow or blocking automated access.",
+    "DNS_FAILURE": "We couldn't resolve the domain. Double-check the URL and try again.",
+    "INVALID_TLS": "The site has a TLS certificate error. We can't safely connect to it.",
+    "NON_HTML": "The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).",
+    "CLIENT_RENDERED": "The page returned an empty HTML shell — it's likely a client-rendered (SPA) site. We detected some hints:",
+    "REDIRECT_LOOP": "We detected a redirect loop and stopped following redirects.",
+    "UNKNOWN": "An unexpected error occurred. Please try again.",
+    "TURNSTILE_FAILED": "Bot verification failed. Please try again.",
+    "RATE_LIMITED": "Too many requests. Please wait a moment and try again."
+  },
+  "footer": {
+    "tagline": "Free, evidence-based CMS detection. No sign-up required.",
+    "columns": {
+      "tools": "Tools",
+      "learn": "Learn",
+      "company": "Company",
+      "legal": "Legal"
+    },
+    "links": {
+      "cmsDetector": "CMS Detector",
+      "wpDetector": "WordPress Theme Detector",
+      "shopifyDetector": "Shopify Theme Detector",
+      "hostingDetector": "Who Hosts This?",
+      "isWordpress": "Is This WordPress?",
+      "guideFindCms": "How to Find a CMS",
+      "guideWhatIsCms": "What Is a CMS?",
+      "methodology": "Methodology",
+      "about": "About",
+      "contact": "Contact",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Use"
+    },
+    "copyright": "© {year} CMS Detector AI. All rights reserved.",
+    "languageSwitcherLabel": "Language"
+  },
+  "accessibility": {
+    "skipToMain": "Skip to main content",
+    "menuToggle": "Toggle navigation",
+    "closeMenu": "Close menu"
+  },
+  "seo": {
+    "home": {
+      "title": "CMS Detector: What CMS Is This Website Using? | CMS Detector AI",
+      "description": "Free, instant CMS detection — discover the platform, theme, and hosting of any website with evidence-based results. No sign-up needed."
+    },
+    "wpDetector": {
+      "title": "WordPress Theme Detector — Find Any WordPress Theme Free",
+      "description": "Instantly detect the WordPress theme and child theme of any site — including theme name, author, and version. Free, no sign-up."
+    },
+    "shopifyDetector": {
+      "title": "Shopify Theme Detector — Identify Any Shopify Store's Theme",
+      "description": "Find the Shopify theme powering any store, including theme name and store ID. Free CMS Detector AI tool."
+    },
+    "hostingDetector": {
+      "title": "Who Hosts This Website? — Free Hosting & CDN Detector",
+      "description": "Find out who hosts any website — including CDN, server software, and cloud provider — in seconds. Free, evidence-based."
+    },
+    "isWordpress": {
+      "title": "Is This Site Built on WordPress? — Instant WordPress Checker",
+      "description": "Quickly check whether any website runs on WordPress. Get a clear yes/no answer backed by real evidence."
+    },
+    "methodology": {
+      "title": "How CMS Detection Works — Methodology | CMS Detector AI",
+      "description": "Learn exactly how CMS Detector AI identifies website technologies — signals, confidence scoring, and our commitment to accuracy."
+    },
+    "about": {
+      "title": "About CMS Detector AI — Free, Honest CMS Detection",
+      "description": "CMS Detector AI is a free tool for identifying website platforms. No sign-up, no ads, no data storage."
+    },
+    "contact": {
+      "title": "Contact — CMS Detector AI",
+      "description": "Get in touch with the CMS Detector AI team."
+    },
+    "privacy": {
+      "title": "Privacy Policy — CMS Detector AI",
+      "description": "How CMS Detector AI handles your data. Short version: we don't store the URLs you check."
+    },
+    "terms": {
+      "title": "Terms of Use — CMS Detector AI",
+      "description": "Terms of service for using CMS Detector AI."
+    }
+  }
+}

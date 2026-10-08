@@ -1,0 +1,122 @@
+[
+  {
+    "id": "wix",
+    "name": "Wix",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Wix\\.com Website Builder", "weight": 95 },
+      { "type": "html-regex",     "pattern": "wix\\.com/.*\\.js|X-Wix-Published-Version|wixstatic\\.com", "weight": 80 },
+      { "type": "script-host",    "pattern": "static\\.parastorage\\.com|static\\.wixstatic\\.com", "weight": 85 },
+      { "type": "header",         "name": "x-wix-request-id", "pattern": ".*", "weight": 90 }
+    ],
+    "pageSlug": "wix"
+  },
+  {
+    "id": "squarespace",
+    "name": "Squarespace",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Squarespace", "weight": 95 },
+      { "type": "html-regex",     "pattern": "squarespace\\.com|squarespace-cdn\\.com", "weight": 80 },
+      { "type": "script-host",    "pattern": "static1\\.squarespace\\.com", "weight": 85 },
+      { "type": "cookie-name",    "pattern": "^SQspaceCookie$|^ss-", "weight": 70 }
+    ],
+    "pageSlug": "squarespace"
+  },
+  {
+    "id": "webflow",
+    "name": "Webflow",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Webflow", "weight": 95 },
+      { "type": "html-regex",     "pattern": "webflow\\.com|assets\\.website-files\\.com", "weight": 80 },
+      { "type": "script-host",    "pattern": "assets\\.website-files\\.com|uploads-ssl\\.webflow\\.com", "weight": 85 },
+      { "type": "header",         "name": "x-wf-request-id", "pattern": ".*", "weight": 88 }
+    ],
+    "pageSlug": "webflow"
+  },
+  {
+    "id": "framer",
+    "name": "Framer",
+    "category": "builder",
+    "signals": [
+      { "type": "html-regex",     "pattern": "framer\\.com|framerusercontent\\.com", "weight": 80 },
+      { "type": "script-host",    "pattern": "framerusercontent\\.com", "weight": 85 },
+      { "type": "meta-generator", "pattern": "Framer", "weight": 90 },
+      { "type": "header",         "name": "x-framer-version", "pattern": ".*", "weight": 90 }
+    ],
+    "pageSlug": "framer"
+  },
+  {
+    "id": "weebly",
+    "name": "Weebly",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Weebly", "weight": 90 },
+      { "type": "html-regex",     "pattern": "weebly\\.com|editmysite\\.com", "weight": 75 },
+      { "type": "script-host",    "pattern": "cdn\\.editmysite\\.com|weebly\\.com", "weight": 70 }
+    ],
+    "pageSlug": "weebly"
+  },
+  {
+    "id": "godaddy-builder",
+    "name": "GoDaddy Website Builder",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "GoDaddy Website Builder|SitePad|Olitt", "weight": 90 },
+      { "type": "html-regex",     "pattern": "godaddy\\.com/website-builder|ols\\.env", "weight": 70 },
+      { "type": "header",         "name": "server", "pattern": "SITEPAD", "weight": 85 }
+    ],
+    "pageSlug": "godaddy-builder"
+  },
+  {
+    "id": "jimdo",
+    "name": "Jimdo",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Jimdo", "weight": 95 },
+      { "type": "html-regex",     "pattern": "jimdocdn\\.com|static\\.jimdo\\.com", "weight": 80 }
+    ],
+    "pageSlug": "jimdo"
+  },
+  {
+    "id": "strikingly",
+    "name": "Strikingly",
+    "category": "builder",
+    "signals": [
+      { "type": "html-regex",     "pattern": "strikinglycdn\\.com|s\\.strikingly\\.com", "weight": 85 },
+      { "type": "meta-generator", "pattern": "Strikingly", "weight": 95 }
+    ],
+    "pageSlug": "strikingly"
+  },
+  {
+    "id": "google-sites",
+    "name": "Google Sites",
+    "category": "builder",
+    "signals": [
+      { "type": "html-regex",   "pattern": "sites\\.google\\.com|gstatic\\.com/sites/|sites\\.googleusercontent\\.com", "weight": 85 },
+      { "type": "script-host",  "pattern": "sites\\.google\\.com", "weight": 80 }
+    ],
+    "pageSlug": "google-sites"
+  },
+  {
+    "id": "carrd",
+    "name": "Carrd",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "Carrd", "weight": 95 },
+      { "type": "html-regex",     "pattern": "assets\\.carrd\\.co|carrd-static", "weight": 85 }
+    ],
+    "pageSlug": "carrd"
+  },
+  {
+    "id": "site123",
+    "name": "SITE123",
+    "category": "builder",
+    "signals": [
+      { "type": "meta-generator", "pattern": "SITE123", "weight": 95 },
+      { "type": "html-regex",     "pattern": "site123static\\.com|s123-cdn-static", "weight": 80 }
+    ],
+    "pageSlug": "site123"
+  }
+]

@@ -1,0 +1,34 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="About CMS Detector AI — Free, Honest CMS Detection"
+  description="CMS Detector AI is a free tool for identifying website platforms. No sign-up, no ads, no data storage."
+  pagePath="/about"
+>
+  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="a-h1">
+    <div class="container">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow">About</span>
+        <h1 id="a-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0; max-inline-size: 800px;">
+          Evidence-based answers, zero friction
+        </h1>
+      </div>
+    </div>
+  </section>
+  <section class="section-light">
+    <div class="container">
+      <div class="narrow">
+        <p class="type-body" style="color: var(--color-slate);">CMS Detector AI answers one question — <em>what is this website built with?</em> — with proof attached. Every detection lists the exact artifacts matched and a confidence level. When we can’t tell, we say so and explain why, instead of guessing.</p>
+        <p class="type-body" style="color: var(--color-slate);">There is no sign-up, no pricing page, no popups, and no newsletter modal. Submitted URLs are never stored on our servers. The tool runs on Cloudflare’s free tier: content pages are prerendered static HTML, and detection runs in a Worker at the edge.</p>
+        <p class="type-body" style="color: var(--color-slate);">Read <a href="/methodology" class="text-link-light">how detection works</a>, learn <a href="/guides/how-to-find-what-cms-a-website-uses" class="text-link-light">the manual method</a>, or <a href="/contact" class="text-link-light">get in touch</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .narrow { max-inline-size: 720px; }
+  .narrow p { margin: 0 0 16px 0; }
+</style>

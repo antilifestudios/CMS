@@ -1,0 +1,43 @@
+---
+export const prerender = true;
+import Base from '../layouts/Base.astro';
+---
+
+<Base
+  title="Privacy Policy — CMS Detector AI"
+  description="How CMS Detector AI handles your data. Short version: we don't store the URLs you check."
+  pagePath="/privacy"
+>
+  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="p-h1">
+    <div class="container">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow">Legal</span>
+        <h1 id="p-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0;">Privacy policy</h1>
+        <p class="type-subtitle text-ash" style="margin: 0;">Short version: we don’t store the URLs you check.</p>
+      </div>
+    </div>
+  </section>
+  <section class="section-light">
+    <div class="container">
+      <div class="narrow">
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">What we collect</h2>
+        <p class="type-body" style="color: var(--color-slate);">Almost nothing. There are no accounts, no cookies for tracking, and no analytics in v1 beyond placeholder verification tags. When you run a check, our Worker fetches the target site’s public HTML and headers to analyse them — the URL you enter is used for that single request and never logged or stored.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Caching</h2>
+        <p class="type-body" style="color: var(--color-slate);">Successful detection results are cached anonymously for about one hour to reduce load. The cache key is derived from the site’s hostname and path only, and contains no user identifiers.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Your checks stay yours</h2>
+        <p class="type-body" style="color: var(--color-slate);">The “recent checks” list lives only in your browser’s localStorage and never leaves your device. Shareable <code>?url=</code> links contain the URL in plain text by design — only share links you’re comfortable exposing.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Fetching third-party sites</h2>
+        <p class="type-body" style="color: var(--color-slate);">Detection fetches public pages with an honest crawler user agent and never executes page scripts. We only read response headers, cookie names (not values), and capped HTML.</p>
+        <h2 class="type-heading-sm" style="color: var(--color-ink);">Contact</h2>
+        <p class="type-body" style="color: var(--color-slate);">Questions: <a href="mailto:hello@cmsdetectorai.com" class="text-link-light">hello@cmsdetectorai.com</a>.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+<style>
+  .narrow { max-inline-size: 720px; }
+  .narrow p { margin: 0 0 20px 0; }
+  .narrow h2 { margin: 28px 0 8px 0; }
+  .narrow h2:first-child { margin-block-start: 0; }
+  .narrow code { font-family: var(--font-mono); font-size: 13px; background: var(--color-hairline); padding: 2px 6px; border-radius: 3px; }
+</style>

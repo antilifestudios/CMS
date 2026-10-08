@@ -1,0 +1,108 @@
+---
+export const prerender = true;
+import Base from '../../layouts/Base.astro';
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: [
+    {
+      '@type': 'Question',
+      name: 'What is a CMS?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A content management system is software for creating, organising, and publishing digital content without hand-coding every page — e.g. WordPress, Drupal, Shopify, or Contentful.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is the difference between a CMS and a website builder?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A CMS manages content separately from design and can be self-hosted and extended; a website builder (Wix, Squarespace) bundles hosting, templates, and editing into one closed service.',
+      },
+    },
+    {
+      '@type': 'Question',
+      name: 'What is a headless CMS?',
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: 'A headless CMS stores content and serves it via API while developers build the front-end separately — e.g. Contentful with a Next.js site.',
+      },
+    },
+  ],
+  inLanguage: 'en',
+};
+---
+
+<Base
+  title="What Is a CMS? Types, Examples & How to Choose"
+  description="A plain-language explainer: what a CMS is, CMS vs builders vs headless, real examples, and how to pick one."
+  pagePath="/guides/what-is-a-cms"
+  jsonLd={faqJsonLd}
+>
+  <section class="section-dark" style="padding-block: var(--spacing-section);" aria-labelledby="c-h1">
+    <div class="container">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow">Guide · Explainer</span>
+        <h1 id="c-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0; max-inline-size: 800px;">
+          What is a CMS?
+        </h1>
+        <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 620px;">
+          The software behind most of the web — explained without jargon.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-light">
+    <div class="container">
+      <div class="prose">
+        <p class="type-body" style="color: var(--color-slate);">A <strong style="color: var(--color-ink);">content management system (CMS)</strong> is software for creating, organising, and publishing digital content without hand-coding every page. It separates <em>content</em> (your words, images, products) from <em>presentation</em> (themes, templates), so editors can publish while developers control the design.</p>
+
+        <h2 class="type-heading-md" style="color: var(--color-ink); margin: 32px 0 12px 0;">The three main types</h2>
+        <ul class="bullets">
+          <li><strong>Traditional CMS</strong> — content and front-end in one app. Examples: <a href="/cms/wordpress" class="text-link-light">WordPress</a>, <a href="/cms/drupal" class="text-link-light">Drupal</a>, <a href="/cms/joomla" class="text-link-light">Joomla</a>. Fastest path to a full site.</li>
+          <li><strong>Headless CMS</strong> — content via API, any front-end. Examples: <a href="/cms/contentful" class="text-link-light">Contentful</a>, Ghost (headless mode). Best for apps plus web from one content hub.</li>
+          <li><strong>Commerce CMS</strong> — products, carts, checkout built in. Examples: <a href="/cms/shopify" class="text-link-light">Shopify</a>, <a href="/cms/woocommerce" class="text-link-light">WooCommerce</a>. Built to sell.</li>
+        </ul>
+
+        <h2 class="type-heading-md" style="color: var(--color-ink); margin: 32px 0 12px 0;">CMS vs website builder</h2>
+        <p class="type-body" style="color: var(--color-slate);">A website builder (<a href="/cms/wix" class="text-link-light">Wix</a>, <a href="/cms/squarespace" class="text-link-light">Squarespace</a>, <a href="/cms/webflow" class="text-link-light">Webflow</a>) bundles hosting, templates, and editing into one closed service — simpler, but you rent rather than own the stack. A CMS can be self-hosted, extended with plugins, and migrated. Builders win on speed; CMSs win on control.</p>
+
+        <h2 class="type-heading-md" style="color: var(--color-ink); margin: 32px 0 12px 0;">How to choose</h2>
+        <ul class="bullets">
+          <li><strong>Blog or business site, fast:</strong> WordPress or Ghost.</li>
+          <li><strong>Online store:</strong> Shopify (hosted) or WooCommerce (self-hosted on WordPress).</li>
+          <li><strong>Design-led marketing site:</strong> Webflow or Framer.</li>
+          <li><strong>Enterprise / complex permissions:</strong> Drupal, TYPO3, or Sitecore.</li>
+          <li><strong>Content across web + apps:</strong> headless (Contentful) with a framework like Next.js.</li>
+        </ul>
+
+        <p class="type-body" style="color: var(--color-slate);">Curious what a specific site runs on? <a href="/" class="text-link-light">Detect it free</a> — or follow <a href="/guides/how-to-find-what-cms-a-website-uses" class="text-link-light">the manual method</a>.</p>
+
+        <h2 class="type-heading-md" style="color: var(--color-ink); margin: 32px 0 12px 0;">FAQ</h2>
+        <details class="card-light" style="margin-block-end: 12px;">
+          <summary class="type-heading-sm" style="color: var(--color-ink); cursor: pointer;">What is a CMS?</summary>
+          <p class="type-body" style="color: var(--color-slate);">Software for creating, organising, and publishing digital content without hand-coding every page.</p>
+        </details>
+        <details class="card-light" style="margin-block-end: 12px;">
+          <summary class="type-heading-sm" style="color: var(--color-ink); cursor: pointer;">What is the difference between a CMS and a website builder?</summary>
+          <p class="type-body" style="color: var(--color-slate);">A CMS manages content separately from design and can be self-hosted; a builder bundles hosting, templates, and editing into one closed service.</p>
+        </details>
+        <details class="card-light">
+          <summary class="type-heading-sm" style="color: var(--color-ink); cursor: pointer;">What is a headless CMS?</summary>
+          <p class="type-body" style="color: var(--color-slate);">A CMS that serves content via API while developers build the front-end separately — e.g. Contentful with a Next.js site.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .prose { max-inline-size: 720px; }
+  .prose p { margin: 0 0 16px 0; }
+  .bullets { margin: 0 0 16px 0; padding-inline-start: 22px; display: flex; flex-direction: column; gap: 10px; }
+  .bullets li { color: var(--color-slate); font-size: 16px; line-height: 1.6; }
+  .bullets li strong { color: var(--color-ink); }
+</style>
