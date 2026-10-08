@@ -79,6 +79,14 @@ import ThemeCard from '../components/ThemeCard.astro';
               </button>
             </div>
           </form>
+          <p class="type-caption wp-examples" style="margin: var(--spacing-sm) 0 0 0;">
+            <span class="text-mute">Try an example:</span>
+            <button type="button" class="wp-example-link" data-wp-example="getifinity.com">getifinity.com</button>
+            <span class="text-mute" aria-hidden="true">·</span>
+            <button type="button" class="wp-example-link" data-wp-example="engnovate.com">engnovate.com</button>
+            <span class="text-mute" aria-hidden="true">·</span>
+            <button type="button" class="wp-example-link" data-wp-example="pallion.com">pallion.com</button>
+          </p>
           <div id="wp-result"  hidden aria-live="polite"  style="margin-block-start: var(--spacing-xl);"></div>
           <div id="wp-loading" hidden aria-live="polite"  aria-busy="true" style="margin-block-start: var(--spacing-xl);">
             <div class="skeleton-card">
@@ -211,6 +219,20 @@ import ThemeCard from '../components/ThemeCard.astro';
   .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
   .url-input::placeholder { color: var(--color-slate-soft); }
   .detect-btn { block-size: 56px; }
+  .wp-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+  .wp-example-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: var(--color-link-blue-soft);
+    text-decoration: underline;
+    text-decoration-color: rgba(85, 190, 255, 0.45);
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .wp-example-link:hover { text-decoration-color: var(--color-link-blue-soft); }
+  .wp-example-link:focus-visible { outline: 2px solid var(--color-link-blue-soft); outline-offset: 2px; border-radius: 2px; }
   .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: var(--spacing-sm); }
   .sk-row { block-size: 20px; border-radius: var(--radius-app-sm); }
   .sk-headline { inline-size: 60%; block-size: 32px; }
@@ -308,5 +330,13 @@ form?.addEventListener('submit', (e) => {
   e.preventDefault();
   const url = urlInput?.value.trim() ?? '';
   if (url) detect(url);
+});
+document.querySelectorAll<HTMLButtonElement>('[data-wp-example]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    if (!urlInput || !form) return;
+    urlInput.value = btn.dataset.wpExample ?? '';
+    urlInput.focus();
+    form.requestSubmit();
+  });
 });
 </script>

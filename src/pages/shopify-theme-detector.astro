@@ -67,6 +67,14 @@ import ThemeCard from '../components/ThemeCard.astro';
               <button type="submit" class="btn btn-primary detect-btn" id="shopify-submit">Find Theme</button>
             </div>
           </form>
+          <p class="type-caption shopify-examples" style="margin: var(--spacing-sm) 0 0 0;">
+            <span class="text-mute">Try an example:</span>
+            <button type="button" class="shopify-example-link" data-shopify-example="gymshark.com">gymshark.com</button>
+            <span class="text-mute" aria-hidden="true">·</span>
+            <button type="button" class="shopify-example-link" data-shopify-example="allbirds.com">allbirds.com</button>
+            <span class="text-mute" aria-hidden="true">·</span>
+            <button type="button" class="shopify-example-link" data-shopify-example="kyliecosmetics.com">kyliecosmetics.com</button>
+          </p>
           <div id="shopify-loading" hidden style="margin-block-start: 24px;">
             <div class="skeleton-card">
               <div class="skeleton sk-row" style="block-size: 32px; inline-size: 60%; border-radius: 4px;"></div>
@@ -166,6 +174,20 @@ import ThemeCard from '../components/ThemeCard.astro';
   .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
   .url-input::placeholder { color: var(--color-slate-soft); }
   .detect-btn { block-size: 56px; }
+  .shopify-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+  .shopify-example-link {
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    color: var(--color-link-blue-soft);
+    text-decoration: underline;
+    text-decoration-color: rgba(85, 190, 255, 0.45);
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .shopify-example-link:hover { text-decoration-color: var(--color-link-blue-soft); }
+  .shopify-example-link:focus-visible { outline: 2px solid var(--color-link-blue-soft); outline-offset: 2px; border-radius: 2px; }
   .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
   .theme-grid > :global(article) { min-inline-size: 0; }
@@ -220,5 +242,13 @@ form?.addEventListener('submit', async (e) => {
     if (btn) { btn.disabled = false; btn.textContent = 'Find Theme'; }
     if (errEl) { errEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Network error. Please try again.</p></div>`; errEl.hidden = false; }
   }
+});
+document.querySelectorAll<HTMLButtonElement>('[data-shopify-example]').forEach((exampleBtn) => {
+  exampleBtn.addEventListener('click', () => {
+    if (!input || !form) return;
+    input.value = exampleBtn.dataset.shopifyExample ?? '';
+    input.focus();
+    form.requestSubmit();
+  });
 });
 </script>
