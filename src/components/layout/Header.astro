@@ -1,7 +1,13 @@
 ---
 /**
- * Header — sticky dark nav bar.
- * Follows DESIGN.md nav-bar-dark component spec.
+ * Header — sticky dark nav bar with dropdown groups.
+ * Follows DESIGN.md nav-bar-dark / nav-link component spec:
+ * canvas background, 64px height, pill primary CTA, mono-free labels.
+ *
+ * Dropdowns work with mouse (hover on hover-capable devices + click),
+ * keyboard (Enter/Space toggle, ArrowDown opens, Escape closes with
+ * focus return), and touch (tap toggle; mobile menu uses accordions).
+ * All links point at existing routes — no placeholders.
  */
 import NavIcon from './NavIcon.astro';
 import en from '../../i18n/en.json';
@@ -12,13 +18,82 @@ interface Props {
 const { locale = 'en' } = Astro.props;
 const currentPath = Astro.url.pathname;
 
-// Nav labels come from locale files (no hardcoded strings).
-const navLinks = [
-  { href: '/wordpress-theme-detector', label: (en.nav as Record<string, string>).wpShort, icon: 'wordpress' as const },
-  { href: '/shopify-theme-detector',   label: en.nav.shopifyDetector, icon: 'shopify' as const },
-  { href: '/who-hosts-this-website',   label: (en.nav as Record<string, string>).hostingShort, icon: 'hosting' as const },
-  // TODO: How It Works moves to the footer with About, Contact, Privacy, FAQ
+const nav = en.nav as Record<string, string>;
+const t = (key: string, fallback: string): string => nav[key] ?? fallback;
+
+interface DropLink {
+  href: string;
+  label: string;
+  desc: string;
+  icon?: 'wordpress' | 'shopify' | 'hosting' | 'technology' | 'growth' | 'security';
+}
+
+interface DropGroup {
+  id: string;
+  label: string;
+  links: DropLink[];
+}
+
+// Navigation maps onto EXISTING routes only.
+const groups: DropGroup[] = [
+  {
+    id: 'technology',
+    label: t('technology', 'Technology'),
+    links: [
+      {
+        href: '/',
+        label: t('technologyDetector', 'Technology Detector'),
+        desc: t('technologyDesc', 'CMS, framework, hosting & CDN in one scan'),
+        icon: 'technology',
+      },
+    ],
+  },
+  {
+    id: 'themes',
+    label: t('themes', 'Themes'),
+    links: [
+      {
+        href: '/wordpress-theme-detector',
+        label: t('wpDetector', 'WordPress Theme Detector'),
+        desc: t('wpDesc', 'Theme name, author & version from style.css'),
+        icon: 'wordpress',
+      },
+      {
+        href: '/shopify-theme-detector',
+        label: t('shopifyDetector', 'Shopify Theme Detector'),
+        desc: t('shopifyDesc', 'Theme name & ID from storefront data'),
+        icon: 'shopify',
+      },
+    ],
+  },
+  {
+    id: 'growth',
+    label: t('growth', 'Growth & Marketing'),
+    links: [
+      {
+        href: '/growth-marketing-detector',
+        label: t('growthDetector', 'Growth & Marketing Detector'),
+        desc: t('growthDesc', 'Analytics, ads, marketing, payments & chat'),
+        icon: 'growth',
+      },
+    ],
+  },
+  {
+    id: 'security',
+    label: t('security', 'Security & Privacy'),
+    links: [
+      {
+        href: '/security-privacy-detector',
+        label: t('securityDetector', 'Security & Privacy Detector'),
+        desc: t('securityDesc', 'Consent, security & embedded services'),
+        icon: 'security',
+      },
+    ],
+  },
 ];
+
+const isGroupActive = (g: DropGroup): boolean =>
+  g.links.some(({ href }) => (href === '/' ? currentPath === '/' : currentPath.startsWith(href)));
 ---
 
 <header class="nav-bar" role="banner">
@@ -33,29 +108,49 @@ const navLinks = [
         <span class="wordmark-text">CMS Detector AI</span>
       </a>
 
-      <!-- Desktop nav links -->
+      <!-- Desktop nav links + dropdowns -->
       <ul class="nav-links" role="list" id="nav-links">
-        {navLinks.map(({ href, label, icon }) => (
-          <li>
-            <a
-              href={href}
-              class={`nav-link${currentPath.startsWith(href) ? ' nav-link--active' : ''}`}
-              aria-current={currentPath.startsWith(href) ? 'page' : undefined}
+        {groups.map((g) => (
+          <li class="nav-item" data-group={g.id}>
+            <button
+              type="button"
+              class={`nav-link nav-drop-btn${isGroupActive(g) ? ' nav-link--active' : ''}`}
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls={`nav-panel-${g.id}`}
             >
-              <NavIcon name={icon} size={16} />
-              <span>{label}</span>
-            </a>
+              <span>{g.label}</span>
+              <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="nav-panel" id={`nav-panel-${g.id}`} hidden>
+              <ul role="list" class="nav-panel-list">
+                {g.links.map((l) => (
+                  <li>
+                    <a
+                      href={l.href}
+                      class={`nav-panel-link${currentPath === l.href || (l.href !== '/' && currentPath.startsWith(l.href)) ? ' nav-panel-link--active' : ''}`}
+                      aria-current={currentPath === l.href || (l.href !== '/' && currentPath.startsWith(l.href)) ? 'page' : undefined}
+                    >
+                      {l.icon && <NavIcon name={l.icon} size={16} />}
+                      <span class="nav-panel-text">
+                        <span class="nav-panel-title">{l.label}</span>
+                        <span class="nav-panel-desc">{l.desc}</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </li>
         ))}
       </ul>
 
       <!-- Right cluster -->
       <div class="nav-actions">
-        <!-- Language switcher — only shown when multiple locales are published -->
-        <!-- Placeholder, extended in i18n expansion -->
-
         <a href="/" class="btn btn-primary" id="nav-cta">
-          Detect a Site
+          {t('detectSite', 'Detect a Site')}
         </a>
       </div>
 
@@ -109,6 +204,10 @@ const navLinks = [
     margin-inline-start: auto;
   }
 
+  .nav-item {
+    position: relative;
+  }
+
   .nav-link {
     display: inline-flex;
     align-items: center;
@@ -117,20 +216,102 @@ const navLinks = [
     font-size: 14px;
     font-weight: 400;
     color: var(--color-ash);
+    background: transparent;
+    border: none;
     border-radius: var(--radius-app-md);
+    cursor: pointer;
+    font-family: var(--font-sans);
     transition: color 0.15s ease, background-color 0.15s ease;
     white-space: nowrap;
-  }
-
-  .nav-link svg {
-    flex-shrink: 0;
-    display: block;
   }
 
   .nav-link:hover,
   .nav-link--active {
     color: var(--color-on-primary);
     background-color: var(--color-canvas-soft);
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    display: block;
+    transition: transform 0.15s ease;
+  }
+
+  .nav-drop-btn[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Dropdown panel — dark card per feature-card-dark spec */
+  .nav-panel {
+    position: absolute;
+    inset-block-start: calc(100% + 8px);
+    inset-inline-start: 0;
+    min-inline-size: 300px;
+    max-inline-size: min(340px, calc(100vw - 32px));
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    padding: 8px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    z-index: 200;
+  }
+
+  /* Right-align the last group's panel so it never overflows viewport */
+  .nav-item:last-child .nav-panel {
+    inset-inline-start: auto;
+    inset-inline-end: 0;
+  }
+
+  .nav-panel-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .nav-panel-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-app-md);
+    color: var(--color-ash);
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+
+  .nav-panel-link svg {
+    flex-shrink: 0;
+    display: block;
+    margin-block-start: 2px;
+  }
+
+  .nav-panel-link:hover,
+  .nav-panel-link--active {
+    background-color: var(--color-graphite);
+    color: var(--color-on-primary);
+  }
+
+  .nav-panel-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .nav-panel-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--color-on-primary);
+  }
+
+  .nav-panel-desc {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--color-ash);
   }
 
   .nav-actions {
@@ -146,6 +327,19 @@ const navLinks = [
     margin-inline-start: auto;
   }
 
+  /* Hover + keyboard open on hover-capable desktop only;
+     touch devices use tap-to-toggle (JS) to avoid sticky hovers. */
+  @media (hover: hover) and (min-width: 961px) {
+    .nav-item:hover .nav-panel,
+    .nav-item:focus-within .nav-panel {
+      display: block;
+    }
+    .nav-item:hover .nav-panel[hidden],
+    .nav-item:focus-within .nav-panel[hidden] {
+      display: block;
+    }
+  }
+
   /* Mobile */
   @media (max-width: 960px) {
     .nav-links {
@@ -154,7 +348,7 @@ const navLinks = [
       inset: 64px 0 0 0;
       background-color: var(--color-canvas);
       flex-direction: column;
-      align-items: flex-start;
+      align-items: stretch;
       gap: 0;
       padding: 16px;
       margin: 0;
@@ -167,13 +361,34 @@ const navLinks = [
       display: flex;
     }
 
-    .nav-links li { width: 100%; }
+    .nav-item {
+      inline-size: 100%;
+      border-block-end: 1px solid var(--color-hairline-soft);
+    }
 
-    .nav-link {
-      width: 100%;
+    .nav-item:last-child {
+      border-block-end: none;
+    }
+
+    .nav-drop-btn {
+      inline-size: 100%;
+      justify-content: space-between;
       padding: 14px 12px;
       font-size: 16px;
-      border-radius: var(--radius-app-md);
+    }
+
+    .nav-panel {
+      position: static;
+      border: none;
+      box-shadow: none;
+      background: transparent;
+      padding: 0 0 8px 0;
+      min-inline-size: 0;
+      max-inline-size: none;
+    }
+
+    .nav-panel-link {
+      padding: 12px;
     }
 
     .hamburger { display: flex; }
@@ -191,13 +406,103 @@ const navLinks = [
 <script>
   const hamburger = document.getElementById('hamburger');
   const navLinks  = document.getElementById('nav-links');
+  const dropBtns  = Array.from(
+    document.querySelectorAll('.nav-drop-btn')
+  ) as HTMLButtonElement[];
 
-  hamburger?.addEventListener('click', () => {
-    const isOpen = navLinks?.classList.toggle('is-open');
-    hamburger.setAttribute('aria-expanded', String(isOpen));
+  function panelFor(btn: HTMLButtonElement): HTMLElement | null {
+    const id = btn.getAttribute('aria-controls');
+    return id ? document.getElementById(id) : null;
+  }
+
+  function closePanel(btn: HTMLButtonElement): void {
+    btn.setAttribute('aria-expanded', 'false');
+    panelFor(btn)?.setAttribute('hidden', '');
+  }
+
+  function openPanel(btn: HTMLButtonElement): void {
+    // One open group at a time on desktop; accordions act
+    // independently only via sequential taps on mobile.
+    for (const other of dropBtns) {
+      if (other !== btn) closePanel(other);
+    }
+    btn.setAttribute('aria-expanded', 'true');
+    panelFor(btn)?.removeAttribute('hidden');
+  }
+
+  function isOpen(btn: HTMLButtonElement): boolean {
+    return btn.getAttribute('aria-expanded') === 'true';
+  }
+
+  dropBtns.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      // On hover-capable desktop the panel may already be visible via
+      // :hover — a click still toggles pinned state for touch/keyboard.
+      e.stopPropagation();
+      if (isOpen(btn)) closePanel(btn);
+      else openPanel(btn);
+    });
+
+    btn.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closePanel(btn);
+        btn.blur();
+      } else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        openPanel(btn);
+        const first = panelFor(btn)?.querySelector('a');
+        (first as HTMLElement | null)?.focus();
+      }
+    });
+
+    // Leaving the group with the keyboard closes the pinned panel.
+    const item = btn.closest('.nav-item');
+    item?.addEventListener('focusout', (e) => {
+      const next = (e as FocusEvent).relatedTarget as Node | null;
+      if (next && item.contains(next)) return;
+      closePanel(btn);
+    });
   });
 
-  // Close on outside click
+  // Escape anywhere closes all dropdowns and returns focus.
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    let hadOpen = false;
+    for (const btn of dropBtns) {
+      if (isOpen(btn)) {
+        hadOpen = true;
+        closePanel(btn);
+      }
+    }
+    if (hadOpen && hamburger?.getAttribute('aria-expanded') !== 'true') {
+      dropBtns[0]?.focus();
+    }
+  });
+
+  // Close on outside tap/click.
+  document.addEventListener('pointerdown', (e) => {
+    const target = e.target as Node;
+    for (const btn of dropBtns) {
+      const item = btn.closest('.nav-item');
+      if (item && !item.contains(target)) closePanel(btn);
+    }
+  });
+
+  // Choosing a link closes everything (incl. the mobile sheet).
+  navLinks?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) {
+      for (const btn of dropBtns) closePanel(btn);
+      navLinks.classList.remove('is-open');
+      hamburger?.setAttribute('aria-expanded', 'false');
+    }
+  });
+
+  hamburger?.addEventListener('click', () => {
+    const isMenuOpen = navLinks?.classList.toggle('is-open');
+    hamburger.setAttribute('aria-expanded', String(isMenuOpen));
+  });
+
+  // Close on outside click (mobile sheet)
   document.addEventListener('click', (e) => {
     if (!hamburger?.contains(e.target as Node) &&
         !navLinks?.contains(e.target as Node)) {

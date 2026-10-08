@@ -20,7 +20,9 @@ import type {
   PageScanResult,
   TechEvidenceItem,
 } from './types';
-import type { DetectionResult, SignalStrength } from '../detect/signatures';
+import type { DetectionResult, SignalStrength } from '../detect/signatures.ts';
+import { familyForSignal, specificityForStrength } from '../detect/signatures.ts';
+import { scoreDetection, scoreForCoverage, scoreToLabel5 } from '../detect/confidence.ts';
 
 // ----------------------------------------------------------------
 // Confidence rule (single definition).
@@ -103,6 +105,8 @@ export function confidenceForTech(opts: {
 export function toTechItems(result: DetectionResult, pageUrl: string): TechEvidenceItem[] {
   return result.evidence.map((e) => ({
     techId: result.id,
+    techName: result.name,
+    pageSlug: result.pageSlug,
     signalType: e.type,
     name: e.name || e.type,
     value: e.value || e.artifact,
@@ -158,17 +162,17 @@ export function aggregateTechs(pages: PageScanResult[]): AggregatedTech[] {
   >();
   const seenOn = new Map<string, Set<string>>(); // techId -> distinct page urls
 
-  const ensureTech = (page: PageScanResult, id: string) => {
+  const ensureTech = (page: PageScanResult, id: string, item?: TechEvidenceItem) => {
     if (!byTech.has(id)) {
-      byTech.set(id, { name: nameFor(page, id), kind: kindFor(page, id), pageSlug: slugFor(page, id), items: [] });
+      byTech.set(id, { name: item?.techName ?? nameFor(page, id), kind: kindFor(page, id), pageSlug: item?.pageSlug ?? slugFor(page, id), items: [] });
     }
     const entry = byTech.get(id)!;
     if (entry.name === id) {
-      const better = nameFor(page, id);
+      const better = item?.techName ?? nameFor(page, id);
       if (better !== id) entry.name = better;
     }
     if (!entry.pageSlug) {
-      const slug = slugFor(page, id);
+      const slug = item?.pageSlug ?? slugFor(page, id);
       if (slug) entry.pageSlug = slug;
     }
     if (!seenOn.has(id)) seenOn.set(id, new Set());
@@ -191,7 +195,7 @@ export function aggregateTechs(pages: PageScanResult[]): AggregatedTech[] {
     }
     for (const item of items) {
       if (!item.techId) continue;
-      ensureTech(page, item.techId);
+      ensureTech(page, item.techId, item);
       byTech.get(item.techId)!.items.push(item);
       seenOn.get(item.techId)!.add(item.pageUrl || page.url);
     }
@@ -245,6 +249,23 @@ export function aggregateTechs(pages: PageScanResult[]): AggregatedTech[] {
     const detectedOn = seenOn.get(techId)?.size ?? 0;
     const coverage = checkedPages > 0 ? detectedOn / checkedPages : 1;
 
+    // Numeric evidence score for this tech: same deterministic model as
+    // single-page results (family-grouped, specificity-adjusted), with
+    // the multi-page coverage penalty applied.
+    const { score: rawScore } = scoreDetection(
+      evidence.map((e) => ({
+        type: e.signalType as never,
+        artifact: e.name,
+        weight: 0,
+        name: e.name,
+        value: e.sampleValue,
+        strength: e.strength,
+        family: familyForSignal(e.signalType as never),
+        specificity: specificityForStrength(e.strength),
+      }))
+    );
+    const score = scoreForCoverage(rawScore, detectedOn, checkedPages);
+
     out.push({
       techId,
       name: entry.name,
@@ -253,6 +274,8 @@ export function aggregateTechs(pages: PageScanResult[]): AggregatedTech[] {
         signals: evidence.map((e) => ({ strength: e.strength })),
         coverage,
       }),
+      score,
+      scoreLabel: scoreToLabel5(score),
       detectedOn,
       checkedPages,
       evidence,

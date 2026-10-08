@@ -1,0 +1,345 @@
+[
+  {
+    "id": "google-analytics",
+    "name": "Google Analytics",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "googletagmanager\\.com/gtag/js|google-analytics\\.com/(analytics\\.js|gtag/js|g\\.js)", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "googletagmanager\\.com/gtag/js\\?id=G-[A-Z0-9]+|google-analytics\\.com/analytics\\.js|_gaq\\.push|ga\\(\\s*['\"]create['\"]", "weight": 75, "strength": "strong" },
+      { "type": "cookie-name", "pattern": "^_ga$|^_gid$|^_gat", "weight": 40, "strength": "weak" }
+    ]
+  },
+  {
+    "id": "google-tag-manager",
+    "name": "Google Tag Manager",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "googletagmanager\\.com/gtm\\.js", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "googletagmanager\\.com/(gtm\\.js|ns\\.html)\\?id=GTM-[A-Z0-9]+", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "microsoft-clarity",
+    "name": "Microsoft Clarity",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "clarity\\.ms/tag/|www\\.clarity\\.ms/s/", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "clarity\\.ms/tag/[a-z0-9]+|clarity\\(\\s*['\"]init['\"]", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "hotjar",
+    "name": "Hotjar",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "static\\.hotjar\\.com|script\\.hotjar\\.com", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "static\\.hotjar\\.com/c/hotjar-\\d+\\.js|hjSiteSettings|_hjSessionUser|hotjar\\.com/c/hotjar-", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "matomo",
+    "name": "Matomo",
+    "category": "analytics",
+    "signals": [
+      { "type": "html-path", "pattern": "/matomo\\.js|/piwik\\.js|matomo\\.php\\?idsite|piwik\\.php\\?idsite", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "_paq\\.push\\(\\s*\\[\\s*['\"]setTrackerUrl['\"]|matomo\\.js|piwik\\.js", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "plausible",
+    "name": "Plausible",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "plausible\\.io/js/(script|plausible)", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "plausible\\.io/js/(script|plausible)[^\"']*\\.js|data-domain=[\"'][^\"']+[\"'][^>]*plausible", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "mixpanel",
+    "name": "Mixpanel",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "cdn\\.mxpnl\\.com|cdn\\.mixpanel\\.com", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "mixpanel\\.init\\(|cdn\\.mxpnl\\.com/libs/mixpanel", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "posthog",
+    "name": "PostHog",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "us-assets\\.i\\.posthog\\.com|eu-assets\\.i\\.posthog\\.com|us\\.i\\.posthog\\.com|eu\\.i\\.posthog\\.com", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "posthog\\.init\\(|posthog\\.capture\\(|i\\.posthog\\.com/(static/array|decide)", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "segment",
+    "name": "Segment",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "cdn\\.segment\\.(com|io)/analytics\\.js", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "cdn\\.segment\\.(com|io)/analytics\\.js|analytics\\.load\\(\\s*['\"][A-Za-z0-9]+['\"]", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "adobe-analytics",
+    "name": "Adobe Analytics",
+    "category": "analytics",
+    "signals": [
+      { "type": "script-host", "pattern": "assets\\.adobedtm\\.com|\\.demdex\\.net", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "assets\\.adobedtm\\.com/[^\"']+\\.min\\.js|AppMeasurement\\.js|s_code\\.js|_satellite\\.pageBottom|demdex\\.net/id", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "google-ads",
+    "name": "Google Ads",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "googleadservices\\.com/pagead|pagead2\\.googlesyndication\\.com/pagead", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "googletagmanager\\.com/gtag/js\\?id=AW-\\d+|googleadservices\\.com/pagead/conversion|gtag\\(\\s*['\"]config['\"]\\s*,\\s*['\"]AW-\\d+", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "google-adsense",
+    "name": "Google AdSense",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "pagead2\\.googlesyndication\\.com/pagead/js/adsbygoogle\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "adsbygoogle\\.js\\?client=ca-pub-\\d+|data-ad-client=\\s*[\"']ca-pub-\\d+|\\(adsbygoogle\\s*=\\s*window\\.adsbygoogle", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "meta-pixel",
+    "name": "Meta Pixel",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "connect\\.facebook\\.net/[^\"']*/fbevents\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "connect\\.facebook\\.net/[^\"']*/fbevents\\.js|fbq\\(\\s*['\"]init['\"]\\s*,\\s*['\"]\\d{6,}['\"]", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "tiktok-pixel",
+    "name": "TikTok Pixel",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "analytics\\.tiktok\\.com/i18n/pixel", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "analytics\\.tiktok\\.com/i18n/pixel/events\\.js|ttq\\.load\\(\\s*['\"][A-Z0-9]+['\"]", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "linkedin-insight",
+    "name": "LinkedIn Insight Tag",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "snap\\.licdn\\.com/li\\.lms-analytics", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "snap\\.licdn\\.com/li\\.lms-analytics/insight\\.min\\.js|_linkedin_partner_id\\s*=\\s*[\"']\\d+[\"']", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "pinterest-tag",
+    "name": "Pinterest Tag",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "ct\\.pinterest\\.com/v3|s\\.pinimg\\.com/ct/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "pintrk\\(\\s*['\"]load['\"]\\s*,\\s*['\"]\\d+['\"]|ct\\.pinterest\\.com/v3/\\?tid=\\d+", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "reddit-pixel",
+    "name": "Reddit Pixel",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "www\\.redditstatic\\.com/ads/pixel", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "redditstatic\\.com/ads/pixel/.*\\.js|rdt\\(\\s*['\"]init['\"]", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "snapchat-pixel",
+    "name": "Snapchat Pixel",
+    "category": "advertising",
+    "signals": [
+      { "type": "script-host", "pattern": "sc-static\\.net/s/.*snap\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "sc-static\\.net/s/[^\"']*snap\\.js|snaptr\\(\\s*['\"]init['\"]", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "hubspot-tracking",
+    "name": "HubSpot",
+    "category": "marketing",
+    "signals": [
+      { "type": "script-host", "pattern": "js\\.hs-scripts\\.com|js\\.hs-analytics\\.net|js\\.hsforms\\.net|js\\.hs-banner\\.com", "weight": 80, "strength": "strong" },
+      { "type": "html-regex", "pattern": "js\\.hs-scripts\\.com/\\d+\\.js|hbspt\\.forms\\.create\\(|hubspot\\.com/hs/hsstatic", "weight": 75, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "klaviyo",
+    "name": "Klaviyo",
+    "category": "marketing",
+    "signals": [
+      { "type": "script-host", "pattern": "static\\.klaviyo\\.com/onsite/js/klaviyo\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "static\\.klaviyo\\.com/onsite/js/klaviyo\\.js\\?company_id=[A-Za-z0-9]+|_learnq\\.push|klaviyo\\.init", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "mailchimp",
+    "name": "Mailchimp",
+    "category": "marketing",
+    "signals": [
+      { "type": "script-host", "pattern": "chimpstatic\\.com/mcjs-connected|downloads\\.mailchimp\\.com/js/signup-forms", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "chimpstatic\\.com/mcjs-connected/js/users/[^\"']+\\.js|list-manage\\.com/subscribe/post\\?u=[a-f0-9]+|mc\\.validate\\.js", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "activecampaign",
+    "name": "ActiveCampaign",
+    "category": "marketing",
+    "signals": [
+      { "type": "script-host", "pattern": "trackcmp\\.net/visit\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "trackcmp\\.net/visit\\.js|vgo\\(\\s*['\"]setAccount['\"]", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "marketo",
+    "name": "Marketo",
+    "category": "marketing",
+    "signals": [
+      { "type": "script-host", "pattern": "munchkin\\.marketo\\.net/munchkin\\.js|app-\\w+\\.marketo\\.com/js/forms2", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "Munchkin\\.init\\(\\s*['\"]\\d{3}-|marketo\\.net/js/forms2/js/forms2\\.min\\.js|MktoForms2\\.loadForm", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "salesforce",
+    "name": "Salesforce",
+    "category": "marketing",
+    "signals": [
+      { "type": "script-host", "pattern": "\\.force\\.com/embeddedservice/|salesforceliveagent\\.com/chat", "weight": 85, "strength": "strong" },
+      { "type": "html-regex", "pattern": "embeddedservice_bootstrap\\.init\\(|lightning\\.out\\.js|sfdcsid|salesforce\\.com/embeddedservice/", "weight": 80, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "stripe",
+    "name": "Stripe",
+    "category": "payments",
+    "signals": [
+      { "type": "script-host", "pattern": "js\\.stripe\\.com/v\\d+/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "js\\.stripe\\.com/v\\d+/[^\"']+\\.js|checkout\\.stripe\\.com/checkout\\.js|Stripe\\(\\s*['\"]pk_(live|test)_|window\\.Stripe", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "paypal",
+    "name": "PayPal",
+    "category": "payments",
+    "signals": [
+      { "type": "script-host", "pattern": "paypal\\.com/sdk/js|paypalobjects\\.com/api/checkout\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "paypal\\.com/sdk/js\\?client-id=[^\"'\\s]+|paypalobjects\\.com/api/checkout\\.js|paypal\\.Buttons\\.render\\(|paypal\\.HostedFields\\.render", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "razorpay",
+    "name": "Razorpay",
+    "category": "payments",
+    "signals": [
+      { "type": "script-host", "pattern": "checkout\\.razorpay\\.com/v1/checkout\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "checkout\\.razorpay\\.com/v1/checkout\\.js|new\\s+Razorpay\\(\\s*\\{", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "square",
+    "name": "Square",
+    "category": "payments",
+    "signals": [
+      { "type": "script-host", "pattern": "web\\.squarecdn\\.com/[^\"']*square\\.js|js\\.squareupsandbox\\.com/v2/paymentform", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "web\\.squarecdn\\.com/[^\"']*square\\.js|Square\\.payments\\(|SqPaymentForm", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "adyen",
+    "name": "Adyen",
+    "category": "payments",
+    "signals": [
+      { "type": "script-host", "pattern": "checkoutshopper(-live|-test)?\\.adyen\\.com/checkoutshopper/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "checkoutshopper(-live|-test)?\\.adyen\\.com/checkoutshopper/[^\"']*adyen\\.js|AdyenCheckout\\s*\\(", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "apple-pay",
+    "name": "Apple Pay",
+    "category": "payments",
+    "signals": [
+      { "type": "html-regex", "pattern": "window\\.ApplePaySession\\s*&&\\s*ApplePaySession\\.canMakePayments|ApplePaySession\\.canMakePaymentsWithActiveCard|<apple-pay-button|apple-pay-button\\.js", "weight": 80, "strength": "strong" },
+      { "type": "script-host", "pattern": "applepay\\.cdn\\.apple\\.com|apple-pay\\.google\\.com", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "google-pay",
+    "name": "Google Pay",
+    "category": "payments",
+    "signals": [
+      { "type": "script-host", "pattern": "pay\\.google\\.com/gp/p/js/pay\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "pay\\.google\\.com/gp/p/js/pay\\.js|google\\.payments\\.api\\.PaymentsClient", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "intercom",
+    "name": "Intercom",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "widget\\.intercom\\.io/widget/|js\\.intercomcdn\\.com/shim\\.latest\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "widget\\.intercom\\.io/widget/[a-z0-9]+|Intercom\\(\\s*['\"]boot['\"]|intercom\\.settings\\s*=|api-iam\\.intercom\\.io", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "zendesk",
+    "name": "Zendesk",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "static\\.zdassets\\.com/ekr/|[^\\s\"']+\\.zendesk\\.com/embeddable_framework/main\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "static\\.zdassets\\.com/ekr/[^\"']+\\.js|zE\\(\\s*['\"]webWidget|ze\\.activate\\(|d3v0px0pttie9i\\.cloudfront\\.net", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "crisp",
+    "name": "Crisp",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "client\\.crisp\\.chat/l\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "client\\.crisp\\.chat/l\\.js|\\$crisp\\.push|CRISP_WEBSITE_ID\\s*=", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "tawkto",
+    "name": "Tawk.to",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "embed\\.tawk\\.to/[a-f0-9]+/default", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "embed\\.tawk\\.to/[a-f0-9]+/[a-f0-9]+|Tawk_API\\s*=|tawk\\.to/chat", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "drift",
+    "name": "Drift",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "js\\.driftt\\.com/include/", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "js\\.driftt\\.com/include/[^\"']+\\.js|drift\\.load\\(|driftt\\.com/embed", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "livechat",
+    "name": "LiveChat",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "cdn\\.livechatinc\\.com/tracking\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "cdn\\.livechatinc\\.com/tracking\\.js|__lc\\.license\\s*=\\s*\\d+|LiveChatWidget\\.init", "weight": 85, "strength": "strong" }
+    ]
+  },
+  {
+    "id": "hubspot-chat",
+    "name": "HubSpot Chat",
+    "category": "chat",
+    "signals": [
+      { "type": "script-host", "pattern": "js\\.hs-chat\\.net|js\\.usemessages\\.com/conversations-embed\\.js", "weight": 90, "strength": "strong" },
+      { "type": "html-regex", "pattern": "js\\.hs-chat\\.net/[^\"']+\\.js|HubSpotConversations\\.widget\\.load|hubspot\\.com/conversations-visitor", "weight": 85, "strength": "strong" }
+    ]
+  }
+]

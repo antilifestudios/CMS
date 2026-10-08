@@ -18,6 +18,10 @@ export interface RedirectHop {
 export interface TechEvidenceItem {
   /** Technology id, e.g. "astro", "cloudflare" */
   techId: string;
+  /** Display name, e.g. "Google Analytics" (falls back to techId) */
+  techName?: string;
+  /** Slug for /cms/[slug] links, when the tech has a content page. */
+  pageSlug?: string;
   /** Signal channel, e.g. "header", "html-regex", "html-path" */
   signalType: string;
   /**
@@ -56,6 +60,9 @@ export interface AggregatedTech {
   name: string;
   kind: 'framework' | 'hosting' | 'other';
   confidence: ConfidenceLevel;
+  /** Deterministic 0–100 evidence score (see lib/detect/confidence). */
+  score?: number;
+  scoreLabel?: 'VERY HIGH' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INSUFFICIENT';
   /** Distinct successful pages where this tech was detected */
   detectedOn: number;
   /** Successful pages checked (denominator for detectedOn) */

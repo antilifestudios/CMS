@@ -229,10 +229,13 @@ export async function fetchSinglePage(
       if (fw) for (const e of fw.evidence.slice(0, 2)) evidence.push(e.artifact);
       if (prov) for (const e of prov.evidence.slice(0, 2)) evidence.push(e.artifact);
 
-      const techEvidence: TechEvidenceItem[] = [
-        ...(fw ? toTechItems(fw, pageUrl) : []),
-        ...(prov ? toTechItems(prov, pageUrl) : []),
-      ];
+      // All-category evidence: every detection tags its own lines with
+      // its techId (toTechItems), so summary cards group correctly by
+      // technology. The legacy flat list below stays framework/provider
+      // only for the per-page results matrix.
+      const techEvidence: TechEvidenceItem[] = results.flatMap((r) =>
+        toTechItems(r, pageUrl)
+      );
       const frameworkConfidence: ConfidenceLevel = fw ? pageTechConfidence(fw) : 'Low';
       const providerConfidence: ConfidenceLevel = prov ? pageTechConfidence(prov) : 'Low';
 

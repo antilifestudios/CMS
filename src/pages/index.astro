@@ -372,6 +372,8 @@ const breadcrumbJsonLd = {
         {[
           { href: '/wordpress-theme-detector', title: (en.tools as Record<string, string>).wpTitle, desc: (en.tools as Record<string, string>).wpDesc, icon: 'wordpress' as const },
           { href: '/shopify-theme-detector',   title: (en.tools as Record<string, string>).shopifyTitle, desc: (en.tools as Record<string, string>).shopifyDesc, icon: 'shopify' as const },
+          { href: '/growth-marketing-detector', title: (en.tools as Record<string, string>).growthTitle, desc: (en.tools as Record<string, string>).growthDesc, icon: 'growth' as const },
+          { href: '/security-privacy-detector', title: (en.tools as Record<string, string>).securityTitle, desc: (en.tools as Record<string, string>).securityDesc, icon: 'security' as const },
           { href: '/who-hosts-this-website',   title: (en.tools as Record<string, string>).hostingTitle, desc: (en.tools as Record<string, string>).hostingDesc, icon: 'hosting' as const },
           { href: '/is-this-site-wordpress',   title: (en.tools as Record<string, string>).isWordpressTitle, desc: (en.tools as Record<string, string>).isWordpressDesc, icon: undefined },
         ].map(({ href, title, desc, icon }) => (
@@ -693,6 +695,13 @@ const CATEGORY_LABELS: Record<string, string> = {
   hosting:    'Hosting & CDN',
   theme:      'Theme',
   plugin:     'Plugins',
+  analytics:  'Analytics',
+  advertising:'Advertising',
+  marketing:  'Marketing',
+  payments:   'Payments',
+  chat:       'Chat & Support',
+  privacy:    'Privacy / Consent',
+  security:   'Security',
   other:      'Other',
 };
 
@@ -701,6 +710,11 @@ const SIGNAL_LABELS: Record<string, string> = {
   'html-path':      'HTML asset path',
   'html-regex':     'HTML pattern',
   'script-host':    'Script hostname',
+  'stylesheet-url': 'Stylesheet URL',
+  'js-global':      'JavaScript global',
+  'inline-script':  'Inline script',
+  'meta-tag':       'Meta tag',
+  'link-relation':  'Link relation',
   'header':         'HTTP header',
   'cookie-name':    'Cookie name',
   'probe':          'Secondary probe',

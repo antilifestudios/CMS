@@ -15,6 +15,8 @@
 
 import { validateUrl, validateRedirect } from './ssrf';
 import { runSignatureEngine, type DetectionResult, type MatchContext } from './signatures';
+import { applyConfidenceModel } from './confidence';
+import { isKnownShopifyTheme, isKnownWpTheme } from '../../data/themes';
 
 // ----------------------------------------------------------------
 // Constants
@@ -55,10 +57,10 @@ export interface PipelineSuccess {
   /** Whether HTML appeared to be a client-rendered shell */
   isClientRendered: boolean;
   /** Structured WordPress extras (also present as probe evidence) */
-  wordpressTheme?: { name?: string; author?: string; version?: string; slug?: string };
+  wordpressTheme?: { name?: string; author?: string; version?: string; slug?: string; known?: boolean };
   wordpressPlugins?: string[];
   /** Structured Shopify extras (also present as probe evidence) */
-  shopifyTheme?: { name?: string; id?: string };
+  shopifyTheme?: { name?: string; id?: string; known?: boolean };
 }
 
 export type PipelineResult =
@@ -531,6 +533,8 @@ export async function runDetectionPipeline(
               name: 'theme',
               value: wpThemeMeta.themeName ?? '',
               strength: 'strong' as const,
+              family: 'PLATFORM_IDENTIFIER' as const,
+              specificity: 0.7,
             },
           ],
         };
@@ -548,7 +552,7 @@ export async function runDetectionPipeline(
           ...r,
           evidence: [
             ...r.evidence,
-            { type: 'probe' as const, artifact: label, weight: 80, name: 'theme', value: shopifyTheme.name ?? shopifyTheme.id ?? '', strength: 'strong' as const },
+            { type: 'probe' as const, artifact: label, weight: 80, name: 'theme', value: shopifyTheme.name ?? shopifyTheme.id ?? '', strength: 'strong' as const, family: 'PLATFORM_IDENTIFIER' as const, specificity: 0.7 },
           ],
         };
       }
@@ -571,6 +575,8 @@ export async function runDetectionPipeline(
         name: `/wp-content/plugins/${slug}/`,
         value: `/wp-content/plugins/${slug}/`,
         strength: 'strong' as const,
+        family: 'ASSET' as const,
+        specificity: 0.7,
       })),
     });
   }
@@ -585,12 +591,16 @@ export async function runDetectionPipeline(
       confidence: 70,
       confidenceLabel: 'likely',
       evidence: [
-        { type: 'probe' as const, artifact: `dns[cname]: "${dnsHint.cname}"`, weight: 70, name: 'cname', value: dnsHint.cname, strength: 'weak' as const },
+        { type: 'probe' as const, artifact: `dns[cname]: "${dnsHint.cname}"`, weight: 70, name: 'cname', value: dnsHint.cname, strength: 'weak' as const, family: 'PLATFORM_IDENTIFIER' as const, specificity: 0.3 },
       ],
     });
   }
 
-  // 10. Client-rendered check
+  // 10. Evidence-model scoring: deterministic 0–100 scores, platform
+  // conflict resolution. Legacy confidence fields are left untouched.
+  results = applyConfidenceModel(results);
+
+  // 11. Client-rendered check
   const clientRendered = isClientRendered(html);
 
   const themeSlug = /\/wp-content\/themes\/([^/]+)\//i.exec(html)?.[1];
@@ -608,11 +618,14 @@ export async function runDetectionPipeline(
               author: wpThemeMeta.themeAuthor,
               version: wpThemeMeta.themeVersion,
               slug: themeSlug,
+              known: isKnownWpTheme(themeSlug),
             },
           }
         : {}),
       ...(wpPlugins.length > 0 ? { wordpressPlugins: wpPlugins } : {}),
-      ...(shopifyTheme.name || shopifyTheme.id ? { shopifyTheme } : {}),
+      ...(shopifyTheme.name || shopifyTheme.id
+        ? { shopifyTheme: { ...shopifyTheme, known: isKnownShopifyTheme(shopifyTheme.name) } }
+        : {}),
     },
   };
 }

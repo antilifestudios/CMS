@@ -15,6 +15,11 @@ export type SignalType =
   | 'html-path'
   | 'html-regex'
   | 'script-host'
+  | 'stylesheet-url'
+  | 'js-global'
+  | 'inline-script'
+  | 'meta-tag'
+  | 'link-relation'
   | 'header'
   | 'cookie-name'
   | 'probe';
@@ -30,6 +35,50 @@ export type SignalType =
  */
 export type SignalStrength = 'definitive' | 'strong' | 'weak';
 
+/**
+ * Independent evidence families. Correlated manifestations of one
+ * underlying fingerprint (e.g. three URLs on the same CDN host) share
+ * a family; confidence rewards corroboration ACROSS families, never
+ * duplicated lines within one.
+ */
+export type EvidenceFamily =
+  | 'NETWORK'
+  | 'HTML'
+  | 'ASSET'
+  | 'SCRIPT'
+  | 'META'
+  | 'COOKIE'
+  | 'PLATFORM_IDENTIFIER';
+
+/** Default family per signal channel (overridable per rule). */
+export function familyForSignal(type: SignalType, explicit?: EvidenceFamily): EvidenceFamily {
+  if (explicit) return explicit;
+  switch (type) {
+    case 'header':           return 'NETWORK';
+    case 'cookie-name':      return 'COOKIE';
+    case 'meta-generator':
+    case 'meta-tag':         return 'META';
+    case 'script-host':
+    case 'js-global':        return 'SCRIPT';
+    case 'stylesheet-url':
+    case 'html-path':        return 'ASSET';
+    case 'inline-script':
+    case 'html-regex':
+    case 'link-relation':    return 'HTML';
+    case 'probe':            return 'PLATFORM_IDENTIFIER';
+  }
+}
+
+/** Default specificity multiplier per strength (overridable per rule). */
+export function specificityForStrength(strength: SignalStrength, explicit?: number): number {
+  if (typeof explicit === 'number') return Math.min(1, Math.max(0, explicit));
+  switch (strength) {
+    case 'definitive': return 1.0;
+    case 'strong':     return 0.7;
+    case 'weak':       return 0.3;
+  }
+}
+
 export interface Signal {
   type: SignalType;
   /** For header signals: which header name */
@@ -42,6 +91,10 @@ export interface Signal {
   strength?: SignalStrength;
   /** Capture group index for version extraction */
   versionGroup?: number;
+  /** Evidence family override (defaults from signal type) */
+  family?: EvidenceFamily;
+  /** Specificity multiplier 0–1 (defaults from strength) */
+  specificity?: number;
 }
 
 export interface Probe {
@@ -62,6 +115,14 @@ export interface TechSignature {
   excludes?: string[];
   /** Slug for /cms/[slug] page */
   pageSlug?: string;
+  /**
+   * False-positive guards (all optional, backward compatible):
+   * - negative: regexes that veto the tech when matched (e.g. a docs
+   *   page merely discussing the technology).
+   * - minFamilies: minimum distinct evidence families required.
+   */
+  negative?: string[];
+  minFamilies?: number;
 }
 
 export interface Evidence {
@@ -78,7 +139,14 @@ export interface Evidence {
   value: string;
   /** Fingerprint strength of the rule that produced this evidence. */
   strength: SignalStrength;
+  /** Independent evidence family this signal belongs to. */
+  family: EvidenceFamily;
+  /** Specificity multiplier 0–1 applied to this signal. */
+  specificity: number;
 }
+
+/** 0–100 deterministic confidence label (see confidence.ts). */
+export type ScoreLabel = 'VERY HIGH' | 'HIGH' | 'MEDIUM' | 'LOW' | 'INSUFFICIENT';
 
 export interface DetectionResult {
   id: string;
@@ -89,16 +157,28 @@ export interface DetectionResult {
   version?: string;
   evidence: Evidence[];
   pageSlug?: string;
+  /**
+   * Evidence-model scoring (added by applyConfidenceModel, optional so
+   * older consumers keep working): 0–100 score, human label, distinct
+   * evidence families, and ids of conflicting candidates when the tech
+   * lost a mutually-exclusive contest.
+   */
+  score?: number;
+  scoreLabel?: ScoreLabel;
+  families?: number;
+  conflicting?: string[];
 }
 
 // ----------------------------------------------------------------
 // Load all signatures
 // ----------------------------------------------------------------
-import cmsRaw       from '../../data/signatures/cms.json';
-import buildersRaw  from '../../data/signatures/builders.json';
-import ecommerceRaw from '../../data/signatures/ecommerce.json';
-import frameworksRaw from '../../data/signatures/frameworks.json';
-import hostingRaw   from '../../data/signatures/hosting.json';
+import cmsRaw       from '../../data/signatures/cms.json' with { type: 'json' };
+import buildersRaw  from '../../data/signatures/builders.json' with { type: 'json' };
+import ecommerceRaw from '../../data/signatures/ecommerce.json' with { type: 'json' };
+import frameworksRaw from '../../data/signatures/frameworks.json' with { type: 'json' };
+import hostingRaw   from '../../data/signatures/hosting.json' with { type: 'json' };
+import marketingRaw from '../../data/signatures/marketing.json' with { type: 'json' };
+import securityRaw  from '../../data/signatures/security.json' with { type: 'json' };
 
 export const ALL_SIGNATURES: TechSignature[] = [
   ...cmsRaw,
@@ -106,6 +186,8 @@ export const ALL_SIGNATURES: TechSignature[] = [
   ...ecommerceRaw,
   ...frameworksRaw,
   ...hostingRaw,
+  ...marketingRaw,
+  ...securityRaw,
 ] as TechSignature[];
 
 // Pre-compile all regex patterns at module load
@@ -171,7 +253,9 @@ function matchSignal(
     }
 
     case 'html-path':
-    case 'html-regex': {
+    case 'html-regex':
+    case 'js-global':
+    case 'inline-script': {
       const match = rx.exec(ctx.html);
       if (match) {
         // Name is the concrete marker found (e.g. "data-astro-cid",
@@ -213,6 +297,68 @@ function matchSignal(
             }
           }
           return { matched: true, artifact: `script[src]: "${src.slice(0, 120)}"`, name: host, value: src.slice(0, 120) };
+        }
+      }
+      return none;
+    }
+
+    case 'link-relation': {
+      // Match <link rel="..." href="..." /> where href matches
+      const linkRx = /<link[^>]+rel=["']([^"']+)["'][^>]*href=["']([^"']+)["']/gi;
+      let m: RegExpExecArray | null;
+      while ((m = linkRx.exec(ctx.html)) !== null) {
+        const href = m[2];
+        if (rx.test(href)) {
+          return {
+            matched: true,
+            artifact: `link[${m[1]}]: "${href.slice(0, 120)}"`,
+            name: href.slice(0, 80),
+            value: href.slice(0, 120),
+          };
+        }
+      }
+      // rel may come after href — try the reversed attribute order too
+      const linkRx2 = /<link[^>]+href=["']([^"']+)["'][^>]*rel=["']([^"']+)["']/gi;
+      while ((m = linkRx2.exec(ctx.html)) !== null) {
+        const href = m[1];
+        if (rx.test(href)) {
+          return {
+            matched: true,
+            artifact: `link[${m[2]}]: "${href.slice(0, 120)}"`,
+            name: href.slice(0, 80),
+            value: href.slice(0, 120),
+          };
+        }
+      }
+      return none;
+    }
+
+    case 'stylesheet-url': {
+      // Match <link ... href="..."> (stylesheet or any linked asset)
+      const cssRx = /<link[^>]+href=["']([^"']+)["']/gi;
+      let m: RegExpExecArray | null;
+      while ((m = cssRx.exec(ctx.html)) !== null) {
+        const href = m[1];
+        if (rx.test(href)) {
+          return { matched: true, artifact: `stylesheet: "${href.slice(0, 120)}"`, name: href.slice(0, 80), value: href.slice(0, 120) };
+        }
+      }
+      return none;
+    }
+
+    case 'meta-tag': {
+      // Match any <meta name|property|itemprop="..." content="...">
+      const metaRx = /<meta[^>]+(?:name|property|itemprop)=["']([^"']+)["'][^>]+content=["']([^"']+)["']/gi;
+      let m: RegExpExecArray | null;
+      while ((m = metaRx.exec(ctx.html)) !== null) {
+        const combined = `${m[1]}=${m[2]}`;
+        if (rx.test(combined) || rx.test(m[2])) {
+          return {
+            matched: true,
+            artifact: `meta[${m[1]}]: "${m[2].slice(0, 120)}"`,
+            name: m[1],
+            value: m[2].slice(0, 120),
+          };
         }
       }
       return none;
@@ -280,13 +426,16 @@ function matchTech(
         signal.weight * (1 - totalWeight / 100)
       );
       totalWeight = Math.min(100, totalWeight + contribution);
+      const strength = signal.strength ?? 'weak';
       evidenceList.push({
         type: signal.type,
         artifact,
         weight: signal.weight,
         name,
         value,
-        strength: signal.strength ?? 'weak',
+        strength,
+        family: familyForSignal(signal.type, signal.family),
+        specificity: specificityForStrength(strength, signal.specificity),
       });
       if (v && !version) version = v;
     }
@@ -308,12 +457,34 @@ function matchTech(
           // A probe hit (e.g. /wp-json/ answering, theme style.css)
           // is product-specific: strong, not definitive on its own.
           strength: 'strong',
+          family: 'PLATFORM_IDENTIFIER',
+          specificity: specificityForStrength('strong'),
         });
       }
     }
   }
 
   if (evidenceList.length === 0) return null;
+
+  // Negative veto: an explicit "this is NOT usage" marker kills the
+  // detection outright (e.g. documentation pages merely discussing
+  // the technology). Checked against raw HTML only.
+  if (sig.negative && sig.negative.length > 0) {
+    for (const pattern of sig.negative) {
+      try {
+        if (new RegExp(pattern, 'i').test(ctx.html)) return null;
+      } catch {
+        /* ignore invalid patterns — fail open, never fail closed */
+      }
+    }
+  }
+
+  // Minimum independent families: correlated manifestations of one
+  // fingerprint (same CDN host three times) do not count as proof.
+  if (sig.minFamilies && sig.minFamilies > 1) {
+    const families = new Set(evidenceList.map((e) => e.family));
+    if (families.size < sig.minFamilies) return null;
+  }
 
   return {
     id: sig.id,
