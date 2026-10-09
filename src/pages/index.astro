@@ -645,12 +645,22 @@ const MAX_RECENT  = 5;
 // Error messages (client-side translation)
 const ERROR_MESSAGES: Record<string, string> = {
   INVALID_URL:      'Please enter a valid website URL (e.g. https://example.com).',
+  BLOCKED_TARGET:   'Private, internal, or restricted addresses cannot be scanned for security reasons.',
+  TARGET_BLOCKED:   'This site returned an automated bot-challenge or access restriction. We cannot scan challenge pages.',
+  TIMEOUT:          'The request timed out after 8 seconds. The site may be slow or blocking automated access.',
+  TLS_ERROR:        'The site has a secure TLS/SSL certificate error. We cannot safely connect to it.',
+  DNS_FAILED:       'We couldn\'t resolve the domain name. Double-check the URL spelling and try again.',
+  HTTP_ERROR:       'The target website returned a server error. Please try again later.',
+  NOT_HTML:         'The URL returned a non-HTML document (such as binary data, an image, or an API payload).',
+  TOO_LARGE:        'The response exceeded the maximum allowed size for analysis.',
+  RATE_LIMITED:     'Too many requests. Please wait a moment and try again.',
+  BUDGET_EXCEEDED:  'The subrequest budget limit was exceeded for this scan.',
+  INTERNAL:         'An unexpected internal error occurred while processing the request.',
   PRIVATE_IP:       'Private or internal addresses can\'t be checked for security reasons.',
-  BLOCKED:          'This site returned a bot-protection response. We collected header data below.',
-  TIMEOUT:          'The request timed out (8s). The site may be slow or blocking automated access.',
+  BLOCKED:          'This site returned a bot-protection response. We cannot scan challenge pages.',
   DNS_FAILURE:      'We couldn\'t resolve the domain. Double-check the URL and try again.',
   INVALID_TLS:      'The site has a TLS certificate error. We can\'t safely connect to it.',
-  NON_HTML:         'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
+  NON_HTML:         'The URL returned a non-HTML response.',
   CLIENT_RENDERED:  'The page appears to be a client-rendered shell. We detected some hints:',
   REDIRECT_LOOP:    'We detected a redirect loop and stopped following redirects.',
   TURNSTILE_FAILED: 'Bot verification failed. Please try again.',
@@ -1125,6 +1135,11 @@ async function runDetect(rawUrl: string): Promise<void> {
           </div>`;
       }
 
+      const retryable = ['TIMEOUT', 'HTTP_ERROR', 'RATE_LIMITED', 'INTERNAL', 'UNKNOWN', 'DNS_FAILED'].includes(code);
+      const retryHtml = retryable
+        ? `<div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark detect-retry-btn" style="min-height: 44px; min-width: 44px;">Try again</button></div>`
+        : '';
+
       errorEl.innerHTML = `
         <div class="error-card card-dark">
           <div style="display: flex; align-items: center; gap: 8px; margin-block-end: 8px;">
@@ -1132,9 +1147,13 @@ async function runDetect(rawUrl: string): Promise<void> {
             <span class="type-caption-tight text-mute">${esc(code)}</span>
           </div>
           <p class="type-body-sm text-ash" style="margin: 0;">${esc(msg)}</p>
+          ${retryHtml}
           ${partialHtml}
         </div>`;
       errorEl.hidden = false;
+      if (retryable) {
+        errorEl.querySelector('.detect-retry-btn')?.addEventListener('click', () => runDetect(url));
+      }
       }
     }
   } catch (e) {
@@ -1146,8 +1165,10 @@ async function runDetect(rawUrl: string): Promise<void> {
           <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">
             Could not reach the detection API. Check your connection and try again.
           </p>
+          <div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark detect-retry-btn" style="min-height: 44px; min-width: 44px;">Try again</button></div>
         </div>`;
       errorEl.hidden = false;
+      errorEl.querySelector('.detect-retry-btn')?.addEventListener('click', () => runDetect(url));
     }
   }
 }
@@ -1545,43 +1566,231 @@ function renderScanSummary(data: {
     </div>`;
 }
 
-async function runSiteScan(rawUrl: string): Promise<void> {
-  if (!resultEl || !errorEl) return;
-  const url = rawUrl.trim();
-  if (!url) return;
-  setLoading(true);
-  if (submitBtn) submitBtn.textContent = 'Scanning paths…';
+interface ActiveScanState {
+  rootUrl: string;
+  rootHost: string;
+  sampleUrls: string[];
+  foundApprox: number;
+  robotsTxt: string;
+  currentIndex: number;
+  pages: any[];
+  isPaused: boolean;
+}
+
+const ACTIVE_SCAN_KEY = 'cmsdetector_active_scan';
+let activeScan: ActiveScanState | null = null;
+let isScanRunning = false;
+
+function saveActiveScan(st: ActiveScanState | null): void {
+  activeScan = st;
   try {
-    const token = await getTurnstileToken();
-    const res = await fetch('/api/scan', {
+    if (st) sessionStorage.setItem(ACTIVE_SCAN_KEY, JSON.stringify(st));
+    else sessionStorage.removeItem(ACTIVE_SCAN_KEY);
+  } catch {}
+}
+
+function loadActiveScan(): ActiveScanState | null {
+  try {
+    const raw = sessionStorage.getItem(ACTIVE_SCAN_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+function renderResumeBanner(st: ActiveScanState): void {
+  if (!errorEl) return;
+  const scanned = st.currentIndex;
+  const total = st.sampleUrls.length;
+  errorEl.innerHTML = `
+    <div class="error-card card-dark" style="border-color: rgba(255, 255, 255, 0.2);">
+      <span class="badge badge-error" style="background-color: #fbbf24; color: #451a03;">Scan paused</span>
+      <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">
+        Multi-page scan paused (${scanned} of ${total} paths scanned).
+      </p>
+      <div style="margin-block-start: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-primary resume-scan-btn" style="min-height: 44px;">Resume scan</button>
+        <button type="button" class="btn btn-secondary-dark cancel-scan-btn" style="min-height: 44px;">Cancel</button>
+      </div>
+    </div>`;
+  errorEl.hidden = false;
+  errorEl.querySelector('.resume-scan-btn')?.addEventListener('click', () => {
+    errorEl.hidden = true;
+    resumeScanLoop();
+  });
+  errorEl.querySelector('.cancel-scan-btn')?.addEventListener('click', () => {
+    saveActiveScan(null);
+    errorEl.hidden = true;
+    setLoading(false);
+  });
+}
+
+async function resumeScanLoop(): Promise<void> {
+  if (!activeScan || isScanRunning) return;
+  isScanRunning = true;
+  setLoading(true);
+
+  try {
+    while (activeScan && activeScan.currentIndex < activeScan.sampleUrls.length) {
+      if (activeScan.isPaused) {
+        isScanRunning = false;
+        renderResumeBanner(activeScan);
+        return;
+      }
+      const idx = activeScan.currentIndex;
+      const pageUrl = activeScan.sampleUrls[idx];
+      if (submitBtn) {
+        submitBtn.textContent = `Scanning path ${idx + 1}/${activeScan.sampleUrls.length}…`;
+      }
+
+      // Step fetch with 1 retry on network error/5xx
+      let pageData: any = null;
+      for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+          const stepRes = await fetch('/api/scan/step', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              pageUrl,
+              rootHost: activeScan.rootHost,
+              robotsTxt: activeScan.robotsTxt,
+            }),
+          });
+          const stepJson = await stepRes.json();
+          if (stepJson.ok && stepJson.data) {
+            pageData = stepJson.data;
+            break;
+          }
+        } catch {
+          if (attempt === 0) await new Promise((r) => setTimeout(r, 400));
+        }
+      }
+
+      if (!pageData) {
+        // Failed step marks that URL unscanned, NEVER consistent
+        let pth = '/';
+        try { pth = new URL(pageUrl).pathname; } catch {}
+        pageData = {
+          url: pageUrl,
+          path: pth,
+          error: 'TIMEOUT',
+          framework: 'Unscanned',
+          provider: 'Unscanned',
+          crossDomainRedirect: false,
+          status: 0,
+          timingMs: 0,
+          confidence: 'Low',
+        };
+      }
+
+      activeScan.pages.push(pageData);
+      activeScan.currentIndex++;
+      saveActiveScan(activeScan);
+    }
+
+    // All steps completed -> call /api/scan/complete
+    if (submitBtn) submitBtn.textContent = 'Analysing results…';
+    const compRes = await fetch('/api/scan/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, extraUrls: parseExtraUrls(), token }),
+      body: JSON.stringify({
+        rootUrl: activeScan.rootUrl,
+        rootHost: activeScan.rootHost,
+        pages: activeScan.pages,
+        coverage: {
+          checked: activeScan.pages.filter((p: any) => !p.error && !p.skippedByRobots).length,
+          foundApprox: activeScan.foundApprox,
+          truncated: false,
+        },
+      }),
     });
-    const data = await res.json() as
-      | { ok: true; data: Parameters<typeof renderScanSummary>[0] }
-      | { ok: false; error: { code: string } };
+    const compJson = await compRes.json();
     setLoading(false);
-    if (data.ok) {
-      saveRecent(url);
+    isScanRunning = false;
+
+    if (compJson.ok && compJson.data && resultEl) {
+      const finishedRoot = activeScan.rootUrl;
+      saveActiveScan(null);
+      saveRecent(finishedRoot);
       renderRecent();
-      resultEl.innerHTML = renderScanSummary(data.data);
+      resultEl.innerHTML = renderScanSummary(compJson.data);
       resultEl.hidden = false;
       initLimitInfo(resultEl);
       wireScanActions(resultEl);
       resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
-      const code = data.error?.code ?? 'UNKNOWN';
-      errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Error</span>
-        <p class="type-body-sm text-ash">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'])}</p></div>`;
+      const code = compJson.error?.code ?? 'UNKNOWN';
+      if (errorEl) {
+        errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Error</span>
+          <p class="type-body-sm text-ash">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'])}</p>
+          <div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark detect-retry-btn" style="min-height: 44px;">Try again</button></div></div>`;
+        errorEl.hidden = false;
+        errorEl.querySelector('.detect-retry-btn')?.addEventListener('click', () => resumeScanLoop());
+      }
+    }
+  } catch {
+    setLoading(false);
+    isScanRunning = false;
+    if (activeScan) {
+      renderResumeBanner(activeScan);
+    } else if (errorEl) {
+      errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Network error</span>
+        <p class="type-body-sm text-ash">Could not reach the scan API.</p></div>`;
       errorEl.hidden = false;
     }
+  }
+}
+
+async function runSiteScan(rawUrl: string): Promise<void> {
+  if (!resultEl || !errorEl) return;
+  const url = rawUrl.trim();
+  if (!url) return;
+  setLoading(true);
+  if (submitBtn) submitBtn.textContent = 'Planning scan…';
+
+  try {
+    const token = await getTurnstileToken();
+    const planRes = await fetch('/api/scan/plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url, extraUrls: parseExtraUrls(), token }),
+    });
+    const planData = await planRes.json();
+    if (!planData.ok) {
+      setLoading(false);
+      const code = planData.error?.code ?? 'UNKNOWN';
+      const retryable = ['TIMEOUT', 'HTTP_ERROR', 'RATE_LIMITED', 'INTERNAL', 'UNKNOWN'].includes(code);
+      const retryHtml = retryable
+        ? `<div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark detect-retry-btn" style="min-height: 44px;">Try again</button></div>`
+        : '';
+      errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Error</span>
+        <p class="type-body-sm text-ash">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES['UNKNOWN'])}</p>${retryHtml}</div>`;
+      errorEl.hidden = false;
+      if (retryable) {
+        errorEl.querySelector('.detect-retry-btn')?.addEventListener('click', () => runSiteScan(url));
+      }
+      return;
+    }
+
+    const { rootUrl, rootHost, sampleUrls, foundApprox, robotsTxt } = planData.data;
+    saveActiveScan({
+      rootUrl,
+      rootHost,
+      sampleUrls,
+      foundApprox,
+      robotsTxt,
+      currentIndex: 0,
+      pages: [],
+      isPaused: false,
+    });
+
+    await resumeScanLoop();
   } catch {
     setLoading(false);
     if (errorEl) {
       errorEl.innerHTML = `<div class="error-card card-dark"><span class="badge badge-error">Network error</span>
-        <p class="type-body-sm text-ash">Could not reach the scan API.</p></div>`;
+        <p class="type-body-sm text-ash">Could not reach the scan API. Check your connection and try again.</p>
+        <div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark detect-retry-btn" style="min-height: 44px;">Try again</button></div></div>`;
       errorEl.hidden = false;
+      errorEl.querySelector('.detect-retry-btn')?.addEventListener('click', () => runSiteScan(url));
     }
   }
 }
@@ -1592,6 +1801,24 @@ async function runSiteScan(rawUrl: string): Promise<void> {
 function init(): void {
   renderRecent();
   initLimitInfo(document);
+
+  // Check for interrupted multi-URL scan from sessionStorage
+  const pending = loadActiveScan();
+  if (pending && pending.currentIndex < pending.sampleUrls.length) {
+    activeScan = pending;
+    activeScan.isPaused = true;
+    renderResumeBanner(activeScan);
+  }
+
+  // Handle visibility change (background tab suspension resilience)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && activeScan && isScanRunning) {
+      activeScan.isPaused = true;
+      saveActiveScan(activeScan);
+    } else if (document.visibilityState === 'visible' && activeScan && activeScan.isPaused) {
+      renderResumeBanner(activeScan);
+    }
+  });
 
   // Shareable result views are pre-rendered as "/" — mark them noindex at
   // runtime too (belt-and-braces next to the canonical pointing at "/").

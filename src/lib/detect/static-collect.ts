@@ -205,6 +205,10 @@ export async function fetchWithRedirects(
       continue;
     }
 
+    if (res.status >= 500) {
+      return { error: 'HTTP_ERROR', message: `Server returned HTTP status ${res.status}.`, httpStatus: res.status };
+    }
+
     return { res, finalUrl: current, redirectChain };
   }
 
