@@ -572,3 +572,265 @@ img, video { max-inline-size: 100%; block-size: auto; }
   border-block-start: 1px solid var(--color-hairline);
   margin-block: 0;
 }
+
+/* ============================================================
+   Modern Vercel & Sanity Aesthetics
+   ============================================================ */
+
+/* Glass surfaces */
+.glass-surface {
+  background: rgba(15, 15, 18, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.card-glass {
+  background: rgba(20, 20, 23, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-marketing);
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-glass:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* Subtle glow badge */
+.badge-glow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-ash);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+}
+
+.badge-glow .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-brand);
+  box-shadow: 0 0 8px var(--color-brand);
+}
+
+/* Brand glow element */
+.brand-dot-glow {
+  position: relative;
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: var(--color-brand);
+  box-shadow: 0 0 10px rgba(243, 100, 88, 0.6);
+}
+
+/* Modern Form Controls */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-block-end: var(--spacing-md);
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-ash);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-label .required {
+  color: var(--color-brand);
+  margin-inline-start: 4px;
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  width: 100%;
+  background-color: rgba(20, 20, 23, 0.85);
+  color: var(--color-on-primary);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-app-md);
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  outline: none;
+  background-color: rgba(26, 26, 30, 0.95);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: var(--color-slate-soft);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* FAQ Accordion Styling */
+.faq-section {
+  padding-block: var(--spacing-section-lg);
+}
+
+.faq-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 860px;
+  margin-inline: auto;
+}
+
+.faq-item {
+  background: rgba(20, 20, 24, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-app-lg);
+  overflow: hidden;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.faq-item:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.faq-item[open] {
+  background: rgba(24, 24, 28, 0.85);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.faq-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 22px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-on-primary);
+  transition: color 0.15s ease;
+}
+
+.faq-trigger:hover {
+  color: #ffffff;
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-mute);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
+}
+
+.faq-item[open] .faq-chevron {
+  transform: rotate(180deg);
+  color: var(--color-brand);
+}
+
+.faq-content {
+  padding: 0 22px 20px 22px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color-ash);
+}
+
+.faq-content a {
+  color: var(--color-link-blue-soft);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Consent Banner */
+.consent-banner-backdrop {
+  position: fixed;
+  inset-inline: 0;
+  inset-block-end: 0;
+  z-index: 999;
+  padding: 16px;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+.consent-banner {
+  pointer-events: auto;
+  max-width: 680px;
+  width: 100%;
+  background: rgba(18, 18, 22, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-marketing);
+  padding: 20px 24px;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.consent-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.consent-banner-body {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-ash);
+  margin: 0;
+}
+
+.consent-banner-body a {
+  color: var(--color-link-blue-soft);
+  text-decoration: underline;
+}
+
+.consent-banner-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}

@@ -1,35 +1,341 @@
 ---
 export const prerender = true;
+
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
+
+const aboutJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  name: 'About CMS Detector AI',
+  description: 'Evidence-based web platform and CMS detection powered by Cloudflare edge workers. Completely free, privacy-first, zero tracking.',
+  url: 'https://cmsdetectorai.com/about',
+  mainEntity: {
+    '@type': 'Organization',
+    name: 'CMS Detector AI',
+    url: 'https://cmsdetectorai.com',
+    logo: 'https://cmsdetectorai.com/favicon.svg',
+    sameAs: [],
+    knowsAbout: [
+      'Content Management Systems',
+      'Web Technology Detection',
+      'Web Infrastructure',
+      'Edge Computing',
+      'WordPress',
+      'Shopify'
+    ]
+  }
+};
 ---
 
 <Base
-  title="About CMS Detector AI — Free, Honest CMS Detection"
-  description="CMS Detector AI is a free tool for identifying website platforms. No sign-up, no ads, no data storage."
+  title="About Us — CMS Detector AI | Evidence-Based Web Intelligence"
+  description="Learn about CMS Detector AI: our mission to replace opaque, paywalled detectors with free, deterministic, edge-powered platform detection."
   pagePath="/about"
+  jsonLd={aboutJsonLd}
 >
-  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="a-h1">
+  <!-- Hero Section -->
+  <Section theme="dark" class="about-hero" ariaLabelledby="about-h1">
     <div class="container">
-      <div class="eyebrow-lockup">
-        <span class="eyebrow type-mono-eyebrow">About</span>
-        <h1 id="a-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0; max-inline-size: 800px;">
-          Evidence-based answers, zero friction
-        </h1>
+      <div class="hero-content">
+        <div class="eyebrow-lockup">
+          <div class="badge-glow">
+            <span class="dot"></span>
+            <span>Mission & Architecture</span>
+          </div>
+          <h1 id="about-h1" class="type-display-lg" style="color: var(--color-on-primary); margin: 0;">
+            Evidence-based answers.<br />Zero friction. Zero guesses.
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-width: 680px;">
+            CMS Detector AI was built by engineers tired of paywalled, speculative website profiling tools. We analyze web technologies deterministically at the edge — with verifiable proof attached.
+          </p>
+        </div>
+
+        <!-- Metrics Row -->
+        <div class="metrics-grid">
+          <div class="card-glass metric-card">
+            <span class="metric-num type-display-md">100+</span>
+            <span class="metric-label type-mono-caps">Technologies Tracked</span>
+            <p class="metric-desc">Monolithic CMSs, headless backends, modern JS frameworks & hosting CDNs.</p>
+          </div>
+          <div class="card-glass metric-card">
+            <span class="metric-num type-display-md">&lt;100ms</span>
+            <span class="metric-label type-mono-caps">Edge Execution</span>
+            <p class="metric-desc">Distributed across 330+ Cloudflare data centers worldwide for instantaneous scans.</p>
+          </div>
+          <div class="card-glass metric-card">
+            <span class="metric-num type-display-md">0</span>
+            <span class="metric-label type-mono-caps">Stored Queries</span>
+            <p class="metric-desc">We never record, sell, or profile the URLs you submit. Privacy is guaranteed by design.</p>
+          </div>
+          <div class="card-glass metric-card">
+            <span class="metric-num type-display-md">100%</span>
+            <span class="metric-label type-mono-caps">Free & Open</span>
+            <p class="metric-desc">No accounts, no paid subscriptions, no API paywalls, and no annoying popups.</p>
+          </div>
+        </div>
       </div>
     </div>
   </Section>
-  <Section theme="light">
+
+  <!-- Problem & Solution Section -->
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft);" ariaLabelledby="why-h2">
     <div class="container">
-      <div class="narrow">
-        <p class="type-body" style="color: var(--color-slate);">CMS Detector AI answers one question — <em>what is this website built with?</em> — with proof attached. Every detection lists the exact artifacts matched and a confidence level. When we can’t tell, we say so and explain why, instead of guessing.</p>
-        <p class="type-body" style="color: var(--color-slate);">There is no sign-up, no pricing page, no popups, and no newsletter modal. Submitted URLs are never stored on our servers. The tool runs on Cloudflare’s free tier: content pages are prerendered static HTML, and detection runs in a Worker at the edge.</p>
-        <p class="type-body" style="color: var(--color-slate);">Read <a href="/methodology" class="text-link-light">how detection works</a>, learn <a href="/guides/how-to-find-what-cms-a-website-uses" class="text-link-light">the manual method</a>, or <a href="/contact" class="text-link-light">get in touch</a>.</p>
+      <div class="section-header">
+        <span class="type-mono-eyebrow text-brand">The Problem</span>
+        <h2 id="why-h2" class="type-display-sm" style="color: var(--color-on-primary); margin: 8px 0 0 0;">
+          Why the web needed a better detector
+        </h2>
+      </div>
+
+      <div class="dual-grid">
+        <div class="card-glass comparison-card">
+          <div class="comparison-badge comparison-badge--bad">Legacy Detectors</div>
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 12px 0 10px 0;">Opaque, Speculative & Gated</h3>
+          <ul class="comparison-list">
+            <li><strong>Unchecked Hallucinations:</strong> Often claim a site is WordPress simply because an old database record says so, even after a full rewrite.</li>
+            <li><strong>Paywalls & Gated Results:</strong> Hide hosting details, plugin names, or tech stacks behind expensive monthly corporate subscriptions.</li>
+            <li><strong>Heavy & Slow:</strong> Querying bloated central databases takes seconds and returns stale, months-old crawl snapshots.</li>
+            <li><strong>Data Harvesting:</strong> Log every query you make and monetize search logs for market intelligence and lead generation.</li>
+          </ul>
+        </div>
+
+        <div class="card-glass comparison-card comparison-card--featured">
+          <div class="comparison-badge comparison-badge--good">CMS Detector AI</div>
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 12px 0 10px 0;">Transparent, Real-Time & Free</h3>
+          <ul class="comparison-list">
+            <li><strong>Verifiable Cryptographic Proof:</strong> Every result shows exactly which HTTP header, DOM node, or asset pattern proved the verdict.</li>
+            <li><strong>Honest Unknowns:</strong> When a site uses a bespoke custom stack, we say "Custom / Unknown CMS" instead of making false claims.</li>
+            <li><strong>Live Real-Time Scans:</strong> We inspect current live public responses at the edge, guaranteeing instant up-to-date accuracy.</li>
+            <li><strong>Ephemeral & Zero-Log:</strong> Query targets are evaluated purely in worker memory and discarded immediately after rendering.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Core Engineering Principles -->
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft);" ariaLabelledby="pillars-h2">
+    <div class="container">
+      <div class="section-header">
+        <span class="type-mono-eyebrow text-mute">Core Architecture</span>
+        <h2 id="pillars-h2" class="type-display-sm" style="color: var(--color-on-primary); margin: 8px 0 0 0;">
+          Engineered for technical integrity
+        </h2>
+      </div>
+
+      <div class="pillars-grid">
+        <div class="card-glass pillar-item">
+          <div class="pillar-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 12px 0 8px 0;">Safe Edge Scanning</h3>
+          <p class="type-body-sm text-ash">
+            Our crawler respects standard <code>robots.txt</code> protocols, never executes arbitrary third-party JavaScript, and fetches only lightweight initial HTML and public response headers.
+          </p>
+        </div>
+
+        <div class="card-glass pillar-item">
+          <div class="pillar-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 12px 0 8px 0;">Automated CI Regression</h3>
+          <p class="type-body-sm text-ash">
+            Over 280 automated tests run continuously across real-world platform fixtures, validating false-positive vetoes, multi-page correlation, and signature accuracy.
+          </p>
+        </div>
+
+        <div class="card-glass pillar-item">
+          <div class="pillar-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+          </div>
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 12px 0 8px 0;">Modern Headless Support</h3>
+          <p class="type-body-sm text-ash">
+            We don't stop at classic WordPress or Drupal. We recognize modern headless architectures: Sanity, Contentful, Strapi, Ghost, Next.js, Astro, Remix, and static site pipelines.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- CTA Bar -->
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section-lg);">
+    <div class="container">
+      <div class="card-glass cta-banner">
+        <div class="cta-text">
+          <h2 class="type-heading-md" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+            Ready to inspect a website?
+          </h2>
+          <p class="type-body text-ash" style="margin: 0;">
+            Paste any URL into our detector and see our deterministic analysis in action.
+          </p>
+        </div>
+        <div class="cta-buttons">
+          <a href="/" class="btn btn-primary">Run Free Detection</a>
+          <a href="/blog/how-it-works" class="btn btn-secondary-dark">Read Methodology</a>
+        </div>
       </div>
     </div>
   </Section>
 </Base>
+
 <style>
-  .narrow { max-inline-size: 720px; }
-  .narrow p { margin: 0 0 16px 0; }
+  .about-hero {
+    padding-block: var(--spacing-section-lg);
+  }
+
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xxl);
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .metric-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .metric-num {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+
+  .metric-label {
+    color: var(--color-brand);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .metric-desc {
+    margin: 6px 0 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--color-ash);
+  }
+
+  .section-header {
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .dual-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .comparison-card {
+    padding: 32px;
+  }
+
+  .comparison-card--featured {
+    border-color: rgba(243, 100, 88, 0.4);
+    background: rgba(24, 20, 22, 0.7);
+  }
+
+  .comparison-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .comparison-badge--bad {
+    background: rgba(221, 0, 0, 0.15);
+    color: var(--color-error);
+    border: 1px solid rgba(221, 0, 0, 0.3);
+  }
+
+  .comparison-badge--good {
+    background: rgba(55, 205, 132, 0.15);
+    color: var(--color-success);
+    border: 1px solid rgba(55, 205, 132, 0.3);
+  }
+
+  .comparison-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .comparison-list li {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-ash);
+  }
+
+  .comparison-list strong {
+    color: var(--color-on-primary);
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .pillar-item {
+    padding: 28px;
+  }
+
+  .pillar-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-app-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-brand);
+  }
+
+  .cta-banner {
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .cta-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  @media (max-width: 960px) {
+    .metrics-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .dual-grid,
+    .pillars-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+    .cta-banner {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
 </style>

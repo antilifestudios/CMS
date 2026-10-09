@@ -1,13 +1,9 @@
 ---
 /**
- * Header — sticky dark nav bar with dropdown groups.
- * Follows DESIGN.md nav-bar-dark / nav-link component spec:
- * canvas background, 64px height, pill primary CTA, mono-free labels.
- *
- * Dropdowns work with mouse (hover on hover-capable devices + click),
- * keyboard (Enter/Space toggle, ArrowDown opens, Escape closes with
- * focus return), and touch (tap toggle; mobile menu uses accordions).
- * All links point at existing routes — no placeholders.
+ * Header — sticky nav bar with modern Vercel & Sanity UI aesthetics.
+ * Features glassmorphic backdrop-blur, refined 1px micro-borders, glowing brand mark,
+ * structured dropdown menus, accessible keyboard & touch interactions,
+ * search button, theme toggle, and responsive mobile drawer.
  */
 import NavIcon from './NavIcon.astro';
 import en from '../../i18n/en.json';
@@ -25,7 +21,8 @@ interface DropLink {
   href: string;
   label: string;
   desc: string;
-  icon?: 'wordpress' | 'shopify' | 'hosting' | 'technology' | 'growth' | 'security';
+  badge?: string;
+  icon?: 'wordpress' | 'shopify' | 'hosting' | 'technology' | 'growth' | 'security' | 'book' | 'info' | 'mail' | 'file' | 'help';
 }
 
 interface DropGroup {
@@ -34,51 +31,81 @@ interface DropGroup {
   links: DropLink[];
 }
 
-// Navigation maps onto EXISTING routes only.
-const groups: DropGroup[] = [
-  {
-    id: 'technology',
-    label: t('technology', 'Technology'),
-    links: [
-      {
-        href: '/',
-        label: t('technologyDetector', 'Technology Detector'),
-        desc: t('technologyDesc', 'CMS, framework, hosting & CDN in one scan'),
-        icon: 'technology',
-      },
-      {
-        href: '/growth-marketing-detector',
-        label: t('growth', 'Growth & Marketing'),
-        desc: t('growthDesc', 'Analytics, advertising, marketing, payments & support'),
-        icon: 'growth',
-      },
-      {
-        href: '/security-privacy-detector',
-        label: t('security', 'Security & Privacy'),
-        desc: t('securityDesc', 'Security technologies, privacy & consent'),
-        icon: 'security',
-      },
-    ],
-  },
-  {
-    id: 'themes',
-    label: t('themes', 'Themes'),
-    links: [
-      {
-        href: '/wordpress-theme-detector',
-        label: t('wpDetector', 'WordPress Theme Detector'),
-        desc: t('wpDesc', 'Theme name, author & version from style.css'),
-        icon: 'wordpress',
-      },
-      {
-        href: '/shopify-theme-detector',
-        label: t('shopifyDetector', 'Shopify Theme Detector'),
-        desc: t('shopifyDesc', 'Theme name & ID from storefront data'),
-        icon: 'shopify',
-      },
-    ],
-  },
-];
+const technologyGroup: DropGroup = {
+  id: 'technology',
+  label: t('technology', 'Technology'),
+  links: [
+    {
+      href: '/',
+      label: t('technologyDetector', 'Technology Detector'),
+      desc: t('technologyDesc', 'CMS, framework, hosting & CDN in one scan'),
+      badge: 'Popular',
+      icon: 'technology',
+    },
+    {
+      href: '/wordpress-theme-detector',
+      label: t('wpDetector', 'WordPress Theme Detector'),
+      desc: t('wpDesc', 'Theme name, author & version from style.css'),
+      icon: 'wordpress',
+    },
+    {
+      href: '/shopify-theme-detector',
+      label: t('shopifyDetector', 'Shopify Theme Detector'),
+      desc: t('shopifyDesc', 'Theme name & ID from storefront data'),
+      icon: 'shopify',
+    },
+    {
+      href: '/growth-marketing-detector',
+      label: t('growth', 'Growth & Marketing'),
+      desc: t('growthDesc', 'Analytics, advertising, marketing, payments & support'),
+      icon: 'growth',
+    },
+    {
+      href: '/security-privacy-detector',
+      label: t('security', 'Security & Privacy'),
+      desc: t('securityDesc', 'Security technologies, privacy & consent'),
+      icon: 'security',
+    },
+  ],
+};
+
+const moreGroup: DropGroup = {
+  id: 'more',
+  label: t('more', 'More'),
+  links: [
+    {
+      href: '/faq',
+      label: t('faq', 'Frequently Asked Questions'),
+      desc: 'Technical FAQ on edge signatures, privacy & limits',
+      badge: 'FAQ',
+      icon: 'help',
+    },
+    {
+      href: '/about',
+      label: t('about', 'About Us'),
+      desc: 'Our mission, edge architecture, and engineering principles',
+      icon: 'info',
+    },
+    {
+      href: '/contact',
+      label: t('contact', 'Contact Us'),
+      desc: 'Direct inquiry channels, support, and false positive reports',
+      icon: 'mail',
+    },
+    {
+      href: '/terms',
+      label: t('terms', 'Terms of Service'),
+      desc: 'Fair use, edge rate limits, and acceptable use policy',
+      icon: 'file',
+    },
+    {
+      href: '/privacy',
+      label: t('privacy', 'Privacy Policy'),
+      desc: 'Zero URL logging, cookies, GDPR, and CCPA disclosures',
+      icon: 'file',
+    },
+  ],
+};
 
 const isGroupActive = (g: DropGroup): boolean =>
   g.links.some(({ href }) => (href === '/' ? currentPath === '/' : currentPath.startsWith(href)));
@@ -86,81 +113,217 @@ const isGroupActive = (g: DropGroup): boolean =>
 
 <header class="nav-bar" role="banner">
   <div class="container">
-    <nav
-      class="nav-inner"
-      aria-label="Main navigation"
-    >
-      <!-- Wordmark -->
+    <nav class="nav-inner" aria-label="Main navigation">
+      <!-- Wordmark with Brand Glow & Tag -->
       <a href="/" class="wordmark" aria-label="CMS Detector AI home">
-        <span class="brand-dot" aria-hidden="true"></span>
+        <span class="brand-dot-glow" aria-hidden="true"></span>
         <span class="wordmark-text">CMS Detector AI</span>
+        <span class="wordmark-tag">AI · EDGE</span>
       </a>
 
       <!-- Desktop nav links + dropdowns -->
       <ul class="nav-links" role="list" id="nav-links">
-        {groups.map((g) => (
-          <li class="nav-item" data-group={g.id}>
+        <!-- 1. Technology Dropdown -->
+        <li class="nav-item" data-group="technology">
+          <button
+            type="button"
+            class={`nav-link nav-drop-btn${isGroupActive(technologyGroup) ? ' nav-link--active' : ''}`}
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="nav-panel-technology"
+          >
+            <span>{technologyGroup.label}</span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-panel" id="nav-panel-technology" hidden>
+            <ul role="list" class="nav-panel-list">
+              {technologyGroup.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    class={`nav-panel-link${currentPath === l.href ? ' nav-panel-link--active' : ''}`}
+                  >
+                    <span class="nav-panel-icon-box">
+                      {l.icon && <NavIcon name={l.icon} size={16} />}
+                    </span>
+                    <span class="nav-panel-text">
+                      <span class="nav-panel-title-row">
+                        <span class="nav-panel-title">{l.label}</span>
+                        {l.badge && <span class="nav-panel-badge">{l.badge}</span>}
+                      </span>
+                      <span class="nav-panel-desc">{l.desc}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+
+        <!-- 2. Blog Link (Single link, NO dropdown) -->
+        <li class="nav-item">
+          <a
+            href="/blog"
+            class={`nav-link${currentPath.startsWith('/blog') ? ' nav-link--active' : ''}`}
+            aria-current={currentPath.startsWith('/blog') ? 'page' : undefined}
+          >
+            <span>{t('blog', 'Blog')}</span>
+          </a>
+        </li>
+
+        <!-- 3. More Dropdown -->
+        <li class="nav-item" data-group="more">
+          <button
+            type="button"
+            class={`nav-link nav-drop-btn${isGroupActive(moreGroup) ? ' nav-link--active' : ''}`}
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="nav-panel-more"
+          >
+            <span>{moreGroup.label}</span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-panel" id="nav-panel-more" hidden>
+            <ul role="list" class="nav-panel-list">
+              {moreGroup.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    class={`nav-panel-link${currentPath === l.href ? ' nav-panel-link--active' : ''}`}
+                  >
+                    <span class="nav-panel-icon-box">
+                      {l.icon && <NavIcon name={l.icon} size={16} />}
+                    </span>
+                    <span class="nav-panel-text">
+                      <span class="nav-panel-title-row">
+                        <span class="nav-panel-title">{l.label}</span>
+                        {l.badge && <span class="nav-panel-badge">{l.badge}</span>}
+                      </span>
+                      <span class="nav-panel-desc">{l.desc}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+
+        <!-- Mobile-only quick actions in drawer -->
+        <li class="nav-item mobile-actions-item">
+          <div class="mobile-actions-row">
             <button
               type="button"
-              class={`nav-link nav-drop-btn${isGroupActive(g) ? ' nav-link--active' : ''}`}
-              aria-expanded="false"
-              aria-haspopup="true"
-              aria-controls={`nav-panel-${g.id}`}
+              class="mobile-action-btn search-trigger"
+              aria-label="Scan or search website"
             >
-              <span>{g.label}</span>
-              <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
               </svg>
+              <span>Search</span>
             </button>
-            <div class="nav-panel" id={`nav-panel-${g.id}`} hidden>
-              <ul role="list" class="nav-panel-list">
-                {g.links.map((l) => (
-                  <li>
-                    <a
-                      href={l.href}
-                      class={`nav-panel-link${currentPath === l.href || (l.href !== '/' && currentPath.startsWith(l.href)) ? ' nav-panel-link--active' : ''}`}
-                      aria-current={currentPath === l.href || (l.href !== '/' && currentPath.startsWith(l.href)) ? 'page' : undefined}
-                    >
-                      {l.icon && <NavIcon name={l.icon} size={16} />}
-                      <span class="nav-panel-text">
-                        <span class="nav-panel-title">{l.label}</span>
-                        <span class="nav-panel-desc">{l.desc}</span>
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </li>
-        ))}
+            <button
+              type="button"
+              class="mobile-action-btn mobile-theme-btn"
+              aria-label="Toggle dark/light theme"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"/>
+                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+              </svg>
+              <span>Theme</span>
+            </button>
+          </div>
+          <a href="/#detector-root" class="btn btn-primary mobile-scan-btn">
+            Scan Website
+          </a>
+        </li>
       </ul>
 
-      <!-- Right cluster -->
+      <!-- Right cluster: Search icon, Theme toggle, and Scan Website button -->
       <div class="nav-actions">
-        <a href="/" class="btn btn-primary" id="nav-cta">
-          {t('detectSite', 'Detect a Site')}
+        <!-- Search trigger button -->
+        <button
+          type="button"
+          class="nav-icon-btn search-trigger"
+          id="header-search-btn"
+          aria-label="Scan or search website"
+          title="Scan or search website"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+        </button>
+
+        <!-- Theme toggle button -->
+        <button
+          type="button"
+          class="nav-icon-btn theme-toggle-btn"
+          id="header-theme-toggle"
+          aria-label="Toggle dark/light theme"
+          title="Toggle dark/light theme"
+        >
+          <!-- Moon icon (shows in light mode) -->
+          <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+          </svg>
+          <!-- Sun icon (shows in dark mode) -->
+          <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+          </svg>
+        </button>
+
+        <!-- Scan Website CTA button -->
+        <a href="/#detector-root" class="btn btn-primary nav-scan-btn" id="nav-cta">
+          <span>Scan Website</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
         </a>
       </div>
 
-      <!-- Mobile hamburger -->
+      <!-- Mobile hamburger toggle -->
       <button
-        class="hamburger btn-ghost-dark"
+        class="hamburger"
         id="hamburger"
         aria-expanded="false"
         aria-controls="nav-links"
         aria-label="Toggle navigation"
       >
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <rect y="3"  width="20" height="2" rx="1" fill="currentColor"/>
-          <rect y="9"  width="20" height="2" rx="1" fill="currentColor"/>
-          <rect y="15" width="20" height="2" rx="1" fill="currentColor"/>
-        </svg>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
+        <span class="hamburger-bar"></span>
       </button>
     </nav>
   </div>
 </header>
 
 <style>
+  .nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: rgba(11, 11, 13, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    block-size: 64px;
+    border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    align-items: center;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  :global(html[data-theme="light"]) .nav-bar {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-block-end: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
   .nav-inner {
     display: flex;
     align-items: center;
@@ -171,15 +334,32 @@ const isGroupActive = (g: DropGroup): boolean =>
   .wordmark {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     flex-shrink: 0;
+    text-decoration: none;
   }
 
   .wordmark-text {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--color-on-primary);
     letter-spacing: -0.02em;
+  }
+
+  .wordmark-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
+    border-radius: var(--radius-app-xs);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-mute);
+  }
+
+  :global(html[data-theme="light"]) .wordmark-tag {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.1);
   }
 
   .nav-links {
@@ -199,53 +379,70 @@ const isGroupActive = (g: DropGroup): boolean =>
   .nav-link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     padding: 6px 12px;
     font-size: 14px;
-    font-weight: 400;
+    font-weight: 450;
     color: var(--color-ash);
     background: transparent;
     border: none;
-    border-radius: var(--radius-app-md);
+    border-radius: var(--radius-full);
     cursor: pointer;
     font-family: var(--font-sans);
     transition: color 0.15s ease, background-color 0.15s ease;
     white-space: nowrap;
+    text-decoration: none;
   }
 
   .nav-link:hover,
   .nav-link--active {
     color: var(--color-on-primary);
-    background-color: var(--color-canvas-soft);
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  :global(html[data-theme="light"]) .nav-link:hover,
+  :global(html[data-theme="light"]) .nav-link--active {
+    background-color: rgba(0, 0, 0, 0.06);
+    color: var(--color-ink);
   }
 
   .chevron {
     flex-shrink: 0;
     display: block;
-    transition: transform 0.15s ease;
+    color: var(--color-mute);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s ease;
   }
 
   .nav-drop-btn[aria-expanded="true"] .chevron {
     transform: rotate(180deg);
+    color: var(--color-on-primary);
   }
 
-  /* Dropdown panel — dark card per feature-card-dark spec */
+  /* Dropdown panel — Vercel/Sanity style floating card */
   .nav-panel {
     position: absolute;
-    inset-block-start: calc(100% + 8px);
+    inset-block-start: calc(100% + 10px);
     inset-inline-start: 0;
-    min-inline-size: 300px;
-    max-inline-size: min(340px, calc(100vw - 32px));
-    background-color: var(--color-canvas-soft);
-    border: 1px solid var(--color-hairline-soft);
+    min-inline-size: 320px;
+    max-inline-size: min(380px, calc(100vw - 32px));
+    background-color: rgba(14, 14, 17, 0.96);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: var(--radius-marketing);
     padding: 8px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05);
     z-index: 200;
   }
 
-  /* Right-align the last group's panel so it never overflows viewport */
-  .nav-item:last-child .nav-panel {
+  :global(html[data-theme="light"]) .nav-panel {
+    background-color: rgba(255, 255, 255, 0.98);
+    border-color: rgba(0, 0, 0, 0.12);
+    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
+
+  .nav-item:last-child .nav-panel,
+  .nav-item[data-group="more"] .nav-panel {
     inset-inline-start: auto;
     inset-inline-end: 0;
   }
@@ -262,23 +459,58 @@ const isGroupActive = (g: DropGroup): boolean =>
   .nav-panel-link {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
     padding: 10px 12px;
     border-radius: var(--radius-app-md);
     color: var(--color-ash);
+    text-decoration: none;
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
-  .nav-panel-link svg {
+  .nav-panel-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-app-sm);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     flex-shrink: 0;
-    display: block;
+    color: var(--color-ash);
     margin-block-start: 2px;
+    transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
+  }
+
+  :global(html[data-theme="light"]) .nav-panel-icon-box {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.08);
   }
 
   .nav-panel-link:hover,
   .nav-panel-link--active {
-    background-color: var(--color-graphite);
+    background-color: rgba(255, 255, 255, 0.06);
     color: var(--color-on-primary);
+  }
+
+  :global(html[data-theme="light"]) .nav-panel-link:hover,
+  :global(html[data-theme="light"]) .nav-panel-link--active {
+    background-color: rgba(0, 0, 0, 0.04);
+    color: var(--color-ink);
+  }
+
+  .nav-panel-link:hover .nav-panel-icon-box,
+  .nav-panel-link--active .nav-panel-icon-box {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-on-primary);
+  }
+
+  :global(html[data-theme="light"]) .nav-panel-link:hover .nav-panel-icon-box,
+  :global(html[data-theme="light"]) .nav-panel-link--active .nav-panel-icon-box {
+    background-color: rgba(0, 0, 0, 0.08);
+    border-color: rgba(0, 0, 0, 0.16);
+    color: var(--color-ink);
   }
 
   .nav-panel-text {
@@ -288,61 +520,175 @@ const isGroupActive = (g: DropGroup): boolean =>
     min-width: 0;
   }
 
+  .nav-panel-title-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
   .nav-panel-title {
-    font-size: 14px;
+    font-size: 13.5px;
     font-weight: 500;
-    line-height: 1.3;
     color: var(--color-on-primary);
+  }
+
+  :global(html[data-theme="light"]) .nav-panel-title {
+    color: var(--color-ink);
+  }
+
+  .nav-panel-badge {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: rgba(243, 100, 88, 0.15);
+    color: var(--color-brand);
+    border: 1px solid rgba(243, 100, 88, 0.3);
   }
 
   .nav-panel-desc {
     font-size: 12px;
     font-weight: 400;
     line-height: 1.4;
+    color: var(--color-mute);
+  }
+
+  .nav-panel-link:hover .nav-panel-desc {
     color: var(--color-ash);
   }
 
+  /* Right Action Cluster */
   .nav-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     flex-shrink: 0;
-    margin-inline-start: 16px;
+    margin-inline-start: 12px;
   }
 
+  .nav-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-ash);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  :global(html[data-theme="light"]) .nav-icon-btn {
+    border-color: rgba(0, 0, 0, 0.1);
+    color: var(--color-ink);
+  }
+
+  .nav-icon-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-on-primary);
+  }
+
+  :global(html[data-theme="light"]) .nav-icon-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+
+  /* Theme toggle icon state */
+  .theme-icon-moon {
+    display: none;
+  }
+  .theme-icon-sun {
+    display: block;
+  }
+
+  :global(html[data-theme="light"]) .theme-icon-moon {
+    display: block;
+  }
+  :global(html[data-theme="light"]) .theme-icon-sun {
+    display: none;
+  }
+
+  .nav-scan-btn {
+    font-size: 13px;
+    block-size: 36px;
+    padding-inline: 14px;
+    gap: 6px;
+  }
+
+  /* Hamburger Toggle */
   .hamburger {
     display: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    flex-direction: column;
+    gap: 5px;
     margin-inline-start: auto;
   }
 
-  /* Hover + keyboard open on hover-capable desktop only;
-     touch devices use tap-to-toggle (JS) to avoid sticky hovers. */
+  .hamburger-bar {
+    width: 20px;
+    height: 1.75px;
+    background-color: var(--color-on-primary);
+    border-radius: 2px;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  :global(html[data-theme="light"]) .hamburger-bar {
+    background-color: var(--color-ink);
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger-bar:nth-child(1) {
+    transform: translateY(6.75px) rotate(45deg);
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger[aria-expanded="true"] .hamburger-bar:nth-child(3) {
+    transform: translateY(-6.75px) rotate(-45deg);
+  }
+
+  .mobile-actions-item {
+    display: none;
+  }
+
+  /* Desktop hover triggers */
   @media (hover: hover) and (min-width: 961px) {
     .nav-item:hover .nav-panel,
     .nav-item:focus-within .nav-panel {
       display: block;
     }
-    .nav-item:hover .nav-panel[hidden],
-    .nav-item:focus-within .nav-panel[hidden] {
-      display: block;
-    }
   }
 
-  /* Mobile */
+  /* Mobile Layout */
   @media (max-width: 960px) {
     .nav-links {
       display: none;
       position: fixed;
       inset: 64px 0 0 0;
-      background-color: var(--color-canvas);
+      background-color: rgba(10, 10, 13, 0.98);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       flex-direction: column;
       align-items: stretch;
       gap: 0;
-      padding: 16px;
+      padding: 16px 20px 40px 20px;
       margin: 0;
-      border-block-start: 1px solid var(--color-hairline-soft);
+      border-block-start: 1px solid rgba(255, 255, 255, 0.08);
       z-index: 99;
       overflow-y: auto;
+    }
+
+    :global(html[data-theme="light"]) .nav-links {
+      background-color: rgba(255, 255, 255, 0.98);
+      border-block-start-color: rgba(0, 0, 0, 0.08);
     }
 
     .nav-links.is-open {
@@ -351,18 +697,27 @@ const isGroupActive = (g: DropGroup): boolean =>
 
     .nav-item {
       inline-size: 100%;
-      border-block-end: 1px solid var(--color-hairline-soft);
+      border-block-end: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .nav-item:last-child {
-      border-block-end: none;
+    :global(html[data-theme="light"]) .nav-item {
+      border-block-end-color: rgba(0, 0, 0, 0.06);
     }
 
     .nav-drop-btn {
       inline-size: 100%;
       justify-content: space-between;
-      padding: 14px 12px;
+      padding: 16px 8px;
       font-size: 16px;
+      border-radius: 0;
+    }
+
+    .nav-item > a.nav-link {
+      display: flex;
+      inline-size: 100%;
+      padding: 16px 8px;
+      font-size: 16px;
+      border-radius: 0;
     }
 
     .nav-panel {
@@ -370,50 +725,63 @@ const isGroupActive = (g: DropGroup): boolean =>
       border: none;
       box-shadow: none;
       background: transparent;
-      padding: 0 0 8px 0;
+      padding: 0 0 12px 0;
       min-inline-size: 0;
       max-inline-size: none;
     }
 
     .nav-panel-link {
+      padding: 10px 8px;
+    }
+
+    .mobile-actions-item {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-block: 24px 12px;
+      border-block-end: none;
+    }
+
+    .mobile-actions-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .mobile-action-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
       padding: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--color-on-primary);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius-app-md);
+      cursor: pointer;
+    }
+
+    :global(html[data-theme="light"]) .mobile-action-btn {
+      color: var(--color-ink);
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-scan-btn {
+      width: 100%;
+      text-align: center;
+      justify-content: center;
+      height: 44px;
     }
 
     .hamburger {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-block-size: 44px;
-      min-inline-size: 44px;
-      padding: 10px;
-      margin-inline-start: 8px;
-    }
-    .nav-actions {
       display: flex;
-      align-items: center;
-      margin-inline-start: auto;
     }
-    #nav-cta {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-block-size: 44px;
-      padding-inline: 14px;
-      font-size: 13px;
-      white-space: nowrap;
-    }
-  }
 
-  @media (max-width: 480px) {
-    .nav-inner {
-      gap: 12px;
-    }
-    .wordmark-text {
-      font-size: 13px;
-    }
-    #nav-cta {
-      padding-inline: 10px;
-      font-size: 12px;
+    .nav-actions {
+      display: none;
     }
   }
 </style>
@@ -436,8 +804,6 @@ const isGroupActive = (g: DropGroup): boolean =>
   }
 
   function openPanel(btn: HTMLButtonElement): void {
-    // One open group at a time on desktop; accordions act
-    // independently only via sequential taps on mobile.
     for (const other of dropBtns) {
       if (other !== btn) closePanel(other);
     }
@@ -474,7 +840,7 @@ const isGroupActive = (g: DropGroup): boolean =>
     btn.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closePanel(btn);
-        btn.blur();
+        btn.focus();
       } else if (e.key === 'ArrowDown') {
         e.preventDefault();
         openPanel(btn);
@@ -483,7 +849,6 @@ const isGroupActive = (g: DropGroup): boolean =>
       }
     });
 
-    // Leaving the group with the keyboard closes the pinned panel.
     const item = btn.closest('.nav-item');
     item?.addEventListener('focusout', (e) => {
       const next = (e as FocusEvent).relatedTarget as Node | null;
@@ -492,7 +857,7 @@ const isGroupActive = (g: DropGroup): boolean =>
     });
   });
 
-  // Escape anywhere closes all dropdowns and mobile menu.
+  // Escape key global listener
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     if (navLinks?.classList.contains('is-open')) {
@@ -505,43 +870,12 @@ const isGroupActive = (g: DropGroup): boolean =>
       if (isOpen(btn)) {
         hadOpen = true;
         closePanel(btn);
-      }
-    }
-    if (hadOpen) {
-      dropBtns[0]?.focus();
-    }
-  });
-
-  // Focus trap inside open mobile menu
-  navLinks?.addEventListener('keydown', (e) => {
-    if (!navLinks.classList.contains('is-open')) return;
-    if (e.key === 'Tab') {
-      const focusables = Array.from(
-        navLinks.querySelectorAll<HTMLElement>('a[href], button:not([hidden]):not([disabled])')
-      ).filter((el) => el.offsetParent !== null);
-      if (!focusables.length) return;
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
+        btn.focus();
       }
     }
   });
 
-  // Close on outside tap/click.
-  document.addEventListener('pointerdown', (e) => {
-    const target = e.target as Node;
-    for (const btn of dropBtns) {
-      const item = btn.closest('.nav-item');
-      if (item && !item.contains(target)) closePanel(btn);
-    }
-  });
-
-  // Choosing a link closes everything (incl. the mobile sheet).
+  // Mobile menu links close drawer
   navLinks?.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('a')) {
       setMobileMenu(false);
@@ -553,12 +887,52 @@ const isGroupActive = (g: DropGroup): boolean =>
     setMobileMenu(willOpen);
   });
 
-  // Close on outside click (mobile sheet)
+  // Close when clicking outside
   document.addEventListener('click', (e) => {
+    const target = e.target as Node;
     if (navLinks?.classList.contains('is-open') &&
-        !hamburger?.contains(e.target as Node) &&
-        !navLinks?.contains(e.target as Node)) {
+        !hamburger?.contains(target) &&
+        !navLinks?.contains(target)) {
       setMobileMenu(false);
     }
+    for (const btn of dropBtns) {
+      const item = btn.closest('.nav-item');
+      if (item && !item.contains(target)) {
+        closePanel(btn);
+      }
+    }
   });
+
+  // Search trigger buttons
+  const searchTriggers = document.querySelectorAll('.search-trigger');
+  searchTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => {
+      setMobileMenu(false);
+      if (window.location.pathname === '/') {
+        const input = document.getElementById('url-input') as HTMLInputElement | null;
+        input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        input?.focus();
+      } else {
+        window.location.href = '/?focus=1';
+      }
+    });
+  });
+
+  // Theme toggle buttons (desktop + mobile)
+  function toggleTheme(): void {
+    const current = document.documentElement.getAttribute('data-theme') || 'dark';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // ignore
+    }
+  }
+
+  const themeToggle = document.getElementById('header-theme-toggle');
+  themeToggle?.addEventListener('click', toggleTheme);
+
+  const mobileThemeBtn = document.querySelector('.mobile-theme-btn');
+  mobileThemeBtn?.addEventListener('click', toggleTheme);
 </script>

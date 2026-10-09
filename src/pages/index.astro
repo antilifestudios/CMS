@@ -111,13 +111,16 @@ const breadcrumbJsonLd = {
     <div class="container">
       <div class="hero-inner">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow">Free · Instant · Evidence-based</span>
+          <div class="badge-glow" style="margin-block-end: 4px; align-self: flex-start;">
+            <span class="dot"></span>
+            <span>Deterministic Web Intelligence · Cloudflare Edge</span>
+          </div>
           <h1 id="hero-h1" class="type-display-xl hero-headline">
             What CMS Is This<br />Website Using?
           </h1>
           <p class="type-subtitle hero-sub text-ash">
             Paste any URL and we'll identify the platform, theme, framework,
-            and hosting — with proof, not guesses.
+            and hosting — with verifiable evidence, not guesses.
           </p>
         </div>
 
@@ -266,129 +269,174 @@ const breadcrumbJsonLd = {
   </Section>
 
   <!-- ============================================================
-    HOW IT WORKS  (light section — polarity flip)
+    2. COMPACT SOCIAL-PROOF / STAT STRIP
     ============================================================ -->
-  <Section theme="light" ariaLabelledby="how-h2">
+  <section class="stat-strip-section" aria-label="Engine statistics">
     <div class="container">
-      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
-        <span class="eyebrow" style="color: var(--color-mute);">How detection works</span>
-        <h2 id="how-h2" class="type-display-sm" style="color: var(--color-ink);">
-          Evidence-based results, every time
+      <div class="stat-strip">
+        <div class="stat-item">
+          <span class="stat-number">100+</span>
+          <span class="stat-label">Technologies Recognized</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span class="stat-number">&lt; 3s</span>
+          <span class="stat-label">Average Edge Scan</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span class="stat-number">100%</span>
+          <span class="stat-label">Deterministic Evidence</span>
+        </div>
+        <div class="stat-divider" aria-hidden="true"></div>
+        <div class="stat-item">
+          <span class="stat-number">0</span>
+          <span class="stat-label">Stored Target URLs</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+    3. FEATURE GRID — SPECIALIZED DETECTORS
+    ============================================================ -->
+  <Section theme="dark" ariaLabelledby="tools-h2" class="feature-grid-section" style="border-block-start: 1px solid var(--color-hairline-soft);">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow type-mono-eyebrow text-brand">Specialized Analyzers</span>
+        <h2 id="tools-h2" class="type-display-sm section-title">
+          Deep-dive inspection tools
         </h2>
-        <p class="type-subtitle" style="color: var(--color-slate); max-width: 580px;">
-          Every detection shows <em>why</em> — the exact artifact matched and a confidence level.
-          We never guess. If we can't tell, we say so.
+        <p class="type-subtitle text-ash section-subtitle">
+          Dedicated analyzers for theme architectures, marketing stacks, and privacy compliance.
         </p>
       </div>
 
-      <div class="feature-grid">
-        <div class="card-light feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-          </div>
-          <h3 class="type-heading-sm" style="color: var(--color-ink); margin-block: 12px 8px;">Signals, not guesses</h3>
-          <p class="type-body-sm" style="color: var(--color-slate);">
-            We match against HTTP headers, HTML paths, generator tags, cookie names,
-            and script hostnames — not heuristics or keyword stuffing.
-          </p>
-        </div>
-        <div class="card-light feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
-          </div>
-          <h3 class="type-heading-sm" style="color: var(--color-ink); margin-block: 12px 8px;">Under 3 seconds</h3>
-          <p class="type-body-sm" style="color: var(--color-slate);">
-            Results arrive in under 3 seconds for most sites — fetching, matching,
-            and probing all run inside a Cloudflare Worker on the edge.
-          </p>
-        </div>
-        <div class="card-brand feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
-          </div>
-          <h3 class="type-heading-sm" style="margin-block: 12px 8px;">One unified answer</h3>
-          <p class="type-body-sm">
-            CMS, theme, plugins, hosting, and framework in a single result — instead of
-            sending you across several different sites.
-          </p>
-        </div>
-        <div class="card-light feature-card">
-          <div class="feature-icon" aria-hidden="true">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg>
-          </div>
-          <h3 class="type-heading-sm" style="color: var(--color-ink); margin-block: 12px 8px;">Zero friction</h3>
-          <p class="type-body-sm" style="color: var(--color-slate);">
-            No sign-up, no account, no API keys, no popups. The URLs you check are
-            never stored on our servers.
-          </p>
-        </div>
-      </div>
-    </div>
-  </Section>
-
-  <!-- ============================================================
-    TECHNOLOGY COVERAGE  (dark section)
-    ============================================================ -->
-  <Section theme="dark" ariaLabelledby="coverage-h2">
-    <div class="container">
-      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
-        <span class="eyebrow type-mono-eyebrow">What we detect</span>
-        <h2 id="coverage-h2" class="type-display-sm">40+ technologies detected</h2>
-        <p class="type-subtitle text-ash" style="max-width: 520px;">
-          From the most popular CMS to niche frameworks — with confidence ratings
-          and links to learn more about each platform.
-        </p>
-      </div>
-
-      <div class="tech-category-grid">
-        {[
-          { label: 'CMS', items: ['WordPress', 'Drupal', 'Joomla', 'Ghost', 'TYPO3', 'Craft CMS', 'Umbraco', 'HubSpot CMS', 'Sitecore'] },
-          { label: 'Site Builders', items: ['Wix', 'Squarespace', 'Webflow', 'Framer', 'Weebly', 'GoDaddy', 'Jimdo', 'Carrd', 'SITE123'] },
-          { label: 'E-commerce', items: ['Shopify', 'WooCommerce', 'Magento', 'BigCommerce', 'PrestaShop', 'OpenCart'] },
-          { label: 'Frameworks', items: ['Next.js', 'Nuxt', 'Gatsby', 'Astro', 'Laravel', 'Django', 'Rails'] },
-          { label: 'Hosting & CDN', items: ['Cloudflare', 'Vercel', 'Netlify', 'CloudFront', 'Fastly', 'Akamai', 'WP Engine', 'Kinsta', 'GitHub Pages'] },
-        ].map(({ label, items }) => (
-          <div class="tech-category">
-            <p class="type-mono-caps text-mute" style="margin-block-end: 12px;">{label}</p>
-            <div class="tech-chips">
-              {items.map((item) => (
-                <span class="badge badge-filled">{item}</span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  </Section>
-
-  <!-- ============================================================
-    SPECIALISED TOOLS  (paper section)
-    ============================================================ -->
-  <Section theme="light" ariaLabelledby="tools-h2">
-    <div class="container">
-      <h2 id="tools-h2" class="type-display-sm" style="color: var(--color-ink); margin-block-end: var(--spacing-xl);">
-        {(en.tools as Record<string, string>).heading}
-      </h2>
-      <div class="tool-link-grid">
+      <div class="feature-grid-tools">
         {[
           { href: '/wordpress-theme-detector', title: (en.tools as Record<string, string>).wpTitle, desc: (en.tools as Record<string, string>).wpDesc, icon: 'wordpress' as const },
           { href: '/shopify-theme-detector',   title: (en.tools as Record<string, string>).shopifyTitle, desc: (en.tools as Record<string, string>).shopifyDesc, icon: 'shopify' as const },
           { href: '/growth-marketing-detector', title: (en.tools as Record<string, string>).growthTitle, desc: (en.tools as Record<string, string>).growthDesc, icon: 'growth' as const },
           { href: '/security-privacy-detector', title: (en.tools as Record<string, string>).securityTitle, desc: (en.tools as Record<string, string>).securityDesc, icon: 'security' as const },
-          { href: '/who-hosts-this-website',   title: (en.tools as Record<string, string>).hostingTitle, desc: (en.tools as Record<string, string>).hostingDesc, icon: 'hosting' as const },
-          { href: '/is-this-site-wordpress',   title: (en.tools as Record<string, string>).isWordpressTitle, desc: (en.tools as Record<string, string>).isWordpressDesc, icon: undefined },
         ].map(({ href, title, desc, icon }) => (
-          <a href={href} class="tool-card card-light">
-            <h3 class="type-heading-sm tool-card-title" style="color: var(--color-ink); margin: 0 0 8px 0;">
-              {icon && <NavIcon name={icon} size={16} />}
-              <span>{title}</span>
+          <a href={href} class="tool-card card-dark">
+            <div class="tool-card-head">
+              <span class="tool-card-icon-box">
+                {icon && <NavIcon name={icon} size={18} />}
+              </span>
+              <span class="tool-card-arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            </div>
+            <h3 class="type-heading-sm tool-card-title">
+              {title}
             </h3>
-            <p class="type-body-sm" style="color: var(--color-slate); margin: 0 0 16px 0;">{desc}</p>
-            <span class="type-caption text-link-light" style="display: flex; align-items: center; gap: 4px;">
-              {(en.tools as Record<string, string>).tryIt}
-            </span>
+            <p class="type-body-sm text-ash tool-card-desc">
+              {desc}
+            </p>
           </a>
         ))}
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================================
+    4. HOW DETECTION WORKS SUMMARY
+    ============================================================ -->
+  <Section theme="dark" ariaLabelledby="how-h2" class="how-section" style="border-block-start: 1px solid var(--color-hairline-soft);">
+    <div class="container">
+      <div class="section-header">
+        <span class="eyebrow type-mono-eyebrow text-mute">Detection Engine</span>
+        <h2 id="how-h2" class="type-display-sm section-title">
+          Evidence-based results. Every time.
+        </h2>
+        <p class="type-subtitle text-ash section-subtitle">
+          Every detection shows why — the exact header, HTML path, or script artifact matched. We never guess.
+        </p>
+      </div>
+
+      <div class="how-works-grid">
+        <div class="card-dark how-card">
+          <div class="how-icon-box" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          </div>
+          <h3 class="type-heading-sm how-card-title">Signals, Not Guesses</h3>
+          <p class="type-body-sm text-ash">
+            We match against HTTP response headers, meta generator tags, script hostnames, and linked stylesheets — not keyword stuffing or stale databases.
+          </p>
+        </div>
+
+        <div class="card-dark how-card">
+          <div class="how-icon-box" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></svg>
+          </div>
+          <h3 class="type-heading-sm how-card-title">Under 3 Seconds</h3>
+          <p class="type-body-sm text-ash">
+            Fetching, regex parsing, and selective probes run inside Cloudflare Workers on the global edge for rapid execution.
+          </p>
+        </div>
+
+        <div class="card-dark how-card">
+          <div class="how-icon-box" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </div>
+          <h3 class="type-heading-sm how-card-title">Multi-Path Scanning</h3>
+          <p class="type-body-sm text-ash">
+            Sample up to 15 pages per domain to identify hybrid stacks where the blog, store, or app use different architectures.
+          </p>
+        </div>
+
+        <div class="card-dark how-card">
+          <div class="how-icon-box" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </div>
+          <h3 class="type-heading-sm how-card-title">Zero Friction & Privacy</h3>
+          <p class="type-body-sm text-ash">
+            No accounts, no email gates, no paywalls. The URLs you inspect are analyzed ephemerally in RAM and never stored in a database.
+          </p>
+        </div>
+      </div>
+
+      <!-- Recognized tech stacks pill strip -->
+      <div class="coverage-bar">
+        <span class="type-mono-caps text-mute coverage-label">Supported Tech Stacks:</span>
+        <div class="coverage-pills">
+          {['WordPress', 'Shopify', 'Webflow', 'Next.js', 'Framer', 'Squarespace', 'Wix', 'Ghost', 'Drupal', 'Astro', 'Nuxt', 'Contentful', 'Cloudflare', 'Vercel', 'Netlify'].map((tech) => (
+            <span class="badge badge-filled">{tech}</span>
+          ))}
+          <a href="/blog/how-it-works" class="badge-link type-caption">
+            All 40+ technologies →
+          </a>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- ============================================================
+    5. FINAL CALL TO ACTION
+    ============================================================ -->
+  <Section theme="dark" class="final-cta-section" style="border-block-start: 1px solid var(--color-hairline-soft);">
+    <div class="container">
+      <div class="final-cta-card card-dark">
+        <div class="final-cta-text">
+          <span class="type-mono-eyebrow text-brand">Start Instant Scan</span>
+          <h2 class="type-display-sm final-cta-title">
+            Analyze any website in seconds
+          </h2>
+          <p class="type-subtitle text-ash final-cta-sub">
+            Free, deterministic CMS, theme, and framework detection backed by verifiable evidence.
+          </p>
+        </div>
+        <div class="final-cta-action">
+          <button type="button" class="btn btn-primary final-cta-btn" id="final-cta-trigger">
+            <span>Scan a Website</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </Section>
@@ -563,74 +611,260 @@ const breadcrumbJsonLd = {
   .sk-body { inline-size: 85%; }
   .sk-body--short { inline-size: 50%; }
 
-  /* Feature grid */
-  .feature-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-lg);
+  /* Stat strip */
+  .stat-strip-section {
+    background-color: var(--color-canvas);
+    border-block-start: 1px solid var(--color-hairline-soft);
+    border-block-end: 1px solid var(--color-hairline-soft);
+    padding-block: var(--spacing-lg);
   }
 
-  .feature-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-  .feature-card:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.08); }
-  .feature-icon { display: flex; color: var(--color-ink); }
-  .card-brand .feature-icon { color: var(--color-ink); }
-
-  /* Tech coverage */
-  .tech-category-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-xl);
-  }
-
-  .tech-chips {
+  .stat-strip {
     display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
   }
 
-  /* Tools grid */
-  .tool-link-grid {
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-number {
+    font-family: var(--font-waldenburg);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    color: var(--color-on-primary);
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-mute);
+  }
+
+  .stat-divider {
+    inline-size: 1px;
+    block-size: 32px;
+    background-color: var(--color-hairline-soft);
+  }
+
+  /* Section headers */
+  .section-header {
+    margin-block-end: var(--spacing-xl);
+    max-inline-size: 640px;
+  }
+
+  .section-title {
+    color: var(--color-on-primary);
+    margin-block: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .section-subtitle {
+    margin: 0;
+  }
+
+  /* Feature grid (Tools) */
+  .feature-grid-tools {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: var(--spacing-lg);
   }
 
   .tool-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-marketing);
     text-decoration: none;
-    display: block;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    transition: border-color 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+  }
+
+  .tool-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.04);
+  }
+
+  .tool-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--spacing-md);
+  }
+
+  .tool-card-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 36px;
+    block-size: 36px;
+    border-radius: var(--radius-app-md);
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-on-primary);
+  }
+
+  .tool-card-arrow {
+    display: inline-flex;
+    align-items: center;
+    color: var(--color-mute);
+    transition: transform 0.15s ease, color 0.15s ease;
+  }
+
+  .tool-card:hover .tool-card-arrow {
+    color: var(--color-brand);
+    transform: translateX(3px);
   }
 
   .tool-card-title {
+    color: var(--color-on-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  .tool-card-desc {
+    margin: 0;
+  }
+
+  /* How detection works grid */
+  .how-works-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    margin-block-end: var(--spacing-xxl);
+  }
+
+  .how-card {
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-marketing);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    transition: border-color 0.15s ease;
+  }
+
+  .how-card:hover {
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  .how-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 40px;
+    block-size: 40px;
+    border-radius: var(--radius-app-md);
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-brand);
+    margin-block-end: var(--spacing-md);
+  }
+
+  .how-card-title {
+    color: var(--color-on-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  /* Tech coverage bar */
+  .coverage-bar {
     display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-marketing);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-hairline-soft);
+  }
+
+  .coverage-label {
+    letter-spacing: 0.5px;
+  }
+
+  .coverage-pills {
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
   }
 
-  .tool-card-title svg {
-    flex-shrink: 0;
-    display: block;
+  .badge-link {
+    color: var(--color-brand);
+    text-decoration: none;
+    margin-inline-start: 4px;
+    transition: opacity 0.15s ease;
   }
 
-  .tool-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  .badge-link:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+  }
+
+  /* Final CTA section */
+  .final-cta-section {
+    padding-block: var(--spacing-section-lg);
+  }
+
+  .final-cta-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xxl);
+    border-radius: var(--radius-marketing);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+  }
+
+  .final-cta-text {
+    max-inline-size: 600px;
+  }
+
+  .final-cta-title {
+    color: var(--color-on-primary);
+    margin-block: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .final-cta-sub {
+    margin: 0;
+  }
+
+  .final-cta-btn {
+    white-space: nowrap;
+    padding-inline: var(--spacing-xl);
+    block-size: 50px;
   }
 
   @media (max-width: 960px) {
-    .tech-category-grid { grid-template-columns: repeat(2, 1fr); }
+    .feature-grid-tools { grid-template-columns: 1fr; }
+    .how-works-grid { grid-template-columns: 1fr; }
+    .final-cta-card {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   @media (max-width: 768px) {
-    .feature-grid   { grid-template-columns: 1fr; }
-    .tool-link-grid { grid-template-columns: 1fr; }
-    .tech-category-grid { grid-template-columns: 1fr; }
+    .stat-strip {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-md);
+    }
+    .stat-divider { display: none; }
     .hero { min-block-size: 60vh; }
   }
 
   @media (max-width: 480px) {
     .input-row { flex-direction: column; }
     .detect-btn { inline-size: 100%; }
+    .stat-strip { grid-template-columns: 1fr; }
+    .final-cta-btn { inline-size: 100%; }
   }
 </style>
 
@@ -945,7 +1179,7 @@ function renderResults(data: {
         ? `<div class="no-match-card card-dark" style="margin-block-start: 16px;">
              <p class="type-heading-sm" style="margin: 0 0 8px 0;">No known platform detected</p>
              <p class="type-body-sm text-ash" style="margin: 0 0 16px 0;">
-               This site may be custom-built. Try <a href="/guides/how-to-find-what-cms-a-website-uses"
+               This site may be custom-built. Try <a href="/blog/how-to-find-a-cms"
                class="text-link-dark">these manual methods</a> to investigate further.
              </p>
            </div>`
@@ -1852,6 +2086,11 @@ function init(): void {
 
   document.getElementById('recent-clear')?.addEventListener('click', () => {
     clearRecent();
+    input?.focus();
+  });
+
+  document.getElementById('final-cta-trigger')?.addEventListener('click', () => {
+    input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     input?.focus();
   });
 }

@@ -1,0 +1,207 @@
+---
+export const prerender = true;
+
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
+---
+
+<Base
+  title="404: Page Not Found — CMS Detector AI"
+  description="The page you are looking for does not exist. Use CMS Detector AI to scan website platforms, themes, and hosting."
+  pagePath="/404"
+  noindex={true}
+>
+  <Section theme="dark" class="error-hero" ariaLabelledby="error-h1">
+    <div class="container">
+      <div class="error-layout">
+        <!-- Error Code Eyebrow -->
+        <div class="badge-glow error-badge">
+          <span class="dot" style="background-color: var(--color-brand); box-shadow: 0 0 8px var(--color-brand);"></span>
+          <span>404 Error · Resource Not Found</span>
+        </div>
+
+        <h1 id="error-h1" class="type-display-xl error-title">
+          Lost in the stack?
+        </h1>
+        
+        <p class="type-subtitle text-ash error-subtitle">
+          The page you requested does not exist or has been relocated. But you can still analyze any website's CMS, theme, or hosting right here.
+        </p>
+
+        <!-- Inline Quick Scan Box -->
+        <div class="card-glass error-scan-box">
+          <form action="/" method="GET" class="error-scan-form">
+            <input
+              type="text"
+              name="url"
+              class="form-input error-scan-input"
+              placeholder="Enter any website URL (e.g. sanity.io)..."
+              required
+            />
+            <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
+              Detect CMS
+            </button>
+          </form>
+        </div>
+
+        <!-- Quick Helpful Links -->
+        <div class="error-links-section">
+          <h2 class="type-mono-caps text-mute" style="margin-block-end: 16px;">
+            Or explore popular detectors
+          </h2>
+          <div class="error-grid">
+            <a href="/" class="card-glass error-link-card">
+              <div class="link-card-header">
+                <NavIcon name="technology" size={18} />
+                <span class="link-card-title">Technology Detector</span>
+              </div>
+              <p class="link-card-desc">Comprehensive scan for CMS, framework, hosting and CDN.</p>
+            </a>
+
+            <a href="/wordpress-theme-detector" class="card-glass error-link-card">
+              <div class="link-card-header">
+                <NavIcon name="wordpress" size={18} />
+                <span class="link-card-title">WordPress Theme Detector</span>
+              </div>
+              <p class="link-card-desc">Extract active WP theme name, author, and stylesheet version.</p>
+            </a>
+
+            <a href="/shopify-theme-detector" class="card-glass error-link-card">
+              <div class="link-card-header">
+                <NavIcon name="shopify" size={18} />
+                <span class="link-card-title">Shopify Theme Detector</span>
+              </div>
+              <p class="link-card-desc">Identify active Shopify storefront themes and store signatures.</p>
+            </a>
+
+            <a href="/faq" class="card-glass error-link-card">
+              <div class="link-card-header">
+                <NavIcon name="help" size={18} />
+                <span class="link-card-title">Frequently Asked Questions</span>
+              </div>
+              <p class="link-card-desc">Answers to common questions about our edge detection engine.</p>
+            </a>
+          </div>
+        </div>
+
+        <div class="error-actions">
+          <a href="/" class="btn btn-secondary-dark">
+            ← Return to Homepage
+          </a>
+        </div>
+      </div>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .error-hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--spacing-section-lg);
+  }
+
+  .error-layout {
+    max-width: 760px;
+    margin-inline: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .error-badge {
+    margin-block-end: 8px;
+  }
+
+  .error-title {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .error-subtitle {
+    margin: 0;
+    max-width: 580px;
+  }
+
+  .error-scan-box {
+    width: 100%;
+    max-width: 620px;
+    padding: 16px;
+    margin-block: 12px;
+  }
+
+  .error-scan-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .error-scan-input {
+    flex: 1;
+    font-size: 15px;
+    height: 44px;
+  }
+
+  .error-links-section {
+    width: 100%;
+    margin-block-start: 16px;
+  }
+
+  .error-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    text-align: left;
+  }
+
+  .error-link-card {
+    padding: 20px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+  }
+
+  .error-link-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .link-card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-on-primary);
+  }
+
+  .link-card-title {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .link-card-desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--color-ash);
+  }
+
+  .error-actions {
+    margin-block-start: 16px;
+  }
+
+  @media (max-width: 640px) {
+    .error-scan-form {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .error-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -6,6 +6,7 @@
 import BaseHead from '../components/layout/BaseHead.astro';
 import Header   from '../components/layout/Header.astro';
 import Footer   from '../components/layout/Footer.astro';
+import ConsentBanner from '../components/layout/ConsentBanner.astro';
 import '../styles/global.css';
 
 interface Props {
@@ -41,6 +42,7 @@ const locale = props.locale ?? 'en';
     </main>
 
     <Footer />
+    <ConsentBanner />
   </body>
 </html>
 

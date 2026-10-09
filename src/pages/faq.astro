@@ -1,0 +1,100 @@
+---
+export const prerender = true;
+
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import FAQ from '../components/FAQ.astro';
+import en from '../i18n/en.json';
+
+const pageTitle = "Frequently Asked Questions (FAQ) — CMS Detector AI";
+const pageDescription = "Explore answers about how CMS Detector AI identifies web technologies, headless frameworks, hosting, privacy policies, and detection confidence.";
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://cmsdetectorai.com',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'FAQ',
+      item: 'https://cmsdetectorai.com/faq',
+    },
+  ],
+};
+---
+
+<Base
+  title={pageTitle}
+  description={pageDescription}
+  pagePath="/faq"
+  jsonLd={breadcrumbJsonLd}
+>
+  <!-- Hero Section -->
+  <Section theme="dark" class="faq-hero" ariaLabelledby="faq-h1">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="eyebrow-lockup">
+          <div class="badge-glow">
+            <span class="dot"></span>
+            <span>Documentation & Support</span>
+          </div>
+          <h1 id="faq-h1" class="type-display-lg" style="color: var(--color-on-primary); margin: 0;">
+            Frequently Asked Questions
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-width: 680px;">
+            Clear, technical explanations of how our deterministic edge engine identifies content platforms, headless stacks, and web infrastructure.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Global FAQ component with JSON-LD -->
+  <FAQ includeSchema={true} />
+
+  <!-- Quick Links section -->
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section);">
+    <div class="container">
+      <div class="more-help-grid">
+        <div class="card-glass help-card">
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">Methodology & Verification</h3>
+          <p class="type-body-sm text-ash" style="margin: 0 0 16px 0;">Understand our scoring system, heuristic models, and false-positive guards.</p>
+          <a href="/blog/how-it-works" class="btn btn-secondary-dark">Read Methodology →</a>
+        </div>
+        <div class="card-glass help-card">
+          <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">Still need help?</h3>
+          <p class="type-body-sm text-ash" style="margin: 0 0 16px 0;">Have a misdetection to report or need to submit a framework signature? Reach out anytime.</p>
+          <a href="/contact" class="btn btn-brand">Contact Our Team →</a>
+        </div>
+      </div>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .faq-hero {
+    padding-block: var(--spacing-section-lg) var(--spacing-section);
+  }
+
+  .hero-inner {
+    max-width: 860px;
+  }
+
+  .more-help-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    max-width: 860px;
+    margin-inline: auto;
+  }
+
+  .help-card {
+    padding: 28px;
+  }
+</style>

@@ -8,7 +8,7 @@ import { buildHreflangLinks } from '../../i18n/index';
 interface Props {
   title: string;
   description: string;
-  /** Relative path of the current page, e.g. "/" or "/methodology" */
+  /** Relative path of the current page, e.g. "/" or "/blog" */
   pagePath?: string;
   /** Whether this page should be excluded from search engines */
   noindex?: boolean;
@@ -41,6 +41,11 @@ const hreflangLinks = buildHreflangLinks(pagePath, siteUrl);
 // it is a public site key, not a secret). Empty = challenge disabled.
 const turnstileSiteKey = (import.meta.env?.PUBLIC_TURNSTILE_SITEKEY as string | undefined) ?? '';
 
+// Search Console, Webmaster Tools & AdSense verification
+const googleSiteVerification = (import.meta.env?.PUBLIC_GOOGLE_SITE_VERIFICATION as string | undefined) ?? '';
+const bingSiteVerification = (import.meta.env?.PUBLIC_BING_SITE_VERIFICATION as string | undefined) ?? '';
+const adsenseClientId = (import.meta.env?.PUBLIC_ADSENSE_CLIENT_ID as string | undefined) ?? '';
+
 // Base JSON-LD (WebSite + Organization on homepage)
 const isHome = pagePath === '/';
 const websiteJsonLd = {
@@ -72,6 +77,20 @@ if (jsonLd) {
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
 
+<!-- Theme initialization (prevents flash) -->
+<script is:inline>
+  (function() {
+    try {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light' || (!saved && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    } catch (e) {}
+  })();
+</script>
+
 <!-- Primary meta -->
 <title>{title}</title>
 <meta name="description" content={description} />
@@ -100,9 +119,21 @@ if (jsonLd) {
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
 
-<!-- Webmaster verification placeholders -->
+<!-- Webmaster verification -->
+{googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
+{bingSiteVerification && <meta name="msvalidate.01" content={bingSiteVerification} />}
+<!-- Fallback comments for manual verification if env is not used -->
 <!-- <meta name="google-site-verification" content="REPLACE_ME" /> -->
 <!-- <meta name="msvalidate.01" content="REPLACE_ME" /> -->
+
+<!-- Google AdSense (Auto ads loaded when client id provided) -->
+{adsenseClientId && (
+  <script
+    async
+    src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
+    crossorigin="anonymous"
+  />
+)}
 
 <!-- GA placeholder -->
 <!-- <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script> -->

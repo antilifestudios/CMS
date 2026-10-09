@@ -1,0 +1,218 @@
+---
+export const prerender = true;
+
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const posts = allPosts.sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: 'https://cmsdetectorai.com',
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Blog',
+      item: 'https://cmsdetectorai.com/blog',
+    },
+  ],
+};
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+---
+
+<Base
+  title="Blog & Engineering Notes — CMS Detector AI"
+  description="Technical guides, architecture breakdowns, and edge heuristics for detecting CMSs, themes, frameworks, and web hosting."
+  pagePath="/blog"
+  jsonLd={breadcrumbJsonLd}
+>
+  <Section theme="dark" class="blog-hero" ariaLabelledby="blog-h1">
+    <div class="container">
+      <div class="hero-inner">
+        <div class="eyebrow-lockup">
+          <div class="badge-glow">
+            <span class="dot"></span>
+            <span>Engineering & Research</span>
+          </div>
+          <h1 id="blog-h1" class="type-display-lg" style="color: var(--color-on-primary); margin: 0;">
+            Blog & Technical Guides
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 640px;">
+            In-depth explainers on web platform architecture, edge detection algorithms, and manual DevTools inspection methods.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section-lg);">
+    <div class="container">
+      <div class="blog-grid">
+        {posts.map((post) => (
+          <article class="card-glass post-card">
+            <div class="post-card-meta">
+              <div class="post-tags">
+                {post.data.tags.map((tag) => (
+                  <span class="badge badge-filled">{tag}</span>
+                ))}
+              </div>
+              <div class="post-time-meta">
+                <time datetime={post.data.publishDate.toISOString()}>
+                  {formatDate(post.data.publishDate)}
+                </time>
+                <span class="meta-dot">·</span>
+                <span>{post.data.readingTime}</span>
+              </div>
+            </div>
+
+            <h2 class="type-heading-sm post-title">
+              <a href={`/blog/${post.id}`} class="post-title-link">
+                {post.data.title}
+              </a>
+            </h2>
+
+            <p class="type-body-sm text-ash post-desc">
+              {post.data.description}
+            </p>
+
+            <div class="post-card-foot">
+              <a href={`/blog/${post.id}`} class="read-link">
+                <span>Read article</span>
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                  <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .blog-hero {
+    padding-block: var(--spacing-section-lg) var(--spacing-section);
+  }
+
+  .hero-inner {
+    max-inline-size: 860px;
+  }
+
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    max-inline-size: 1120px;
+    margin-inline: auto;
+  }
+
+  .post-card {
+    display: flex;
+    flex-direction: column;
+    padding: 28px;
+    border-radius: var(--radius-marketing);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+    transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .post-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .post-card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-block-end: 14px;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .post-time-meta {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-mute);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-dot {
+    opacity: 0.5;
+  }
+
+  .post-title {
+    margin: 0 0 10px 0;
+    color: var(--color-on-primary);
+    line-height: 1.3;
+  }
+
+  .post-title-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .post-title-link:hover {
+    color: var(--color-brand);
+  }
+
+  .post-desc {
+    margin: 0;
+    flex: 1;
+    line-height: 1.6;
+  }
+
+  .post-card-foot {
+    margin-block-start: 24px;
+    padding-block-start: 16px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    text-decoration: none;
+    transition: gap 0.15s ease, color 0.15s ease;
+  }
+
+  .read-link:hover {
+    color: var(--color-brand);
+    gap: 10px;
+  }
+
+  @media (max-width: 640px) {
+    .blog-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

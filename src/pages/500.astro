@@ -1,0 +1,126 @@
+---
+export const prerender = true;
+
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import NavIcon from '../components/layout/NavIcon.astro';
+---
+
+<Base
+  title="500: Server Error — CMS Detector AI"
+  description="An unexpected server condition occurred while processing this edge request. Our team monitors and resolves edge hiccups automatically."
+  pagePath="/500"
+  noindex={true}
+>
+  <Section theme="dark" class="error-hero" ariaLabelledby="server-error-h1">
+    <div class="container">
+      <div class="error-layout">
+        <!-- Error Badge -->
+        <div class="badge-glow error-badge">
+          <span class="dot" style="background-color: var(--color-brand-deep); box-shadow: 0 0 8px var(--color-brand-deep);"></span>
+          <span>500 Error · Edge Worker Fault</span>
+        </div>
+
+        <h1 id="server-error-h1" class="type-display-xl error-title">
+          Unexpected Edge Hiccup
+        </h1>
+        
+        <p class="type-subtitle text-ash error-subtitle">
+          Our distributed Cloudflare edge workers encountered an unexpected condition while fulfilling your request. This is usually temporary.
+        </p>
+
+        <!-- Troubleshooting Box -->
+        <div class="card-glass troubleshooting-card">
+          <h2 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 12px 0;">
+            Troubleshooting Steps
+          </h2>
+          <ul class="troubleshoot-list">
+            <li><strong>Target Server Availability:</strong> If you scanned a site, ensure the destination domain is currently live, public, and not down.</li>
+            <li><strong>Aggressive Anti-Bot Blocks:</strong> Some targets serve aggressive Captcha interstitials that prevent automated edge inspection.</li>
+            <li><strong>Transient Network Lag:</strong> Subrequest time-outs may occur during high global traffic. Re-running the scan usually succeeds immediately.</li>
+          </ul>
+        </div>
+
+        <div class="error-actions">
+          <button type="button" class="btn btn-primary" onclick="window.location.reload()">
+            ↻ Refresh & Try Again
+          </button>
+          <a href="/" class="btn btn-secondary-dark">
+            Return to Homepage
+          </a>
+          <a href="/contact" class="btn btn-secondary-dark">
+            Report Issue
+          </a>
+        </div>
+      </div>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .error-hero {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--spacing-section-lg);
+  }
+
+  .error-layout {
+    max-width: 720px;
+    margin-inline: auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .error-badge {
+    margin-block-end: 8px;
+  }
+
+  .error-title {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .error-subtitle {
+    margin: 0;
+    max-width: 580px;
+  }
+
+  .troubleshooting-card {
+    width: 100%;
+    padding: 24px 28px;
+    text-align: left;
+    margin-block: 8px;
+  }
+
+  .troubleshoot-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .troubleshoot-list li {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--color-ash);
+  }
+
+  .troubleshoot-list strong {
+    color: var(--color-on-primary);
+  }
+
+  .error-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-block-start: 12px;
+  }
+</style>

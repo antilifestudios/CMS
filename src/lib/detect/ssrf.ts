@@ -16,7 +16,7 @@
  * private IP is additionally mitigated by Cloudflare's own egress guards
  * (Workers block fetches to private ranges). Every redirect hop is
  * re-validated with validateRedirect(). This limitation is documented
- * in /methodology.
+ * in /blog/how-it-works.
  */
 
 export type SsrfValidationResult =

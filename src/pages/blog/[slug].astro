@@ -1,0 +1,488 @@
+---
+export const prerender = true;
+
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Filter table of contents headings (h2 and h3)
+const tocHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+
+// Related posts: exclude current, take 3 newest
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3);
+
+function formatDate(date: Date): string {
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
+const siteUrl = 'https://cmsdetectorai.com';
+const postUrl = `${siteUrl}/blog/${post.id}`;
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.publishDate.toISOString(),
+  dateModified: (post.data.updatedDate ?? post.data.publishDate).toISOString(),
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': postUrl,
+  },
+  author: {
+    '@type': 'Organization',
+    name: 'CMS Detector AI',
+    url: siteUrl,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'CMS Detector AI',
+    url: siteUrl,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${siteUrl}/favicon.svg`,
+    },
+  },
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Home',
+      item: siteUrl,
+    },
+    {
+      '@type': 'ListItem',
+      position: 2,
+      name: 'Blog',
+      item: `${siteUrl}/blog`,
+    },
+    {
+      '@type': 'ListItem',
+      position: 3,
+      name: post.data.title,
+      item: postUrl,
+    },
+  ],
+};
+---
+
+<Base
+  title={`${post.data.title} — CMS Detector AI`}
+  description={post.data.description}
+  pagePath={`/blog/${post.id}`}
+  canonical={postUrl}
+  jsonLd={[articleJsonLd, breadcrumbJsonLd]}
+>
+  <!-- Article Header -->
+  <Section theme="dark" class="post-hero" ariaLabelledby="post-h1">
+    <div class="container">
+      <div class="post-header-inner">
+        <a href="/blog" class="back-link">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M11.5 7h-9M6 3.5L2.5 7 6 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Back to Blog</span>
+        </a>
+
+        <div class="post-meta-strip">
+          <div class="post-tags">
+            {post.data.tags.map((tag) => (
+              <span class="badge badge-filled">{tag}</span>
+            ))}
+          </div>
+          <div class="post-dates type-caption text-mute">
+            <time datetime={post.data.publishDate.toISOString()}>
+              Published {formatDate(post.data.publishDate)}
+            </time>
+            {post.data.updatedDate && (
+              <>
+                <span class="meta-dot">·</span>
+                <span>Updated {formatDate(post.data.updatedDate)}</span>
+              </>
+            )}
+            <span class="meta-dot">·</span>
+            <span>{post.data.readingTime}</span>
+          </div>
+        </div>
+
+        <h1 id="post-h1" class="type-display-md post-headline">
+          {post.data.title}
+        </h1>
+
+        <p class="type-subtitle text-ash post-lead">
+          {post.data.description}
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Article Body -->
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section-lg);">
+    <div class="container">
+      <div class="post-layout">
+        <!-- Main Content Area -->
+        <article class="post-article">
+          {tocHeadings.length >= 3 && (
+            <nav class="card-glass toc-box" aria-label="Table of contents">
+              <p class="type-mono-caps text-mute toc-title">Table of contents</p>
+              <ul class="toc-list" role="list">
+                {tocHeadings.map((heading) => (
+                  <li class={`toc-item toc-depth-${heading.depth}`}>
+                    <a href={`#${heading.slug}`} class="toc-link">
+                      {heading.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
+
+          <div class="prose-content">
+            <Content />
+          </div>
+
+          <!-- Bottom CTA to scan a website -->
+          <div class="card-glass post-scan-cta">
+            <div class="cta-text">
+              <span class="type-mono-eyebrow text-brand">Edge Detection Engine</span>
+              <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 6px 0;">
+                Analyze any website in under 3 seconds
+              </h3>
+              <p class="type-body-sm text-ash" style="margin: 0;">
+                Test our deterministic scanner on any public URL. Identifies CMS, theme, framework, and hosting with zero logging.
+              </p>
+            </div>
+            <a href="/" class="btn btn-primary cta-btn">
+              <span>Scan a Website</span>
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </div>
+        </article>
+      </div>
+
+      <!-- Related Posts -->
+      {relatedPosts.length > 0 && (
+        <div class="related-section">
+          <div class="related-header">
+            <span class="type-mono-eyebrow text-mute">Continue reading</span>
+            <h2 class="type-heading-sm" style="color: var(--color-on-primary); margin: 4px 0 0 0;">
+              Related Articles
+            </h2>
+          </div>
+          <div class="related-grid">
+            {relatedPosts.map((rel) => (
+              <a href={`/blog/${rel.id}`} class="card-glass related-card">
+                <span class="type-caption text-mute">
+                  {formatDate(rel.data.publishDate)} · {rel.data.readingTime}
+                </span>
+                <h3 class="type-heading-sm related-title">
+                  {rel.data.title}
+                </h3>
+                <p class="type-body-sm text-ash related-desc">
+                  {rel.data.description}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .post-hero {
+    padding-block: var(--spacing-section) var(--spacing-section);
+  }
+
+  .post-header-inner {
+    max-inline-size: 780px;
+    margin-inline: auto;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--color-ash);
+    text-decoration: none;
+    margin-block-end: 24px;
+    transition: color 0.15s ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-on-primary);
+  }
+
+  .post-meta-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-block-end: 16px;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .post-dates {
+    font-family: var(--font-mono);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meta-dot {
+    opacity: 0.5;
+  }
+
+  .post-headline {
+    color: var(--color-on-primary);
+    margin: 0 0 16px 0;
+    line-height: 1.15;
+  }
+
+  .post-lead {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .post-layout {
+    max-inline-size: 780px;
+    margin-inline: auto;
+  }
+
+  .post-article {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  /* Table of contents box */
+  .toc-box {
+    padding: 20px 24px;
+    border-radius: var(--radius-marketing);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .toc-title {
+    margin: 0 0 12px 0;
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toc-depth-3 {
+    padding-inline-start: 16px;
+  }
+
+  .toc-link {
+    font-size: 14px;
+    color: var(--color-ash);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .toc-link:hover {
+    color: var(--color-brand);
+  }
+
+  /* Markdown prose styling */
+  .prose-content {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--color-ash);
+  }
+
+  .prose-content :global(h2) {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    margin: 40px 0 16px 0;
+    letter-spacing: -0.02em;
+    scroll-margin-top: 80px;
+  }
+
+  .prose-content :global(h3) {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    margin: 28px 0 12px 0;
+    letter-spacing: -0.01em;
+    scroll-margin-top: 80px;
+  }
+
+  .prose-content :global(p) {
+    margin: 0 0 20px 0;
+  }
+
+  .prose-content :global(ul),
+  .prose-content :global(ol) {
+    margin: 0 0 20px 0;
+    padding-inline-start: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .prose-content :global(li) {
+    line-height: 1.6;
+  }
+
+  .prose-content :global(strong) {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+
+  .prose-content :global(a) {
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose-content :global(code) {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: var(--radius-app-xs);
+    color: var(--color-on-primary);
+  }
+
+  .prose-content :global(pre) {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-md);
+    padding: 16px;
+    overflow-x: auto;
+    margin: 0 0 24px 0;
+  }
+
+  .prose-content :global(pre code) {
+    background: transparent;
+    padding: 0;
+    border-radius: 0;
+    font-size: 13px;
+  }
+
+  /* Scan CTA */
+  .post-scan-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 32px;
+    border-radius: var(--radius-marketing);
+    margin-block-start: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .cta-text {
+    flex: 1;
+  }
+
+  .cta-btn {
+    flex-shrink: 0;
+    gap: 6px;
+  }
+
+  /* Related section */
+  .related-section {
+    max-inline-size: 780px;
+    margin-inline: auto;
+    margin-block-start: 48px;
+    padding-block-start: 36px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .related-header {
+    margin-block-end: 20px;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-radius: var(--radius-app-lg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .related-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.04);
+  }
+
+  .related-title {
+    margin: 8px 0 6px 0;
+    font-size: 15px;
+    color: var(--color-on-primary);
+    line-height: 1.35;
+  }
+
+  .related-desc {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    .post-scan-cta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .cta-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>

@@ -35,7 +35,7 @@ export const SCAN_CONFIG = {
   /** Hard subrequest ceiling — stop sampling, don't error. */
   SUBREQUEST_CEILING: 50,
   /** Crawler identity (must match pipeline UA family). */
-  USER_AGENT: 'CMSDetector-AI/1.0 (+https://cmsdetectorai.com/methodology)',
+  USER_AGENT: 'CMSDetector-AI/1.0 (+https://cmsdetectorai.com/blog/how-it-works)',
 } as const;
 
 export type ScanConfig = typeof SCAN_CONFIG;

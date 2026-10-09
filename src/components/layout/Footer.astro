@@ -1,7 +1,7 @@
 ---
 /**
- * Footer — dark terminal surface.
- * Follows DESIGN.md footer component spec.
+ * Footer — modern dark terminal surface per DESIGN.md & Vercel aesthetics.
+ * Provides accessible navigation to all tools, documentation, company, and legal pages.
  */
 import en from '../../i18n/en.json';
 
@@ -9,39 +9,35 @@ const year = new Date().getFullYear();
 
 const columns = [
   {
-    eyebrow: 'Tools',
+    eyebrow: 'Detection Tools',
     links: [
       { href: '/', label: 'Technology Detector' },
       { href: '/wordpress-theme-detector', label: 'WordPress Theme Detector' },
       { href: '/shopify-theme-detector',   label: 'Shopify Theme Detector' },
       { href: '/growth-marketing-detector', label: 'Growth & Marketing Detector' },
       { href: '/security-privacy-detector', label: 'Security & Privacy Detector' },
-      { href: '/who-hosts-this-website',   label: 'Who Hosts This Website?' },
-      { href: '/is-this-site-wordpress',   label: 'Is This WordPress?' },
     ],
   },
   {
-    eyebrow: 'Learn',
+    eyebrow: 'Blog & Guides',
     links: [
-      { href: '/guides/how-to-find-what-cms-a-website-uses', label: 'How to Find a Site\'s CMS' },
-      { href: '/guides/what-is-a-cms',                       label: 'What Is a CMS?' },
-      { href: '/methodology',                                 label: 'Methodology' },
-      { href: '/cms/wordpress',                               label: 'WordPress Detection' },
-      { href: '/cms/shopify',                                 label: 'Shopify Detection' },
+      { href: '/blog',                                label: 'All Blog Articles' },
+      { href: '/blog/how-it-works',                   label: 'How It Works (Engine)' },
+      { href: '/blog/how-to-find-a-cms',              label: 'How to Find a CMS' },
+      { href: '/blog/what-is-a-cms',                  label: 'What Is a CMS?' },
+      { href: '/blog/wordpress-signatures',          label: 'WordPress Signatures' },
+      { href: '/blog/shopify-signatures',            label: 'Shopify Signatures' },
     ],
   },
   {
-    eyebrow: 'Company',
+    eyebrow: 'More',
     links: [
-      { href: '/about',   label: 'About' },
-      { href: '/contact', label: 'Contact' },
-    ],
-  },
-  {
-    eyebrow: 'Legal',
-    links: [
-      { href: '/privacy', label: 'Privacy Policy' },
-      { href: '/terms',   label: 'Terms of Use' },
+      { href: '/faq',                                 label: 'Frequently Asked Questions (FAQ)' },
+      { href: '/about',                               label: 'About Us' },
+      { href: '/contact',                             label: 'Contact Us' },
+      { href: '/terms',                               label: 'Terms of Service' },
+      { href: '/privacy',                             label: 'Privacy Policy' },
+      { href: '#cookie-preferences',                  label: 'Cookie Preferences', isCookieTrigger: true },
     ],
   },
 ];
@@ -55,9 +51,15 @@ const columns = [
         <div class="footer-col">
           <p class="type-mono-caps footer-eyebrow">{eyebrow}</p>
           <ul role="list" class="footer-link-list">
-            {links.map(({ href, label }) => (
+            {links.map((link) => (
               <li>
-                <a href={href} class="footer-link">{label}</a>
+                {link.isCookieTrigger ? (
+                  <button type="button" class="footer-link-btn" data-open-cookie-settings>
+                    {link.label}
+                  </button>
+                ) : (
+                  <a href={link.href} class="footer-link">{link.label}</a>
+                )}
               </li>
             ))}
           </ul>
@@ -65,34 +67,38 @@ const columns = [
       ))}
     </div>
 
-    <hr class="divider" />
-
-    <!-- Temporary: keeps /methodology linked while header no longer includes it. Remove when full footer (About, Contact, Privacy, FAQ) is built. -->
-    <p class="type-meta" style="margin: 0 0 16px 0;">
-      <a href="/methodology" class="footer-link">{en.nav.methodology}</a>
-    </p>
+    <hr class="divider" style="margin-block: 0 24px;" />
 
     <!-- Bottom strip -->
     <div class="footer-bottom">
-      <p class="type-meta text-mute">
-        © {year} CMS Detector AI. All rights reserved. Free, evidence-based CMS detection. No sign-up required.
-      </p>
+      <div class="footer-bottom-info">
+        <p class="type-meta text-mute" style="margin: 0;">
+          © {year} CMS Detector AI. All rights reserved. Free, evidence-based CMS detection powered by Cloudflare edge workers.
+        </p>
+        <p class="type-meta text-mute" style="margin: 4px 0 0 0;">
+          Compliant with Google AdSense, Search Console & GDPR. No personal URL tracking.
+        </p>
+      </div>
+
       <a href="/" class="wordmark-footer" aria-label="CMS Detector AI home">
-        <span class="brand-dot" style="inline-size:10px; block-size:10px;" aria-hidden="true"></span>
-        <span style="font-size:14px; font-weight:600; color:var(--color-ash);">CMS Detector AI</span>
+        <span class="brand-dot-glow" aria-hidden="true"></span>
+        <span style="font-size:14px; font-weight:600; color:var(--color-ash); letter-spacing: -0.01em;">
+          CMS Detector AI
+        </span>
       </a>
     </div>
   </div>
 </footer>
 
-<!-- Reserved collapsed ad container — no layout shift, zero size until ads are enabled -->
+<!-- Reserved collapsed ad container — zero layout shift until ads are active -->
 <div id="ad-footer-container" aria-hidden="true" style="display:none; overflow:hidden; block-size:0;"></div>
 
 <style>
   .footer {
-    background-color: var(--color-canvas);
+    background-color: #08080a;
     color: var(--color-on-primary);
-    padding-block: var(--spacing-section);
+    padding-block: var(--spacing-section-lg) var(--spacing-section);
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .footer-grid {
@@ -105,6 +111,7 @@ const columns = [
   .footer-eyebrow {
     color: var(--color-mute);
     margin: 0 0 16px 0;
+    letter-spacing: 0.08em;
   }
 
   .footer-link-list {
@@ -113,40 +120,73 @@ const columns = [
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
   }
 
   .footer-link {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--color-ash);
+    transition: color 0.15s ease;
+    text-decoration: none;
+  }
+
+  .footer-link:hover {
+    color: var(--color-on-primary);
+  }
+
+  .footer-link-btn {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: 13.5px;
+    color: var(--color-ash);
+    cursor: pointer;
+    text-align: left;
     transition: color 0.15s ease;
   }
 
-  .footer-link:hover { color: var(--color-on-primary); }
+  .footer-link-btn:hover {
+    color: var(--color-on-primary);
+    text-decoration: underline;
+  }
 
   .footer-bottom {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-block-start: var(--spacing-lg);
     gap: var(--spacing-md);
     flex-wrap: wrap;
+  }
+
+  .footer-bottom-info {
+    max-width: 680px;
   }
 
   .wordmark-footer {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     text-decoration: none;
+    padding: 6px 12px;
+    border-radius: var(--radius-app-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    transition: border-color 0.15s ease;
   }
 
-  @media (max-width: 768px) {
+  .wordmark-footer:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  @media (max-width: 860px) {
     .footer-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-lg);
     }
   }
 
-  @media (max-width: 376px) {
+  @media (max-width: 480px) {
     .footer-grid {
       grid-template-columns: 1fr;
     }

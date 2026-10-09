@@ -17,7 +17,7 @@ import type { BotProtectionInfo } from './protection.ts';
 // Constants
 // ----------------------------------------------------------------
 
-const USER_AGENT = 'CMSDetector-AI/1.0 (+https://cmsdetectorai.com/methodology)';
+const USER_AGENT = 'CMSDetector-AI/1.0 (+https://cmsdetectorai.com/blog/how-it-works)';
 const MAX_PROBES = 3;
 
 // ----------------------------------------------------------------

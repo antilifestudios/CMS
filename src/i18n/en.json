@@ -23,11 +23,13 @@
     "securityDetector": "Security & Privacy Detector",
     "securityDesc": "Security technologies, privacy & consent",
     "detectSite": "Detect a Site",
-    "hostingDetector": "Who Hosts This Website",
-    "hostingShort": "Hosting Detector",
-    "guides": "Guides",
-    "methodology": "How It Works",
-    "about": "About"
+    "blog": "Blog",
+    "more": "More",
+    "faq": "FAQ",
+    "about": "About Us",
+    "contact": "Contact Us",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
   },
   "tools": {
     "heading": "Specialised detectors",
@@ -39,11 +41,49 @@
     "growthDesc": "Analytics, advertising, marketing, payments & chat.",
     "securityTitle": "Security & Privacy Detector",
     "securityDesc": "Consent, security & embedded services.",
-    "hostingTitle": "Hosting & CDN Detector",
-    "hostingDesc": "Find out who hosts any website and what CDN they use.",
-    "isWordpressTitle": "Is This Site WordPress?",
-    "isWordpressDesc": "Quick yes/no with evidence for any website.",
     "tryIt": "Try it →"
+  },
+  "faq": {
+    "eyebrow": "Transparency & Architecture",
+    "heading": "Frequently Asked Questions",
+    "subtitle": "Clear, technical explanations of how our edge engine identifies content platforms, headless stacks, and web infrastructure.",
+    "items": [
+      {
+        "id": "how-it-works",
+        "question": "How does CMS Detector AI determine what CMS a website uses?",
+        "answer": "CMS Detector AI inspects public HTTP response headers, meta generator tags, script signatures, DOM fingerprints, linked stylesheet paths, and known API endpoints without executing untrusted client scripts. Each detected technology is backed by verifiable cryptographic, DOM, or header evidence strings with defined confidence levels."
+      },
+      {
+        "id": "headless-and-modern",
+        "question": "Can CMS Detector AI detect modern headless CMSs and static generators?",
+        "answer": "Yes. In addition to traditional monolithic platforms like WordPress, Shopify, and Drupal, our signature engine recognizes modern headless systems including Sanity, Strapi, Contentful, and Ghost, as well as modern static frameworks like Next.js, Astro, Nuxt, SvelteKit, and Remix."
+      },
+      {
+        "id": "pricing-and-limits",
+        "question": "Is CMS Detector AI free to use, and is there any query limit?",
+        "answer": "CMS Detector AI is completely free to use. There are no paid tiers, no required user accounts, and no paywalled features. Fair-use edge rate limits apply to protect our infrastructure from automated scraping."
+      },
+      {
+        "id": "privacy-and-storage",
+        "question": "Does CMS Detector AI store or log the URLs I submit?",
+        "answer": "No. Target URLs are analyzed ephemerally in Cloudflare Worker edge memory strictly for the duration of the scan. We do not store submitted URLs in databases, do not log personal user queries, and never sell or share scan queries with third parties."
+      },
+      {
+        "id": "unknown-cms",
+        "question": "Why does my website return 'Custom / Unknown CMS'?",
+        "answer": "A result of 'Custom / Unknown CMS' indicates that the target website does not expose identifiable signatures of known commercial or open-source CMSs. This typically means the site uses a bespoke in-house backend, a fully decoupled static architecture, or has stripped its identifying headers and generator tags."
+      },
+      {
+        "id": "themes-and-plugins",
+        "question": "Can this tool detect WordPress themes, Shopify themes, and plugins?",
+        "answer": "Yes. We offer specialized detectors for WordPress and Shopify themes. Our engine parses stylesheet headers, storefront JSON objects, and asset directory signatures to reveal active theme names, authors, parent/child relationships, and version numbers."
+      },
+      {
+        "id": "comparison",
+        "question": "How is CMS Detector AI different from legacy detectors?",
+        "answer": "Legacy tools often rely on stale databases, guess without evidence, or push users into paywalls and aggressive affiliate funnels. CMS Detector AI provides verifiable evidence strings, sub-3-second edge execution, a clean modern interface, and zero registration requirements."
+      }
+    ]
   },
   "hero": {
     "eyebrow": "Free · Instant · Evidence-based",
@@ -195,10 +235,9 @@
   "footer": {
     "tagline": "Free, evidence-based CMS detection. No sign-up required.",
     "columns": {
-      "tools": "Tools",
-      "learn": "Learn",
-      "company": "Company",
-      "legal": "Legal"
+      "tools": "Detection Tools",
+      "blog": "Blog & Guides",
+      "more": "More"
     },
     "links": {
       "cmsDetector": "CMS Detector",
@@ -206,11 +245,13 @@
       "shopifyDetector": "Shopify Theme Detector",
       "growthDetector": "Growth & Marketing Detector",
       "securityDetector": "Security & Privacy Detector",
-      "hostingDetector": "Who Hosts This?",
-      "isWordpress": "Is This WordPress?",
+      "blog": "Blog",
+      "guideHowItWorks": "How It Works",
       "guideFindCms": "How to Find a CMS",
       "guideWhatIsCms": "What Is a CMS?",
-      "methodology": "Methodology",
+      "wpSignatures": "WordPress Signatures",
+      "shopifySignatures": "Shopify Signatures",
+      "faq": "FAQ",
       "about": "About",
       "contact": "Contact",
       "privacy": "Privacy Policy",
@@ -236,18 +277,6 @@
     "shopifyDetector": {
       "title": "Shopify Theme Detector — Identify Any Shopify Store's Theme",
       "description": "Find the Shopify theme powering any store, including theme name and store ID. Free CMS Detector AI tool."
-    },
-    "hostingDetector": {
-      "title": "Who Hosts This Website? — Free Hosting & CDN Detector",
-      "description": "Find out who hosts any website — including CDN, server software, and cloud provider — in seconds. Free, evidence-based."
-    },
-    "isWordpress": {
-      "title": "Is This Site Built on WordPress? — Instant WordPress Checker",
-      "description": "Quickly check whether any website runs on WordPress. Get a clear yes/no answer backed by real evidence."
-    },
-    "methodology": {
-      "title": "How CMS Detection Works — Methodology | CMS Detector AI",
-      "description": "Learn exactly how CMS Detector AI identifies website technologies — signals, confidence scoring, and our commitment to accuracy."
     },
     "about": {
       "title": "About CMS Detector AI — Free, Honest CMS Detection",

@@ -17,7 +17,7 @@ import { extractGtmIds, fetchGtmContainers } from './gtm-expansion.ts';
 import type { CoverageMetadata, ScanStatus, StandardErrorCode } from './types.ts';
 
 export const USER_AGENT =
-  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 CMSDetector-AI/1.0 (+https://cmsdetectorai.com/methodology)';
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 CMSDetector-AI/1.0 (+https://cmsdetectorai.com/blog/how-it-works)';
 
 export const MAX_HTML_BYTES = 500_000;
 export const MAX_BUNDLES = 5;

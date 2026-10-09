@@ -1,44 +1,236 @@
 ---
 export const prerender = true;
+
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
+import { LEGAL_LAST_UPDATED, CONTACT_EMAIL } from '../data/legal.ts';
+
+const privacyJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Privacy Policy — CMS Detector AI',
+  description: 'Privacy Policy for CMS Detector AI: zero persistent scan URL storage, no account registration, Cloudflare edge processing, and data rights.',
+  url: 'https://cmsdetectorai.com/privacy',
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cmsdetectorai.com' },
+    { '@type': 'ListItem', position: 2, name: 'Privacy Policy', item: 'https://cmsdetectorai.com/privacy' },
+  ],
+};
 ---
 
 <Base
   title="Privacy Policy — CMS Detector AI"
-  description="How CMS Detector AI handles your data. Short version: we don't store the URLs you check."
+  description="Comprehensive privacy policy for CMS Detector AI: zero target URL database logging, no account requirements, Cloudflare edge security, and GDPR/CCPA rights."
   pagePath="/privacy"
+  canonical="https://cmsdetectorai.com/privacy"
+  jsonLd={[privacyJsonLd, breadcrumbJsonLd]}
 >
-  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="p-h1">
+  <Section theme="dark" class="legal-hero" ariaLabelledby="privacy-h1">
     <div class="container">
-      <div class="eyebrow-lockup">
-        <span class="eyebrow type-mono-eyebrow">Legal</span>
-        <h1 id="p-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0;">Privacy policy</h1>
-        <p class="type-subtitle text-ash" style="margin: 0;">Short version: we don’t store the URLs you check.</p>
+      <div class="hero-inner">
+        <div class="eyebrow-lockup">
+          <div class="badge-glow">
+            <span class="dot"></span>
+            <span>Privacy & Compliance</span>
+          </div>
+          <h1 id="privacy-h1" class="type-display-lg" style="color: var(--color-on-primary); margin: 0;">
+            Privacy Policy
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 640px;">
+            Last updated: {LEGAL_LAST_UPDATED}
+          </p>
+        </div>
       </div>
     </div>
   </Section>
-  <Section theme="light">
+
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section-lg);">
     <div class="container">
-      <div class="narrow">
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">What we collect</h2>
-        <p class="type-body" style="color: var(--color-slate);">Almost nothing. There are no accounts, no cookies for tracking, and no analytics in v1 beyond placeholder verification tags. When you run a check, our Worker fetches the target site’s public HTML and headers to analyse them — the URL you enter is used for that single request and never logged or stored.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Caching</h2>
-        <p class="type-body" style="color: var(--color-slate);">Successful detection results are cached anonymously for about one hour to reduce load. The cache key is derived from the site’s hostname and path only, and contains no user identifiers.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Your checks stay yours</h2>
-        <p class="type-body" style="color: var(--color-slate);">The “recent checks” list lives only in your browser’s localStorage and never leaves your device. Shareable <code>?url=</code> links contain the URL in plain text by design — only share links you’re comfortable exposing.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Fetching third-party sites</h2>
-        <p class="type-body" style="color: var(--color-slate);">Detection fetches public pages with an honest crawler user agent and never executes page scripts. We only read response headers, cookie names (not values), and capped HTML.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Contact</h2>
-        <p class="type-body" style="color: var(--color-slate);">Questions: <a href="mailto:hello@cmsdetectorai.com" class="text-link-light">hello@cmsdetectorai.com</a>.</p>
+      <div class="legal-layout">
+        <!-- Quick Summary Box -->
+        <div class="card-glass legal-summary">
+          <h2 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 10px 0;">
+            Key Highlights at a Glance
+          </h2>
+          <ul class="summary-bullets">
+            <li><strong>Zero Scan URL Logging:</strong> Target URLs you submit to scan are analyzed ephemerally in edge worker memory to compute verdicts and are never stored in a user database or sold to third parties.</li>
+            <li><strong>No User Accounts:</strong> You do not need to register, create a password, or submit personal profile information to use our scanning tools.</li>
+            <li><strong>Edge Observability:</strong> Standard Cloudflare server metrics (execution duration, CPU time, subrequest count, and host) are logged strictly for performance and DDoS protection. Client IP is held in volatile memory for 60 seconds to enforce rate limits.</li>
+            <li><strong>Data Rights:</strong> Send inquiries and data requests to <code>{CONTACT_EMAIL}</code>.</li>
+          </ul>
+        </div>
+
+        <div class="legal-content">
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">1. Introduction</h2>
+            <p>
+              CMS Detector AI ("we," "our," or "us") operates the free web intelligence utility available at <code>https://cmsdetectorai.com</code>. We are committed to transparency regarding how data is handled when you visit our website or run technology scans.
+            </p>
+            <p>
+              This Privacy Policy explains the specific technical data processed by our edge infrastructure, our advertising partners, and how you can exercise your data rights under GDPR and CCPA.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">2. What We Process and How It Works</h2>
+            <p><strong>A. Submitted Scan URLs (Target Websites)</strong></p>
+            <p>
+              When you submit a URL to detect its CMS, theme, or hosting stack, our Cloudflare edge worker sends an automated HTTP GET request to that target's public address. 
+              The response headers and initial HTML payload are processed strictly in volatile memory (RAM) to match signatures and compute confidence levels. 
+              We do not persist submitted scan URLs in any relational database or profile individual users based on the URLs they inspect.
+            </p>
+
+            <p><strong>B. Technical Edge Logs and Security Observability</strong></p>
+            <p>
+              To safeguard our infrastructure against abusive scraping and denial-of-service floods, our Cloudflare edge functions log structured performance metrics:
+            </p>
+            <ul>
+              <li>Request timestamp and pseudo-random request identifier.</li>
+              <li>Scanned target hostname (for cache lookup and system error debugging).</li>
+              <li>Scan duration, edge CPU execution time, and subrequest count.</li>
+              <li>Client IP address, retained exclusively in ephemeral in-memory maps for up to 60 seconds to enforce rate limiting.</li>
+            </ul>
+
+            <p><strong>C. Browser Local Storage</strong></p>
+            <p>
+              To enhance your experience, our front-end saves your recent scan history and cookie banner consent preferences directly in your browser's <code>localStorage</code>. This data remains on your local device, is never transmitted to our servers, and can be deleted at any time through your browser controls or our on-page "Clear" button.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">3. Third-Party Services and Cookies</h2>
+            <p>
+              We maintain partnerships with trusted infrastructure and advertising providers:
+            </p>
+            <ul>
+              <li><strong>Cloudflare:</strong> Provides global CDN delivery, DDoS defense, SSL termination, and Turnstile bot protection to ensure service uptime.</li>
+              <li><strong>Google AdSense:</strong> We display advertisements to support the free operation of this tool. Google and its ad partners use cookies to serve personalized or non-personalized advertisements based on your prior visits. You may opt out of personalized advertising by visiting Google Ad Settings.</li>
+            </ul>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">4. Your Privacy Rights (GDPR & CCPA)</h2>
+            <p>
+              Depending on your jurisdiction, you have statutory rights concerning your personal data:
+            </p>
+            <ul>
+              <li>The right to know what personal data is collected, disclosed, or shared.</li>
+              <li>The right to request the deletion of your personal data.</li>
+              <li>The right to non-discrimination for exercising your privacy choices.</li>
+            </ul>
+            <p>
+              Because CMS Detector AI does not require accounts, passwords, or emails to run scans, we hold no user profiles. For any privacy questions or data requests, contact our data protection team directly at{' '}
+              <a href={`mailto:${CONTACT_EMAIL}?subject=Privacy%20data%20request`} class="text-link-dark">
+                {CONTACT_EMAIL}
+              </a>.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">5. Contact Information</h2>
+            <p>
+              If you have any questions, feedback, or concerns regarding this Privacy Policy, please email us at{' '}
+              <a href={`mailto:${CONTACT_EMAIL}`} class="text-link-dark">
+                {CONTACT_EMAIL}
+              </a>.
+            </p>
+          </section>
+        </div>
       </div>
     </div>
   </Section>
 </Base>
+
 <style>
-  .narrow { max-inline-size: 720px; }
-  .narrow p { margin: 0 0 20px 0; }
-  .narrow h2 { margin: 28px 0 8px 0; }
-  .narrow h2:first-child { margin-block-start: 0; }
-  .narrow code { font-family: var(--font-mono); font-size: 13px; background: var(--color-hairline); padding: 2px 6px; border-radius: 3px; }
+  .legal-hero {
+    padding-block: var(--spacing-section-lg) var(--spacing-section);
+  }
+
+  .hero-inner {
+    max-inline-size: 820px;
+  }
+
+  .legal-layout {
+    max-inline-size: 820px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .legal-summary {
+    padding: 28px 32px;
+    border-radius: var(--radius-marketing);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .summary-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .summary-bullets li {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--color-ash);
+  }
+
+  .summary-bullets strong {
+    color: var(--color-on-primary);
+  }
+
+  .legal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .legal-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .legal-block p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--color-ash);
+  }
+
+  .legal-block ul {
+    margin: 4px 0;
+    padding-inline-start: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legal-block li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-ash);
+  }
+
+  .legal-block strong {
+    color: var(--color-on-primary);
+  }
+
+  .legal-block code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: var(--radius-app-xs);
+    color: var(--color-on-primary);
+  }
 </style>

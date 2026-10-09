@@ -1,0 +1,217 @@
+---
+/**
+ * Global FAQ Component
+ * Renders an accessible, modern accordion FAQ section with schema.org FAQPage JSON-LD.
+ * Designed per Sanity & Vercel design aesthetics: sleek dark card surfaces,
+ * crisp typography, smooth chevron rotation, and rich snippet markup.
+ */
+import en from '../i18n/en.json';
+
+interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category?: 'general' | 'detection' | 'privacy' | 'tech';
+}
+
+interface Props {
+  title?: string;
+  subtitle?: string;
+  eyebrow?: string;
+  items?: FAQItem[];
+  theme?: 'dark' | 'light';
+  includeSchema?: boolean;
+}
+
+const defaultItems: FAQItem[] = (en.faq.items as FAQItem[]).map((item, idx) => ({
+  ...item,
+  category: idx % 3 === 0 ? 'detection' : idx % 3 === 1 ? 'privacy' : 'tech',
+}));
+
+const {
+  title = en.faq.heading,
+  subtitle = en.faq.subtitle,
+  eyebrow = en.faq.eyebrow,
+  items = defaultItems,
+  theme = 'dark',
+  includeSchema = true,
+} = Astro.props;
+
+// Generate valid Schema.org FAQPage JSON-LD
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+---
+
+<section class={`faq-section section--${theme}`} id="faq" aria-labelledby="faq-heading">
+  <div class="container">
+    <div class="faq-header">
+      <div class="eyebrow-lockup">
+        {eyebrow && <span class="eyebrow type-mono-eyebrow">{eyebrow}</span>}
+        <h2 id="faq-heading" class="type-display-md faq-title">
+          {title}
+        </h2>
+        {subtitle && (
+          <p class="type-subtitle faq-subtitle text-ash">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </div>
+
+    <!-- Category filter buttons -->
+    <div class="faq-filters" role="tablist" aria-label="FAQ categories">
+      <button type="button" class="faq-filter-btn is-active" data-filter="all">All Questions</button>
+      <button type="button" class="faq-filter-btn" data-filter="detection">Detection Engine</button>
+      <button type="button" class="faq-filter-btn" data-filter="privacy">Privacy & Edge</button>
+      <button type="button" class="faq-filter-btn" data-filter="tech">Coverage & Stacks</button>
+    </div>
+
+    <!-- FAQ items -->
+    <div class="faq-accordion">
+      {items.map((item) => (
+        <details class="faq-item" data-category={item.category || 'general'} id={`faq-${item.id}`}>
+          <summary class="faq-trigger">
+            <span>{item.question}</span>
+            <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </summary>
+          <div class="faq-content">
+            <p>{item.answer}</p>
+          </div>
+        </details>
+      ))}
+    </div>
+
+    <!-- Need more answers banner -->
+    <div class="faq-cta card-glass">
+      <div class="faq-cta-content">
+        <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 6px 0;">
+          Have a question not covered here?
+        </h3>
+        <p class="type-body-sm text-ash" style="margin: 0;">
+          Check out our detailed <a href="/blog/how-it-works" class="text-link-dark">methodology documentation</a> or reach out directly to our engineering team.
+        </p>
+      </div>
+      <a href="/contact" class="btn btn-secondary-dark">
+        Contact Support →
+      </a>
+    </div>
+  </div>
+</section>
+
+{includeSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+)}
+
+<style>
+  .faq-header {
+    text-align: center;
+    max-width: 760px;
+    margin-inline: auto;
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .faq-title {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .faq-subtitle {
+    margin: 8px auto 0 auto;
+    max-width: 640px;
+  }
+
+  .faq-filters {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .faq-filter-btn {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    color: var(--color-ash);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: all 0.15s ease;
+  }
+
+  .faq-filter-btn:hover {
+    color: var(--color-on-primary);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+
+  .faq-filter-btn.is-active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .faq-content p {
+    margin: 0;
+    color: var(--color-ash);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  .faq-cta {
+    margin-block-start: var(--spacing-xxl);
+    max-width: 860px;
+    margin-inline: auto;
+    padding: 24px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 640px) {
+    .faq-cta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+</style>
+
+<script>
+  // Filter logic for category buttons
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.faq-filter-btn');
+  const items = document.querySelectorAll<HTMLElement>('.faq-item');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+
+      const filter = btn.getAttribute('data-filter') ?? 'all';
+      items.forEach((item) => {
+        const cat = item.getAttribute('data-category');
+        if (filter === 'all' || cat === filter) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

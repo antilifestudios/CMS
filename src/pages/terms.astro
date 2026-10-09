@@ -1,42 +1,229 @@
 ---
 export const prerender = true;
+
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
+import { LEGAL_LAST_UPDATED, CONTACT_EMAIL } from '../data/legal.ts';
+
+const termsJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: 'Terms of Service — CMS Detector AI',
+  description: 'Terms of Service and Acceptable Use Policy for CMS Detector AI: fair use policies, edge rate limits, and service warranties.',
+  url: 'https://cmsdetectorai.com/terms',
+};
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cmsdetectorai.com' },
+    { '@type': 'ListItem', position: 2, name: 'Terms of Service', item: 'https://cmsdetectorai.com/terms' },
+  ],
+};
 ---
 
 <Base
-  title="Terms of Use — CMS Detector AI"
-  description="Terms of service for using CMS Detector AI: fair use, no guarantees, and acceptable use."
+  title="Terms of Service — CMS Detector AI"
+  description="Terms of Service and Acceptable Use Policy for CMS Detector AI: fair use, edge rate limiting, and service disclaimers."
   pagePath="/terms"
+  canonical="https://cmsdetectorai.com/terms"
+  jsonLd={[termsJsonLd, breadcrumbJsonLd]}
 >
-  <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="t-h1">
+  <Section theme="dark" class="legal-hero" ariaLabelledby="terms-h1">
     <div class="container">
-      <div class="eyebrow-lockup">
-        <span class="eyebrow type-mono-eyebrow">Legal</span>
-        <h1 id="t-h1" class="type-display-md" style="color: var(--color-on-primary); margin: 0;">Terms of use</h1>
+      <div class="hero-inner">
+        <div class="eyebrow-lockup">
+          <div class="badge-glow">
+            <span class="dot"></span>
+            <span>Legal Agreement</span>
+          </div>
+          <h1 id="terms-h1" class="type-display-lg" style="color: var(--color-on-primary); margin: 0;">
+            Terms of Service
+          </h1>
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 640px;">
+            Last updated: {LEGAL_LAST_UPDATED}
+          </p>
+        </div>
       </div>
     </div>
   </Section>
-  <Section theme="light">
+
+  <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section-lg);">
     <div class="container">
-      <div class="narrow">
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">The service</h2>
-        <p class="type-body" style="color: var(--color-slate);">CMS Detector AI is a free tool that analyses publicly accessible web pages and reports which technologies they appear to use. It is provided “as is”, without warranties of any kind.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">No guarantees</h2>
-        <p class="type-body" style="color: var(--color-slate);">Detections are best-effort interpretations of public signals with stated confidence levels — not certifications. Do not base security, legal, or purchasing decisions solely on a result without independent verification (see our <a href="/guides/how-to-find-what-cms-a-website-uses" class="text-link-light">manual verification guide</a>).</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Fair use</h2>
-        <p class="type-body" style="color: var(--color-slate);">You may use the tool for any lawful purpose. Automated bulk querying that degrades the service for others is not permitted; rate limiting and bot verification may apply to protect availability.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Acceptable use</h2>
-        <p class="type-body" style="color: var(--color-slate);">Do not submit URLs intended to probe non-public infrastructure, and do not attempt to bypass the tool’s SSRF protections. We block private, internal, and literal-IP targets by design.</p>
-        <h2 class="type-heading-sm" style="color: var(--color-ink);">Changes</h2>
-        <p class="type-body" style="color: var(--color-slate);">These terms may be updated as the service evolves. Continued use constitutes acceptance. Contact: <a href="mailto:hello@cmsdetectorai.com" class="text-link-light">hello@cmsdetectorai.com</a>.</p>
+      <div class="legal-layout">
+        <div class="card-glass legal-summary">
+          <h2 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 10px 0;">
+            Terms Summary
+          </h2>
+          <ul class="summary-bullets">
+            <li><strong>Free Service:</strong> CMS Detector AI is provided free of charge for lawful, technical, and commercial research. No user accounts or payment information are required.</li>
+            <li><strong>Deterministic Heuristics:</strong> Technology detection is based on deterministic public markers, HTTP headers, and script artifacts, not guaranteed enterprise certifications.</li>
+            <li><strong>Fair Use & Edge Protection:</strong> Automated scraping, denial-of-service attempts, or efforts to probe private internal networks (SSRF) are strictly prohibited.</li>
+            <li><strong>Zero Persistent Query Logging:</strong> Submitted target URLs are processed ephemerally in edge memory for detection and are not stored in a persistent database.</li>
+          </ul>
+        </div>
+
+        <div class="legal-content">
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">1. Agreement to Terms</h2>
+            <p>
+              By accessing or using <code>https://cmsdetectorai.com</code> ("CMS Detector AI", "the Service"), you agree to be bound by these Terms of Service. If you do not agree with any part of these terms, you should discontinue using the Service.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">2. Nature and Scope of Service</h2>
+            <p>
+              CMS Detector AI is an automated, web-based intelligence utility that analyzes publicly accessible internet websites. Our system operates via serverless functions running on the Cloudflare edge network, fetching public HTTP response headers, meta tags, and script references to infer underlying content management systems, e-commerce platforms, hosting providers, and frameworks.
+            </p>
+            <p>
+              All scans are conducted in real time without executing arbitrary client-side JavaScript. While our detection engine achieves high precision, results represent technical estimates and heuristics rather than legal or official audits.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">3. Acceptable Use Policy</h2>
+            <p>When using CMS Detector AI, you agree not to:</p>
+            <ul>
+              <li>Submit non-routable IP addresses, local loopback interfaces (e.g. 127.0.0.1, ::1), cloud metadata IPs, or attempt Server-Side Request Forgery (SSRF).</li>
+              <li>Launch automated bot floods or distributed Denial-of-Service (DDoS) attacks against our edge infrastructure.</li>
+              <li>Attempt to circumvent edge rate limits, Turnstile challenges, or security firewall rules.</li>
+              <li>Use data gathered through the Service for unlawful harassment, defamatory targeting, or malicious surveillance.</li>
+            </ul>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">4. Rate Limits and Edge Availability</h2>
+            <p>
+              To ensure equitable access for all users, we enforce per-IP rate limits (typically up to 30 requests per minute) and concurrency restrictions at the Cloudflare edge. Requests exceeding these parameters will receive HTTP 429 (Too Many Requests) responses. We reserve the right to temporarily or permanently throttle IP addresses that exhibit abusive automated traffic patterns.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">5. Intellectual Property and Nominative Fair Use</h2>
+            <p>
+              All software, algorithms, documentation, brand design, and layout code on CMS Detector AI are the intellectual property of CMS Detector AI.
+            </p>
+            <p>
+              Detected third-party trademarks, product names, logos, and company names (e.g., WordPress, Shopify, Drupal, Cloudflare, Vercel, Next.js) are the property of their respective owners. Their mention on this website constitutes nominative fair use solely for descriptive, technological identification purposes and does not imply sponsorship, affiliation, or endorsement.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">6. Disclaimer of Warranties</h2>
+            <p>
+              THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED. WE EXPRESSLY DISCLAIM ALL WARRANTIES, INCLUDING MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. WE DO NOT WARRANT THAT DETECTIONS WILL BE 100% ERROR-FREE OR UNINTERRUPTED.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">7. Limitation of Liability</h2>
+            <p>
+              TO THE FULLEST EXTENT PERMITTED BY LAW, CMS DETECTOR AI AND ITS OPERATORS SHALL NOT BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES ARISING OUT OF YOUR USE OF OR INABILITY TO USE THE SERVICE.
+            </p>
+          </section>
+
+          <section class="legal-block">
+            <h2 class="type-heading-sm text-white">8. Contact Us</h2>
+            <p>
+              For questions regarding these Terms of Service or acceptable use policies, contact our team at{' '}
+              <a href={`mailto:${CONTACT_EMAIL}?subject=Terms%20inquiry`} class="text-link-dark">
+                {CONTACT_EMAIL}
+              </a>.
+            </p>
+          </section>
+        </div>
       </div>
     </div>
   </Section>
 </Base>
+
 <style>
-  .narrow { max-inline-size: 720px; }
-  .narrow p { margin: 0 0 20px 0; }
-  .narrow h2 { margin: 28px 0 8px 0; }
-  .narrow h2:first-child { margin-block-start: 0; }
+  .legal-hero {
+    padding-block: var(--spacing-section-lg) var(--spacing-section);
+  }
+
+  .hero-inner {
+    max-inline-size: 820px;
+  }
+
+  .legal-layout {
+    max-inline-size: 820px;
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .legal-summary {
+    padding: 28px 32px;
+    border-radius: var(--radius-marketing);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .summary-bullets {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .summary-bullets li {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--color-ash);
+  }
+
+  .summary-bullets strong {
+    color: var(--color-on-primary);
+  }
+
+  .legal-content {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .legal-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .legal-block p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--color-ash);
+  }
+
+  .legal-block ul {
+    margin: 4px 0;
+    padding-inline-start: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .legal-block li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--color-ash);
+  }
+
+  .legal-block strong {
+    color: var(--color-on-primary);
+  }
+
+  .legal-block code {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: var(--radius-app-xs);
+    color: var(--color-on-primary);
+  }
 </style>

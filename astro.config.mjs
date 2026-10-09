@@ -41,4 +41,17 @@ export default defineConfig({
 
   // Prerender all content pages; API routes stay server-rendered
   prefetch: true,
+
+  // 301 redirects for removed and relocated routes
+  redirects: {
+    '/who-hosts-this-website': { status: 301, destination: '/' },
+    '/is-this-site-wordpress': { status: 301, destination: '/' },
+    '/guides/how-to-find-what-cms-a-website-uses': { status: 301, destination: '/blog/how-to-find-a-cms' },
+    '/guides/what-is-a-cms': { status: 301, destination: '/blog/what-is-a-cms' },
+    '/methodology': { status: 301, destination: '/blog/how-it-works' },
+    '/privacy-policy': { status: 301, destination: '/privacy' },
+    '/terms-of-service': { status: 301, destination: '/terms' },
+    '/learn': { status: 301, destination: '/blog' },
+    '/guides': { status: 301, destination: '/blog' },
+  },
 });

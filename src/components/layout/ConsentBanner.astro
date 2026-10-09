@@ -1,0 +1,107 @@
+---
+/**
+ * ConsentBanner — Privacy & Cookie Consent Banner.
+ * Compliant with GDPR, ePrivacy, CCPA, and Google AdSense requirements.
+ * Modern Vercel/Sanity dark glass aesthetic with accessible keyboard controls.
+ */
+---
+
+<div id="cookie-consent-container" class="consent-banner-backdrop" style="display: none;" aria-live="polite">
+  <div class="consent-banner" role="dialog" aria-labelledby="consent-title" aria-describedby="consent-desc">
+    <div class="consent-banner-header">
+      <div class="brand-dot-glow" aria-hidden="true"></div>
+      <span id="consent-title" class="type-mono-caps" style="color: var(--color-on-primary);">
+        Privacy & Cookie Preferences
+      </span>
+    </div>
+    
+    <p id="consent-desc" class="consent-banner-body">
+      We use cookies and edge telemetry to maintain performance, analyze tool usage, and support advertising partners like Google AdSense. 
+      You can accept all cookies or choose essential only. Learn more in our <a href="/privacy">Privacy Policy</a>.
+    </p>
+
+    <div class="consent-banner-actions">
+      <button type="button" id="consent-reject" class="btn btn-secondary-dark" style="font-size: 13px; block-size: 38px;">
+        Essential Only
+      </button>
+      <button type="button" id="consent-accept" class="btn btn-primary" style="font-size: 13px; block-size: 38px; padding-inline: 18px;">
+        Accept All
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const STORAGE_KEY = 'cms_cookie_consent';
+    const container = document.getElementById('cookie-consent-container');
+    const acceptBtn = document.getElementById('consent-accept');
+    const rejectBtn = document.getElementById('consent-reject');
+
+    if (!container || !acceptBtn || !rejectBtn) return;
+
+    function getConsent() {
+      try {
+        const item = localStorage.getItem(STORAGE_KEY);
+        return item ? JSON.parse(item) : null;
+      } catch {
+        return null;
+      }
+    }
+
+    function setConsent(preferences: { essential: boolean; analytics: boolean; advertising: boolean }) {
+      try {
+        const payload = {
+          ...preferences,
+          timestamp: new Date().toISOString(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+
+        // Dispatch global custom event for tags/analytics
+        window.dispatchEvent(new CustomEvent('cms:consent_updated', { detail: payload }));
+
+        // Support Google Consent Mode if gtag is initialized
+        if (typeof (window as unknown as { gtag?: Function }).gtag === 'function') {
+          (window as unknown as { gtag: Function }).gtag('consent', 'update', {
+            ad_storage: preferences.advertising ? 'granted' : 'denied',
+            ad_user_data: preferences.advertising ? 'granted' : 'denied',
+            ad_personalization: preferences.advertising ? 'granted' : 'denied',
+            analytics_storage: preferences.analytics ? 'granted' : 'denied',
+          });
+        }
+      } catch (err) {
+        console.error('Failed to store cookie consent', err);
+      }
+      container.style.display = 'none';
+    }
+
+    // Show banner only if no decision has been saved yet
+    const existing = getConsent();
+    if (!existing) {
+      // Delay slightly for smooth page entry
+      setTimeout(() => {
+        container.style.display = 'flex';
+      }, 500);
+    }
+
+    acceptBtn.addEventListener('click', () => {
+      setConsent({ essential: true, analytics: true, advertising: true });
+    });
+
+    rejectBtn.addEventListener('click', () => {
+      setConsent({ essential: true, analytics: false, advertising: false });
+    });
+
+    // Allow re-opening banner via global helper or footer button
+    (window as unknown as { openCookieSettings: () => void }).openCookieSettings = () => {
+      container.style.display = 'flex';
+    };
+
+    document.querySelectorAll('[data-open-cookie-settings]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        container.style.display = 'flex';
+      });
+    });
+  })();
+</script>
