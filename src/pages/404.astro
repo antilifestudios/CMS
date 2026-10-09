@@ -30,18 +30,32 @@ import NavIcon from '../components/layout/NavIcon.astro';
         </p>
 
         <!-- Inline Quick Scan Box -->
-        <div class="card-glass error-scan-box">
+        <div style="margin-block: var(--spacing-xl);">
           <form action="/" method="GET" class="error-scan-form">
-            <input
-              type="text"
-              name="url"
-              class="form-input error-scan-input"
-              placeholder="Enter any website URL (e.g. sanity.io)..."
-              required
-            />
-            <button type="submit" class="btn btn-primary" style="white-space: nowrap;">
-              Detect CMS
-            </button>
+            <div class="search-bar">
+              <div class="search-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </div>
+              <label for="error-url-input" class="sr-only">Website URL</label>
+              <input
+                id="error-url-input"
+                type="text"
+                name="url"
+                class="search-input"
+                placeholder="Enter any website URL (e.g. sanity.io or domain.com)..."
+                required
+              />
+              <button type="submit" class="btn btn-primary search-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <span>Detect CMS</span>
+              </button>
+            </div>
           </form>
         </div>
 

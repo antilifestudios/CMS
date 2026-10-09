@@ -61,20 +61,59 @@ import ThemeCard from '../components/ThemeCard.astro';
         </div>
         <div style="margin-block-start: var(--spacing-xxl);">
           <form id="shopify-form" novalidate>
-            <div class="shopify-input-row">
+            <div class="search-bar">
+              <div class="search-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+              </div>
               <label for="shopify-input" class="sr-only">Shopify store URL</label>
-              <input id="shopify-input" type="url" class="input url-input" placeholder="https://store.myshopify.com" required />
-              <button type="submit" class="btn btn-primary detect-btn" id="shopify-submit">Find Theme</button>
+              <input
+                id="shopify-input"
+                type="url"
+                inputmode="url"
+                autocomplete="url"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
+                class="search-input"
+                placeholder="https://store.myshopify.com or domain.com"
+                required
+              />
+              <button type="button" id="shopify-clear-btn" class="search-clear-btn" aria-label="Clear input" hidden>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+              <button type="submit" class="btn btn-primary search-btn" id="shopify-submit">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <span>Find Theme</span>
+              </button>
+            </div>
+
+            <!-- Quick presets -->
+            <div class="preset-bar">
+              <span class="type-mono-caps text-mute preset-lbl">Try:</span>
+              <div class="preset-chips">
+                <button type="button" class="preset-chip" data-shopify-example="gymshark.com">gymshark.com</button>
+                <button type="button" class="preset-chip" data-shopify-example="allbirds.com">allbirds.com</button>
+                <button type="button" class="preset-chip" data-shopify-example="kyliecosmetics.com">kyliecosmetics.com</button>
+              </div>
+            </div>
+
+            <div class="search-note type-caption text-mute">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span>Automated &amp; private theme audit. Submitted stores are evaluated in real time without storing browsing history.</span>
             </div>
           </form>
-          <p class="type-caption shopify-examples" style="margin: var(--spacing-sm) 0 0 0;">
-            <span class="text-mute">Try an example:</span>
-            <button type="button" class="shopify-example-link" data-shopify-example="gymshark.com">gymshark.com</button>
-            <span class="text-mute" aria-hidden="true">·</span>
-            <button type="button" class="shopify-example-link" data-shopify-example="allbirds.com">allbirds.com</button>
-            <span class="text-mute" aria-hidden="true">·</span>
-            <button type="button" class="shopify-example-link" data-shopify-example="kyliecosmetics.com">kyliecosmetics.com</button>
-          </p>
           <div id="shopify-loading" hidden style="margin-block-start: 24px;">
             <div class="skeleton-card">
               <div class="skeleton sk-row" style="block-size: 32px; inline-size: 60%; border-radius: 4px;"></div>
@@ -169,11 +208,6 @@ import ThemeCard from '../components/ThemeCard.astro';
 <style>
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
-  .shopify-input-row { display: flex; gap: 8px; }
-  .url-input { flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg); padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06); border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); }
-  .url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); }
-  .url-input::placeholder { color: var(--color-slate-soft); }
-  .detect-btn { block-size: 56px; }
   .shopify-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
   .shopify-example-link {
     background: none;
@@ -206,7 +240,21 @@ const btn    = document.getElementById('shopify-submit') as HTMLButtonElement | 
 const loadEl = document.getElementById('shopify-loading') as HTMLElement | null;
 const resEl  = document.getElementById('shopify-result') as HTMLElement | null;
 const errEl  = document.getElementById('shopify-error')  as HTMLElement | null;
-function esc(s: string) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+const clearBtn = document.getElementById('shopify-clear-btn');
+function updateClearBtn() {
+  if (!clearBtn || !input) return;
+  clearBtn.hidden = !input.value.trim();
+}
+input?.addEventListener('input', updateClearBtn);
+clearBtn?.addEventListener('click', () => {
+  if (input) {
+    input.value = '';
+    input.focus();
+    updateClearBtn();
+  }
+});
+updateClearBtn();
+
 input?.focus();
 form?.addEventListener('submit', async (e) => {
   e.preventDefault();
