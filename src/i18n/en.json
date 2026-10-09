@@ -168,9 +168,19 @@
   },
   "errors": {
     "INVALID_URL": "Please enter a valid website URL (e.g. https://example.com).",
-    "PRIVATE_IP": "Private or internal addresses cannot be checked for security reasons.",
-    "BLOCKED": "This site returned a bot-protection response. We can't analyse it, but we did collect some header information.",
+    "BLOCKED_TARGET": "Private, internal, or restricted addresses cannot be scanned for security reasons.",
+    "TARGET_BLOCKED": "This site returned an automated bot-challenge or access restriction. We cannot scan challenge pages.",
     "TIMEOUT": "The request timed out after 8 seconds. The site may be slow or blocking automated access.",
+    "TLS_ERROR": "The site has a secure TLS/SSL certificate error. We cannot safely connect to it.",
+    "DNS_FAILED": "We couldn't resolve the domain name. Double-check the URL spelling and try again.",
+    "HTTP_ERROR": "The target website returned a server error. Please try again later.",
+    "NOT_HTML": "The URL returned a non-HTML document (such as binary data, an image, or an API payload).",
+    "TOO_LARGE": "The response exceeded the maximum allowed size for analysis.",
+    "RATE_LIMITED": "Too many requests. Please wait a moment and try again.",
+    "BUDGET_EXCEEDED": "The subrequest budget limit was exceeded for this scan.",
+    "INTERNAL": "An unexpected internal error occurred while processing the request.",
+    "PRIVATE_IP": "Private or internal addresses cannot be checked for security reasons.",
+    "BLOCKED": "This site returned a bot-protection response. We cannot scan challenge pages.",
     "DNS_FAILURE": "We couldn't resolve the domain. Double-check the URL and try again.",
     "INVALID_TLS": "The site has a TLS certificate error. We can't safely connect to it.",
     "NON_HTML": "The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).",
@@ -178,7 +188,9 @@
     "REDIRECT_LOOP": "We detected a redirect loop and stopped following redirects.",
     "UNKNOWN": "An unexpected error occurred. Please try again.",
     "TURNSTILE_FAILED": "Bot verification failed. Please try again.",
-    "RATE_LIMITED": "Too many requests. Please wait a moment and try again."
+    "retry": "Try again",
+    "resume": "Resume scan",
+    "unscanned": "Unscanned"
   },
   "footer": {
     "tagline": "Free, evidence-based CMS detection. No sign-up required.",

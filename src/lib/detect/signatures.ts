@@ -237,29 +237,37 @@ export interface MatchContext {
   headers: Record<string, string>;
   cookies: string[];
   probeResults?: Record<string, string>; // probe path → response body
+  _cleanedHtml?: string;
+  _resourceUrls?: string[];
+}
+
+interface ResourceRef {
+  tag: string;
+  attr: string;
+  src: string;
 }
 
 /**
- * Strip blocks whose text content is never live usage evidence:
- * - <style>: CSS selectors (e.g. #CookieDeclarationContainer) name
- *   technologies without loading them.
- * - <pre>/<code>: documentation snippets and tutorials quote integration
- *   code without executing it.
- * - Fenced code samples (```...```): documentation, including fences
- *   embedded in JSON data blobs with escaped newlines (docs sites ship
- *   their guides as JSON — e.g. sentry.io's own homepage carries a dozen
- *   Sentry.init samples that must never count as SDK usage).
- * - JSON-LD metadata blocks: structured data, never executed code.
- * - Named code-sample containers (<div>/<figure class="code-wrapper",
- *   "highlight", "codeblock", …>): syntax-highlighted samples from
- *   renderers that don't use <pre>. The `highlight` token only matches
- *   standalone (never `highlight-section`-style marketing classes), so
- *   live scripts elsewhere on the page are untouched.
- * Live integrations live in attributes, <script> bodies, and resource
- * URLs — never inside these blocks. Applied to whole-HTML text searches
- * (html-regex / js-global / inline-script) only; resource-URL channels
- * (<script src>, <link href>, …) are unaffected.
+ * Pre-extract resource URLs once per context.
  */
+function getResourceUrls(ctx: MatchContext): ResourceRef[] {
+  if (ctx._resourceUrls) return ctx._resourceUrls as unknown as ResourceRef[];
+  const refs: ResourceRef[] = [];
+  const attrRx =
+    /<(script|iframe|img|source|video|audio|embed|track|link|form)[^>]+?(?:src|href|action|data-src)=["']([^"']+)["']/gi;
+  let m: RegExpExecArray | null;
+  while ((m = attrRx.exec(ctx.html)) !== null) {
+    const tag = m[1].toLowerCase();
+    const val = m[2];
+    if (val && !val.startsWith('data:') && !val.startsWith('blob:') && !val.startsWith('javascript:')) {
+      const attr = tag === 'link' ? 'href' : tag === 'form' ? 'action' : 'src';
+      refs.push({ tag, attr, src: val });
+    }
+  }
+  ctx._resourceUrls = refs as unknown as string[];
+  return refs;
+}
+
 const NON_USAGE_BLOCK_RX = /<(style|pre|code)[\s>][\s\S]*?<\/\1\s*>/gi;
 const FENCED_CODE_RX = /```[\s\S]*?```/g;
 const JSONLD_RX = /<script[^>]+type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script\s*>/gi;
@@ -287,6 +295,12 @@ function usageHtml(html: string): string {
   return out;
 }
 
+function getCleanedHtml(ctx: MatchContext): string {
+  if (ctx._cleanedHtml !== undefined) return ctx._cleanedHtml;
+  ctx._cleanedHtml = usageHtml(ctx.html);
+  return ctx._cleanedHtml;
+}
+
 // ----------------------------------------------------------------
 // Core matching
 // ----------------------------------------------------------------
@@ -300,7 +314,8 @@ function matchSignal(
 
   switch (signal.type) {
     case 'meta-generator': {
-      // Match <meta name="generator" content="..." />
+      // Fast check: if "generator" is not in HTML at all, skip regex
+      if (!ctx.html.toLowerCase().includes('generator')) return none;
       const genRx = /<meta[^>]+name=["']generator["'][^>]+content=["']([^"']+)["']/gi;
       let m: RegExpExecArray | null;
       while ((m = genRx.exec(ctx.html)) !== null) {
@@ -318,15 +333,9 @@ function matchSignal(
     case 'html-regex':
     case 'js-global':
     case 'inline-script': {
-      // Search AND slice context from the same stripped string — indices
-      // from the stripped text must never be applied to the raw HTML,
-      // or evidence values would show unrelated page content.
-      const searched = usageHtml(ctx.html);
+      const searched = getCleanedHtml(ctx);
       const match = rx.exec(searched);
       if (match) {
-        // Name is the concrete marker found (e.g. "data-astro-cid",
-        // "/_astro/"), not the regex — it reads cleanly in evidence
-        // rows and still dedupes identical markers across pages.
         const marker = match[0].slice(0, 80);
         const at = match.index ?? 0;
         const from = Math.max(0, at - 24);
@@ -346,23 +355,9 @@ function matchSignal(
     }
 
     case 'script-host': {
-      // Resource-URL signal: scans every external resource reference the
-      // page loads — <script src>, <iframe src>, <img/srcset>, <link href>,
-      // <source/video/audio/embed src>, and <form action>. The name stays
-      // 'script-host' for backward compatibility with existing signature
-      // JSON, but the channel is any loaded resource, never prose text.
-      // Bare brand mentions in article copy can never match here because
-      // we only test URL attribute values.
-      const attrRx =
-        /<(script|iframe|img|source|video|audio|embed|track|link|form)[^>]+?(?:src|href|action|data-src)=["']([^"']+)["']/gi;
-      let m: RegExpExecArray | null;
-      while ((m = attrRx.exec(ctx.html)) !== null) {
-        const tag = m[1].toLowerCase();
-        const src = m[2];
-        if (!src || src.startsWith('data:') || src.startsWith('blob:')) continue;
+      const refs = getResourceUrls(ctx);
+      for (const { tag, attr, src } of refs) {
         if (rx.test(src)) {
-          // Name is the concrete host when the URL carries one,
-          // otherwise the matched pattern.
           let host = signal.pattern;
           if (/^https?:\/\//i.test(src) || src.startsWith('//')) {
             try {
@@ -371,8 +366,12 @@ function matchSignal(
               /* keep pattern */
             }
           }
-          const attr = tag === 'link' ? 'href' : tag === 'form' ? 'action' : 'src';
-          return { matched: true, artifact: `${tag}[${attr}]: "${src.slice(0, 120)}"`, name: host, value: src.slice(0, 120) };
+          return {
+            matched: true,
+            artifact: `${tag}[${attr}]: "${src.slice(0, 120)}"`,
+            name: host,
+            value: src.slice(0, 120),
+          };
         }
       }
       return none;

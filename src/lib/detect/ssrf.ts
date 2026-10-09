@@ -114,6 +114,11 @@ export function validateUrl(raw: string): SsrfValidationResult {
     return { ok: false, code: 'INVALID_URL', message: 'Cannot parse URL' };
   }
 
+  // Reject credentials in userinfo
+  if (parsed.username || parsed.password || /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\/[^/]*@/.test(withScheme)) {
+    return { ok: false, code: 'INVALID_URL', message: 'URLs with user credentials are not allowed' };
+  }
+
   // Only http and https
   if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
     return { ok: false, code: 'INVALID_URL', message: `Unsupported scheme: ${parsed.protocol}` };
@@ -150,7 +155,7 @@ export function validateUrl(raw: string): SsrfValidationResult {
 
   // Block all literal IPs (IPv4 any encoding, IPv6 any form)
   if (looksLikeIpv4(host) || looksLikeIpv6(host) || looksLikeIpv6(parsed.hostname)) {
-    return { ok: false, code: 'PRIVATE_IP', message: 'Direct IP access is not allowed' };
+    return { ok: false, code: 'BLOCKED_TARGET', message: 'Direct IP access is not allowed' };
   }
 
   // Block reserved patterns
@@ -158,7 +163,7 @@ export function validateUrl(raw: string): SsrfValidationResult {
     if (pattern.test(host)) {
       return {
         ok: false,
-        code: 'PRIVATE_IP',
+        code: 'BLOCKED_TARGET',
         message: 'Private or reserved hostname',
       };
     }

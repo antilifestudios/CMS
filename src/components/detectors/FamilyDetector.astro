@@ -69,6 +69,7 @@ const labelsData = JSON.stringify(categoryLabels);
         autocorrect="off"
         autocapitalize="off"
         spellcheck="false"
+        enterkeyhint="go"
         class="input fam-url-input"
         placeholder="https://example.com"
         required
@@ -111,8 +112,8 @@ const labelsData = JSON.stringify(categoryLabels);
   .fam-detect-btn { flex-shrink: 0; block-size: 56px; font-size: 16px; }
   .fam-recent { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .fam-recent-list { list-style: none; padding: 0; margin: 0; display: flex; gap: 6px; flex-wrap: wrap; }
-  .fam-recent-btn { font-size: 12px; block-size: 28px; padding-inline: 10px; border-radius: var(--radius-full); }
-  .fam-recent-clear { background: transparent; border: none; color: var(--color-mute); cursor: pointer; text-decoration: underline; padding: 4px; }
+  .fam-recent-btn { font-size: 12px; min-block-size: 44px; padding-inline: 12px; border-radius: var(--radius-full); display: inline-flex; align-items: center; }
+  .fam-recent-clear { background: transparent; border: none; color: var(--color-mute); cursor: pointer; text-decoration: underline; padding: 10px; min-block-size: 44px; display: inline-flex; align-items: center; }
   .fam-recent-clear:hover { color: var(--color-ash); }
   .fam-loading { margin-block-start: 16px; }
   .fam-skeleton-card { background-color: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
@@ -160,7 +161,7 @@ const labelsData = JSON.stringify(categoryLabels);
   .fam-fams-list { margin: 0; font-size: 12px; color: var(--color-slate-soft); font-family: var(--font-mono); }
   .fam-low-hint { margin: 6px 0 0 0; font-size: 13px; color: var(--color-ash); background: rgba(255,255,255,0.04); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-app-sm); padding: 8px 10px; line-height: 1.5; }
   .fam-ev { margin-block-start: 6px; }
-  .fam-ev-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--color-mute); list-style: none; padding: 6px 0; font-size: 13px; font-weight: 500; }
+  .fam-ev-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--color-mute); list-style: none; min-block-size: 44px; padding-block: 8px; font-size: 13px; font-weight: 500; }
   .fam-ev-toggle::-webkit-details-marker { display: none; }
   .fam-ev-toggle:hover { color: var(--color-ash); }
   .fam-ev details[open] .fam-toggle-icon, details[open] > summary .fam-toggle-icon { transform: rotate(180deg); }
@@ -176,12 +177,13 @@ const labelsData = JSON.stringify(categoryLabels);
   .fam-ev-host { color: var(--color-on-primary); display: block; overflow-wrap: anywhere; }
   .fam-ev-path { color: var(--color-ash); display: block; overflow-wrap: anywhere; word-break: break-all; }
   .fam-ev-single { display: block; overflow-wrap: anywhere; word-break: break-word; }
-  .fam-copy { flex-shrink: 0; background: transparent; border: 1px solid var(--color-hairline-soft); color: var(--color-mute); border-radius: var(--radius-app-sm); font-size: 10px; font-family: var(--font-mono); padding: 2px 7px; cursor: pointer; line-height: 1.6; }
+  .fam-copy { flex-shrink: 0; background: transparent; border: 1px solid var(--color-hairline-soft); color: var(--color-mute); border-radius: var(--radius-app-sm); font-size: 11px; font-family: var(--font-mono); padding: 8px 12px; min-block-size: 44px; min-inline-size: 44px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; line-height: 1.2; }
   .fam-copy:hover { color: var(--color-on-primary); border-color: var(--color-graphite); }
   .fam-conflict { margin: 6px 0 0 0; font-size: 12px; color: var(--color-mute); }
   .fam-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 4px; }
-  .fam-action-btn { font-size: 12px; block-size: 32px; }
-  .fam-report-link { color: var(--color-mute); text-decoration: underline; text-underline-offset: 2px; align-self: flex-start; padding: 4px 0; font-size: 13px; }
+  .fam-action-btn { font-size: 13px; min-block-size: 44px; padding-inline: 16px; display: inline-flex; align-items: center; }
+  .fam-retry-btn { font-size: 13px; min-block-size: 44px; padding-inline: 16px; display: inline-flex; align-items: center; }
+  .fam-report-link { color: var(--color-mute); text-decoration: underline; text-underline-offset: 2px; align-self: flex-start; padding: 10px 0; min-block-size: 44px; display: inline-flex; align-items: center; font-size: 13px; }
   .fam-report-link:hover { color: var(--color-ash); }
   .fam-empty { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
   .fam-empty-title { margin: 0 0 8px 0; color: var(--color-on-primary); font-size: 20px; font-weight: 500; }
@@ -217,12 +219,22 @@ const labelsData = JSON.stringify(categoryLabels);
 
   const ERROR_MESSAGES = {
     INVALID_URL: 'Please enter a valid website URL (e.g. https://example.com).',
-    PRIVATE_IP: "Private or internal addresses can't be checked for security reasons.",
-    BLOCKED: 'This site returned a bot-protection response. We collected header data below.',
-    TIMEOUT: 'The request timed out (8s). The site may be slow or blocking automated access.',
+    BLOCKED_TARGET: 'Private, internal, or restricted addresses cannot be scanned for security reasons.',
+    TARGET_BLOCKED: 'This site returned an automated bot-challenge or access restriction. We cannot scan challenge pages.',
+    TIMEOUT: 'The request timed out after 8 seconds. The site may be slow or blocking automated access.',
+    TLS_ERROR: 'The site has a secure TLS/SSL certificate error. We cannot safely connect to it.',
+    DNS_FAILED: "We couldn't resolve the domain name. Double-check the URL spelling and try again.",
+    HTTP_ERROR: 'The target website returned a server error. Please try again later.',
+    NOT_HTML: 'The URL returned a non-HTML document (such as binary data, an image, or an API payload).',
+    TOO_LARGE: 'The response exceeded the maximum allowed size for analysis.',
+    RATE_LIMITED: 'Too many requests. Please wait a moment and try again.',
+    BUDGET_EXCEEDED: 'The subrequest budget limit was exceeded for this scan.',
+    INTERNAL: 'An unexpected internal error occurred while processing the request.',
+    PRIVATE_IP: 'Private or internal addresses cannot be checked for security reasons.',
+    BLOCKED: 'This site returned a bot-protection response. We cannot scan challenge pages.',
     DNS_FAILURE: "We couldn't resolve the domain. Double-check the URL and try again.",
     INVALID_TLS: "The site has a TLS certificate error. We can't safely connect to it.",
-    NON_HTML: 'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
+    NON_HTML: 'The URL returned a non-HTML response.',
     REDIRECT_LOOP: 'We detected a redirect loop and stopped following redirects.',
     TURNSTILE_FAILED: 'Bot verification failed. Please try again.',
     UNKNOWN: 'An unexpected error occurred. Please try again.',
@@ -427,7 +439,7 @@ const labelsData = JSON.stringify(categoryLabels);
       const code = err?.code ?? 'UNKNOWN';
       // Explicit bot-protection state renders as an informative result —
       // never an alarming generic error, never challenge-page tech guesses.
-      if (code === 'BLOCKED' && err?.botProtection && resEl) {
+      if ((code === 'BLOCKED' || code === 'TARGET_BLOCKED') && err?.botProtection && resEl) {
         const raw = String(err?.finalUrl ?? url ?? '').replace(/^https?:\/\//, '').replace(/\/$/, '');
         resEl.innerHTML = botProtectionHtml(err, raw || String(url ?? ''));
         resEl.hidden = false;
@@ -437,9 +449,17 @@ const labelsData = JSON.stringify(categoryLabels);
         return;
       }
       if (!errEl) return;
+      const retryable = ['TIMEOUT', 'HTTP_ERROR', 'RATE_LIMITED', 'INTERNAL', 'UNKNOWN', 'DNS_FAILED'].includes(code);
+      const retryHtml = retryable
+        ? `<div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark fam-retry-btn">Try again</button></div>`
+        : '';
       errEl.innerHTML = `<div class="fam-error-card"><span class="badge badge-error">Error</span>
-        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p></div>`;
+        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p>${retryHtml}</div>`;
       errEl.hidden = false;
+      if (retryable) {
+        const retryBtn = errEl.querySelector('.fam-retry-btn');
+        retryBtn?.addEventListener('click', () => run(url));
+      }
     }
 
     function metricsHtml(found) {
@@ -644,7 +664,11 @@ const labelsData = JSON.stringify(categoryLabels);
     }
 
     async function runDetect(url) {
-      const endpoint = root.dataset.detector === 'growth' ? '/api/growth-detect' : '/api/detect';
+      const endpoint = root.dataset.detector === 'growth'
+        ? '/api/growth-detect'
+        : root.dataset.detector === 'security'
+          ? '/api/security-privacy-detect'
+          : '/api/detect';
       const token = await getToken();
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, token }) });
       const data = await res.json();
@@ -652,9 +676,8 @@ const labelsData = JSON.stringify(categoryLabels);
       setLoading(false);
       if (data.ok) {
         saveRecent(url); renderRecent();
-        // Categories shape (growth / security-privacy routes) vs the
-        // legacy single-scan results shape (/api/detect).
-        const html = Array.isArray(data.categories) ? renderCategories(data, url) : renderSingle(data.data, url);
+        const payload = (data.data && typeof data.data === 'object') ? data.data : data;
+        const html = Array.isArray(payload.categories) ? renderCategories(payload, url) : renderSingle(payload, url);
         if (resEl) { resEl.innerHTML = html; resEl.hidden = false; wireActions(resEl); resEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       } else {
         showError(data.error ?? { code: 'UNKNOWN' }, url);
@@ -670,7 +693,12 @@ const labelsData = JSON.stringify(categoryLabels);
       } catch {
         if (loadEl) loadEl.hidden = true;
         setLoading(false);
-        if (errEl) { errEl.innerHTML = `<div class="fam-error-card"><span class="badge badge-error">Network error</span><p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your connection and try again.</p></div>`; errEl.hidden = false; }
+        if (errEl) {
+          errEl.innerHTML = `<div class="fam-error-card"><span class="badge badge-error">Network error</span><p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your connection and try again.</p><div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark fam-retry-btn">Try again</button></div></div>`;
+          errEl.hidden = false;
+          const retryBtn = errEl.querySelector('.fam-retry-btn');
+          retryBtn?.addEventListener('click', () => run(clean));
+        }
       }
     }
 

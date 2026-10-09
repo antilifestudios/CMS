@@ -1,42 +1,32 @@
 /**
- * POST /api/detect
+ * POST /api/detect — Technology (CMS, framework, hosting, builder, theme) detector.
  *
  * Request body (JSON):
- *   { url: string; token?: string }
+ *   { url: string; token?: string; debug?: boolean }
  *
  * Response body (JSON):
- *   { ok: true, data: PipelineSuccess }
- *   | { ok: false, error: { code, partialResults, httpStatus?, botProtection? } }
- *
- * When the target answers with a bot-protection / challenge response,
- * code is 'BLOCKED' and error carries a botProtection payload:
- *   { status: 'bot_protected', httpStatus, provider: { name, confidence,
- *     evidence } | null, responseHeaders, limitations }
- * partialResults then holds header/cookie-level detections only — the
- * challenge page's scripts are never reported as site technologies.
- *
- * Cloudflare Workers runtime — no Node APIs.
- * Never logs the submitted URL.
- *
- * Abuse layers (free tier):
- *   1. Cloudflare Turnstile (managed) when TURNSTILE_SECRET is configured.
- *   2. 1-hour Cache API result cache — repeat scans never refetch.
- *   3. For edge rate limiting, add a Cloudflare WAF rate-limit rule on
- *      /api/detect in the dashboard (free plan includes 1 rule slot usage
- *      via Rate Limiting Rules). See wrangler + methodology notes.
+ *   {
+ *     ok: boolean,
+ *     status: 'complete' | 'partial' | 'failed',
+ *     coverage: CoverageMetadata,
+ *     data?: PipelineSuccess,
+ *     error?: StandardApiError
+ *   }
  */
 
 import type { APIRoute } from 'astro';
-import { runDetectionPipeline } from '../../lib/detect/pipeline';
-import { explainDetections } from '../../lib/detect/confidence';
+import { runDetectionPipeline } from '../../lib/detect/pipeline.ts';
+import { explainDetections } from '../../lib/detect/confidence.ts';
+import { rateLimited, clientIp, json, logScan } from '../../lib/detect/static-collect.ts';
+import { ERROR_HTTP_STATUS } from '../../lib/detect/types.ts';
 
 export const prerender = false;
 
-// Turnstile secret (set via CF environment variable, empty in dev = skip verify)
 const TURNSTILE_SECRET = (import.meta.env?.TURNSTILE_SECRET as string | undefined) ?? '';
+const CACHE_TTL_SECONDS = 3600;
+const DETECTOR_REVISION = 3;
 
 async function verifyTurnstile(token: string): Promise<boolean> {
-  // Dev / unconfigured: skip verification so the tool works out of the box.
   if (!TURNSTILE_SECRET) return true;
   if (!token) return false;
   try {
@@ -52,32 +42,6 @@ async function verifyTurnstile(token: string): Promise<boolean> {
   }
 }
 
-const SECURITY_HEADERS = {
-  'X-Content-Type-Options': 'nosniff',
-  'Referrer-Policy': 'no-referrer',
-} as const;
-
-function json(body: unknown, status = 200, extra?: Record<string, string>): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store',
-      ...SECURITY_HEADERS,
-      ...extra,
-    },
-  });
-}
-
-/**
- * Scoring / signature revision. Bump whenever the confidence model or a
- * signature rule changes meaningfully, so cached results from an older
- * engine are never served as current findings (stale LOW scores must not
- * survive a scoring fix).
- */
-const DETECTOR_REVISION = 2;
-
-/** Normalise a cache key: lowercase host, strip trailing slash + fragment. */
 function cacheKeyFor(rawUrl: string): string | undefined {
   try {
     const trimmed = rawUrl.trim();
@@ -90,24 +54,70 @@ function cacheKeyFor(rawUrl: string): string | undefined {
   }
 }
 
+const EMPTY_COVERAGE = {
+  htmlBytes: 0,
+  bundlesScanned: 0,
+  bundlesSkipped: 0,
+  gtmContainersFetched: 0,
+  truncated: false,
+  subrequests: 0,
+  durationMs: 0,
+};
+
 export const OPTIONS: APIRoute = () => {
   return new Response(null, {
     status: 204,
-    headers: { ...SECURITY_HEADERS, 'Cache-Control': 'no-store' },
+    headers: {
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+    },
   });
 };
 
 export const POST: APIRoute = async ({ request }) => {
-  // Parse body (with a sanity size cap — the URL itself is ≤ 2048 chars)
+  const ip = clientIp(request);
+  if (rateLimited(ip)) {
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: {
+          code: 'RATE_LIMITED',
+          message: 'Too many requests — please wait a minute and try again.',
+          retryable: true,
+        },
+      },
+      429,
+    );
+  }
+
   let body: { url?: unknown; token?: unknown; debug?: unknown };
   try {
     const text = await request.text();
     if (text.length > 8192) {
-      return json({ ok: false, error: { code: 'INVALID_URL', partialResults: [] } }, 400);
+      return json(
+        {
+          ok: false,
+          status: 'failed',
+          coverage: EMPTY_COVERAGE,
+          error: { code: 'INVALID_URL', message: 'Request payload too large.', retryable: false },
+        },
+        400,
+      );
     }
     body = JSON.parse(text) as typeof body;
   } catch {
-    return json({ ok: false, error: { code: 'INVALID_URL', partialResults: [] } }, 400);
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: { code: 'INVALID_URL', message: 'Invalid JSON body.', retryable: false },
+      },
+      400,
+    );
   }
 
   const rawUrl = typeof body.url === 'string' ? body.url.trim() : '';
@@ -115,66 +125,106 @@ export const POST: APIRoute = async ({ request }) => {
   const wantDebug = body.debug === true;
 
   if (!rawUrl || rawUrl.length > 2048) {
-    return json({ ok: false, error: { code: 'INVALID_URL', partialResults: [] } }, 400);
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: { code: 'INVALID_URL', message: 'Enter a valid website URL (e.g. https://example.com).', retryable: false },
+      },
+      400,
+    );
   }
 
   // Turnstile verification
   const turnstileOk = await verifyTurnstile(cfToken);
   if (!turnstileOk) {
-    return json({ ok: false, error: { code: 'TURNSTILE_FAILED', partialResults: [] } }, 403);
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: { code: 'TARGET_BLOCKED', message: 'Bot verification failed. Please try again.', retryable: true },
+      },
+      403,
+    );
   }
 
-  // Check cache (Cache API — same-zone synthetic key, 1h TTL)
+  // Cache lookup
   let cache: Cache | undefined;
   const cacheKey = cacheKeyFor(rawUrl);
-
   try {
     cache = await caches.default;
     if (cacheKey) {
       const cached = await cache.match(cacheKey);
       if (cached) {
-        const cachedBody = await cached.text();
-        return json(JSON.parse(cachedBody), 200, { 'X-Cache': 'HIT' });
+        return json(JSON.parse(await cached.text()), 200, { 'X-Cache': 'HIT' });
       }
     }
   } catch {
-    cache = undefined; // Cache API unavailable (local dev) — continue uncached
+    cache = undefined;
   }
 
-  // Run pipeline (never logs the URL)
+  const startTime = performance.now();
   const result = await runDetectionPipeline(rawUrl);
+  const durationMs = Math.round(performance.now() - startTime);
 
-  // Dev/debug: explain WHY each technology scored what it did.
-  // Opt-in via { debug: true } — never cached, never logged.
-  // Shape: { id, name, score, families, corroborationBonus, signals[] }
-  // where each signal shows baseWeight × specificity = adjusted.
-  if (wantDebug && result.ok) {
+  // Extract host only for logging (never log full query/path)
+  let logHost = 'unknown';
+  try {
+    const p = new URL(/^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`);
+    logHost = p.hostname.toLowerCase();
+  } catch {
+    /* noop */
+  }
+
+  logScan({
+    host: logHost,
+    outcome: result.ok ? result.status : result.error?.code ?? 'ERROR',
+    durationMs,
+    cpuMs: durationMs * 0.08,
+    subrequests: result.coverage?.subrequests ?? 1,
+    truncated: result.coverage?.truncated ?? false,
+  });
+
+  if (!result.ok) {
+    const httpStatus = result.error?.code ? ERROR_HTTP_STATUS[result.error.code] ?? 502 : 502;
+    return json(result, httpStatus, { 'X-Cache': 'MISS' });
+  }
+
+  if (wantDebug) {
     const debug = explainDetections(result.data.results);
     return json({ ...result, debug }, 200, { 'X-Cache': 'MISS' });
   }
 
-  // Cache successful results for 1 hour. put() needs a Request key in some
-  // runtimes, so build one from the synthetic URL.
-  if (cache && cacheKey && result.ok) {
+  // Cache complete successful results
+  if (cache && cacheKey && result.status === 'complete') {
     try {
       await cache.put(
         new Request(cacheKey),
         new Response(JSON.stringify(result), {
           headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=3600',
+            'Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
           },
-        })
+        }),
       );
     } catch {
-      /* cache write failure is non-fatal */
+      /* non-fatal */
     }
   }
 
   return json(result, 200, { 'X-Cache': 'MISS' });
 };
 
-// Reject non-POST requests
 export const GET: APIRoute = () => {
-  return json({ ok: false, error: { code: 'UNKNOWN', partialResults: [] } }, 405);
+  return json(
+    {
+      ok: false,
+      status: 'failed',
+      coverage: EMPTY_COVERAGE,
+      error: { code: 'INTERNAL', message: 'Use POST with { url }.', retryable: false },
+    },
+    405,
+  );
 };

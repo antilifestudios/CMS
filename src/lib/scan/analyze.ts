@@ -1,9 +1,13 @@
 /**
  * Consistency analysis — pure function.
  * Baseline = most common (framework, provider) pair across scanned pages.
+ *
+ * Reliability rule: A failed or skipped page marks that URL "unscanned",
+ * NEVER "consistent". A multi-page scan can ONLY be declared "consistent"
+ * when every attempted page completed successfully without differences.
  */
-import type { PageScanResult, ScanCoverage, ScanResult } from './types';
-import { aggregateTechs } from './aggregate';
+import type { PageScanResult, ScanCoverage, ScanResult } from './types.ts';
+import { aggregateTechs } from './aggregate.ts';
 
 function mode(values: string[]): string {
   const counts = new Map<string, number>();
@@ -33,26 +37,41 @@ export function analyzeConsistency(opts: {
 
   let oddCount = 0;
   for (const p of pages) {
-    if (p.error || p.skippedByRobots) continue;
+    if (p.error || p.skippedByRobots) {
+      p.differsFramework = false;
+      p.differsProvider = false;
+      p.isOddOneOut = false;
+      continue;
+    }
     p.differsFramework = p.framework !== baselineFramework;
-    // Cross-domain redirect counts as a provider-level difference signal
-    // but the flag stays precise: provider differs OR bounced off-domain.
     p.differsProvider = p.provider !== baselineProvider;
     p.isOddOneOut = p.differsFramework || p.differsProvider || p.crossDomainRedirect;
     if (p.isOddOneOut) oddCount += 1;
   }
 
-  const verdict = oddCount === 0 ? 'consistent' : 'mixed';
-  const n = ok.length;
-  // Verdict line carries no leading label — presentation layers render the
-  // "Consistent"/"Mixed stack" label once from locale copy.
-  const verdictLine =
-    verdict === 'consistent'
-      ? `${n}/${pages.length} pages run ${baselineFramework} + ${baselineProvider}`
-      : `${oddCount} of ${pages.length} path${pages.length === 1 ? '' : 's'} differ${oddCount === 1 ? 's' : ''}`;
+  const unscannedCount = pages.length - ok.length;
+
+  // A scan is only consistent when:
+  // 1. At least 1 page completed successfully.
+  // 2. No attempted pages failed or were skipped (unscannedCount === 0).
+  // 3. No differences were observed across pages (oddCount === 0).
+  const isConsistent = ok.length > 0 && unscannedCount === 0 && oddCount === 0;
+  const verdict: 'consistent' | 'mixed' = isConsistent ? 'consistent' : 'mixed';
+
+  let verdictLine: string;
+  if (isConsistent) {
+    verdictLine = `${ok.length}/${pages.length} pages run ${baselineFramework} + ${baselineProvider}`;
+  } else if (ok.length === 0) {
+    verdictLine = `0 of ${pages.length} pages could be scanned`;
+  } else if (unscannedCount > 0) {
+    const diffSuffix = oddCount > 0 ? `, ${oddCount} differ` : '';
+    verdictLine = `${ok.length} of ${pages.length} pages scanned (${unscannedCount} unscanned or failed${diffSuffix})`;
+  } else {
+    verdictLine = `${oddCount} of ${pages.length} path${pages.length === 1 ? '' : 's'} differ${oddCount === 1 ? '' : ''}`;
+  }
 
   // Front-door note: every successful page behind the same named CDN.
-  const namedProviders = ok.map((p) => p.provider).filter((p) => p !== 'Unknown');
+  const namedProviders = ok.map((p) => p.provider).filter((p) => p !== 'Unknown' && p !== 'Unscanned');
   const frontDoorNote =
     namedProviders.length > 0 &&
     namedProviders.length === ok.length &&
@@ -65,10 +84,12 @@ export function analyzeConsistency(opts: {
     baselineFramework,
     baselineProvider,
     verdictLine,
-    coverage,
+    coverage: {
+      ...coverage,
+      checked: ok.length,
+      truncated: coverage.truncated || unscannedCount > 0,
+    },
     pages,
-    // Per-technology rollups: evidence grouped by techId, confidence
-    // per technology. Cards render from this, never from pooled lists.
     techs: aggregateTechs(pages),
     frontDoorNote,
     scannedAt: new Date().toISOString(),

@@ -137,7 +137,10 @@ async function fetchOneContainer(
     const fetched = await fetchWithRedirects(validated.url, ctrl.signal, '*/*', budget, fetchImpl, {
       pinHost: GTM_CONTAINER_HOST,
     });
-    if ('error' in fetched) return { warning: `GTM container ${id} unavailable (${fetched.error})` };
+    if ('error' in fetched) {
+      const detail = fetched.message || fetched.error;
+      return { warning: `GTM container ${id} unavailable (${detail})` };
+    }
     const ct = (fetched.res.headers.get('content-type') ?? '').toLowerCase();
     if (!fetched.res.ok || !(ct.includes('javascript') || ct.includes('ecmascript') || ct === '' || ct.includes('text'))) {
       try {

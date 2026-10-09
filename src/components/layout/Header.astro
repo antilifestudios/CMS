@@ -379,14 +379,41 @@ const isGroupActive = (g: DropGroup): boolean =>
       padding: 12px;
     }
 
-    .hamburger { display: flex; }
-    .nav-actions { margin-inline-start: auto; }
-    #nav-cta { display: none; }
+    .hamburger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-block-size: 44px;
+      min-inline-size: 44px;
+      padding: 10px;
+      margin-inline-start: 8px;
+    }
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      margin-inline-start: auto;
+    }
+    #nav-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-block-size: 44px;
+      padding-inline: 14px;
+      font-size: 13px;
+      white-space: nowrap;
+    }
   }
 
   @media (max-width: 480px) {
+    .nav-inner {
+      gap: 12px;
+    }
     .wordmark-text {
-      font-size: 14px;
+      font-size: 13px;
+    }
+    #nav-cta {
+      padding-inline: 10px;
+      font-size: 12px;
     }
   }
 </style>
@@ -422,10 +449,23 @@ const isGroupActive = (g: DropGroup): boolean =>
     return btn.getAttribute('aria-expanded') === 'true';
   }
 
+  function setMobileMenu(open: boolean): void {
+    if (open) {
+      navLinks?.classList.add('is-open');
+      hamburger?.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      const first = navLinks?.querySelector<HTMLElement>('a, button');
+      first?.focus();
+    } else {
+      navLinks?.classList.remove('is-open');
+      hamburger?.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      for (const btn of dropBtns) closePanel(btn);
+    }
+  }
+
   dropBtns.forEach((btn) => {
     btn.addEventListener('click', (e) => {
-      // On hover-capable desktop the panel may already be visible via
-      // :hover — a click still toggles pinned state for touch/keyboard.
       e.stopPropagation();
       if (isOpen(btn)) closePanel(btn);
       else openPanel(btn);
@@ -452,9 +492,14 @@ const isGroupActive = (g: DropGroup): boolean =>
     });
   });
 
-  // Escape anywhere closes all dropdowns and returns focus.
+  // Escape anywhere closes all dropdowns and mobile menu.
   document.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
+    if (navLinks?.classList.contains('is-open')) {
+      setMobileMenu(false);
+      hamburger?.focus();
+      return;
+    }
     let hadOpen = false;
     for (const btn of dropBtns) {
       if (isOpen(btn)) {
@@ -462,8 +507,28 @@ const isGroupActive = (g: DropGroup): boolean =>
         closePanel(btn);
       }
     }
-    if (hadOpen && hamburger?.getAttribute('aria-expanded') !== 'true') {
+    if (hadOpen) {
       dropBtns[0]?.focus();
+    }
+  });
+
+  // Focus trap inside open mobile menu
+  navLinks?.addEventListener('keydown', (e) => {
+    if (!navLinks.classList.contains('is-open')) return;
+    if (e.key === 'Tab') {
+      const focusables = Array.from(
+        navLinks.querySelectorAll<HTMLElement>('a[href], button:not([hidden]):not([disabled])')
+      ).filter((el) => el.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 
@@ -479,23 +544,21 @@ const isGroupActive = (g: DropGroup): boolean =>
   // Choosing a link closes everything (incl. the mobile sheet).
   navLinks?.addEventListener('click', (e) => {
     if ((e.target as HTMLElement).closest('a')) {
-      for (const btn of dropBtns) closePanel(btn);
-      navLinks.classList.remove('is-open');
-      hamburger?.setAttribute('aria-expanded', 'false');
+      setMobileMenu(false);
     }
   });
 
   hamburger?.addEventListener('click', () => {
-    const isMenuOpen = navLinks?.classList.toggle('is-open');
-    hamburger.setAttribute('aria-expanded', String(isMenuOpen));
+    const willOpen = !navLinks?.classList.contains('is-open');
+    setMobileMenu(willOpen);
   });
 
   // Close on outside click (mobile sheet)
   document.addEventListener('click', (e) => {
-    if (!hamburger?.contains(e.target as Node) &&
+    if (navLinks?.classList.contains('is-open') &&
+        !hamburger?.contains(e.target as Node) &&
         !navLinks?.contains(e.target as Node)) {
-      navLinks?.classList.remove('is-open');
-      hamburger?.setAttribute('aria-expanded', 'false');
+      setMobileMenu(false);
     }
   });
 </script>

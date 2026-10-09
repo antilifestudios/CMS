@@ -1,80 +1,29 @@
 /**
- * POST /api/security-privacy-detect
+ * POST /api/security-privacy-detect — Security & Privacy detector.
  *
- * Request body (JSON):  { url: string }
- * Response body (JSON): { url, finalUrl, scannedAt, mode, categories, warnings }
- *   categories: [{ id, name, count, technologies: [{ id, name, website,
- *                 confidence: "high"|"medium"|"low", score: 0-1,
- *                 score100: 0-100,
- *                 evidence: [{ type, detail }] }] }]
- *
- * Architecture (v1 + GTM expansion):
- * - Pass 1 (static): fetch HTML (redirects, timeout, size cap, realistic
- *   User-Agent), channel-parse it, then fetch same-origin JS bundles
- *   (size-capped) for bundled SDK init strings. All fetch/SSRF/budget
- *   logic is REUSED from src/lib/detect/static-collect.ts.
- * - Pass 1c (GTM expansion, shared src/lib/detect/gtm-expansion.ts):
- *   extract GTM-XXXXXXX ids from HTML + bundles, fetch up to 3 public
- *   container files (pinned to googletagmanager.com, 5s timeout,
- *   400KB cap, fail-soft with a warning) and scan them with the same
- *   signature set. Container hits become "via GTM container" evidence
- *   (0.70) and can never reach the top band on their own.
- * - Pass 2 (rendered headless browser): NOT available in this runtime —
- *   mode is always "static" and a visible warning is returned. The
- *   detector accepts a Pass-2 seam (globals / networkRequests /
- *   storageKeys) so rendering can be plugged in without touching logic.
- *
- * Security: SSRF guard (validateUrl + validateRedirect on every hop,
- * bundle and container URL; Workers egress blocks private ranges as
- * backstop), in-memory per-IP rate limit, strict timeouts,
- * response-size caps, subrequest budget (40/invocation) with a
- * "Partial scan" warning when truncating, fetched JS is scanned as
- * text and never executed. Short-TTL result cache keyed by
- * normalized URL.
+ * Uses the unified `collectEvidence` seam. Cloudflare Workers Free runtime.
  */
 
 import type { APIRoute } from 'astro';
-import { validateUrl } from '../../lib/detect/ssrf';
 import {
   detectSecurityPrivacy,
-  extractChannels,
   groupByCategory,
-} from '../../lib/detect/security-privacy';
+} from '../../lib/detect/security-privacy.ts';
 import {
-  BUNDLE_TIMEOUT_MS,
-  FETCH_TIMEOUT_MS,
-  MAX_BUNDLE_BYTES,
-  MAX_BUNDLES,
-  MAX_HTML_BYTES,
-  PARTIAL_SCAN_WARNING,
-  clientIp,
-  createBudget,
-  extractCookieNames,
-  extractHeaders,
-  fetchBundles,
-  fetchWithRedirects,
-  json,
+  collectEvidence,
   rateLimited,
-  readCappedText,
-  sameOriginScriptUrls,
-} from '../../lib/detect/static-collect';
-import { extractGtmIds, fetchGtmContainers } from '../../lib/detect/gtm-expansion';
+  clientIp,
+  json,
+  logScan,
+} from '../../lib/detect/static-collect.ts';
+import { ERROR_HTTP_STATUS } from '../../lib/detect/types.ts';
 
 export const prerender = false;
 
-// ----------------------------------------------------------------
-// Tuning
-// ----------------------------------------------------------------
+const CACHE_TTL_SECONDS = 600;
+const DETECTOR_REVISION = 3;
 
-const CACHE_TTL_SECONDS = 600; // short TTL: 10 min
-const DETECTOR_REVISION = 2; // bumped: GTM container expansion added
-
-const STATIC_ONLY_WARNING =
-  'Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected.';
-
-// ----------------------------------------------------------------
-// Small helpers
-// ----------------------------------------------------------------
+const memoryCache = new Map<string, { body: string; expires: number }>();
 
 function cacheKeyFor(rawUrl: string): string | undefined {
   try {
@@ -88,41 +37,88 @@ function cacheKeyFor(rawUrl: string): string | undefined {
   }
 }
 
-/** Dev fallback when the Cache API is unavailable. */
-const memoryCache = new Map<string, { body: string; expires: number }>();
+const EMPTY_COVERAGE = {
+  htmlBytes: 0,
+  bundlesScanned: 0,
+  bundlesSkipped: 0,
+  gtmContainersFetched: 0,
+  truncated: false,
+  subrequests: 0,
+  durationMs: 0,
+};
 
-// ----------------------------------------------------------------
-// Route
-// ----------------------------------------------------------------
-
-export const OPTIONS: APIRoute = () => new Response(null, { status: 204 });
+export const OPTIONS: APIRoute = () =>
+  new Response(null, {
+    status: 204,
+    headers: {
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+    },
+  });
 
 export const POST: APIRoute = async ({ request }) => {
-  if (rateLimited(clientIp(request))) {
-    return json({ ok: false, error: { code: 'RATE_LIMITED', message: 'Too many requests — please wait a minute and try again.' } }, 429);
+  const ip = clientIp(request);
+  if (rateLimited(ip)) {
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: {
+          code: 'RATE_LIMITED',
+          message: 'Too many requests — please wait a minute and try again.',
+          retryable: true,
+        },
+      },
+      429,
+    );
   }
 
   let body: { url?: unknown };
   try {
     const text = await request.text();
-    if (text.length > 8192) return json({ ok: false, error: { code: 'INVALID_URL', message: 'Invalid URL.' } }, 400);
+    if (text.length > 8192) {
+      return json(
+        {
+          ok: false,
+          status: 'failed',
+          coverage: EMPTY_COVERAGE,
+          error: { code: 'INVALID_URL', message: 'Invalid URL payload.', retryable: false },
+        },
+        400,
+      );
+    }
     body = JSON.parse(text) as typeof body;
   } catch {
-    return json({ ok: false, error: { code: 'INVALID_URL', message: 'Invalid request body.' } }, 400);
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: { code: 'INVALID_URL', message: 'Invalid request body.', retryable: false },
+      },
+      400,
+    );
   }
 
   const rawUrl = typeof body.url === 'string' ? body.url.trim() : '';
   if (!rawUrl || rawUrl.length > 2048) {
-    return json({ ok: false, error: { code: 'INVALID_URL', message: 'Enter a valid website URL (e.g. https://example.com).' } }, 400);
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: EMPTY_COVERAGE,
+        error: {
+          code: 'INVALID_URL',
+          message: 'Enter a valid website URL (e.g. https://example.com).',
+          retryable: false,
+        },
+      },
+      400,
+    );
   }
 
-  const validated = validateUrl(rawUrl);
-  if (!validated.ok) {
-    const code = validated.code === 'PRIVATE_IP' ? 'PRIVATE_IP' : 'INVALID_URL';
-    return json({ ok: false, error: { code, message: validated.message } }, 400);
-  }
-
-  // Short-TTL cache (Cache API, in-memory fallback for local dev).
   const cacheKey = cacheKeyFor(rawUrl);
   try {
     const cache = await caches.default;
@@ -137,132 +133,105 @@ export const POST: APIRoute = async ({ request }) => {
     }
   }
 
-  const budget = createBudget();
-  const warnings: string[] = [STATIC_ONLY_WARNING];
+  const startTime = performance.now();
+  const collected = await collectEvidence(rawUrl);
+  const durationMs = Math.round(performance.now() - startTime);
 
-  // Pass 1: fetch HTML.
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
-  let res: Response;
-  let finalUrl: string;
+  let logHost = 'unknown';
   try {
-    const fetched = await fetchWithRedirects(
-      validated.url,
-      controller.signal,
-      'text/html,application/xhtml+xml,*/*;q=0.8',
-      budget,
-    );
-    if ('error' in fetched) {
-      return json({ ok: false, error: { code: 'FETCH_FAILED', message: fetched.error } }, 502);
-    }
-    res = fetched.res;
-    finalUrl = fetched.finalUrl;
-  } finally {
-    clearTimeout(timeoutId);
-  }
-
-  const headers = extractHeaders(res);
-  const cookies = extractCookieNames(res, headers);
-  const contentType = (headers['content-type'] ?? '').toLowerCase();
-  if (contentType && !contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
-    return json(
-      { ok: false, error: { code: 'NON_HTML', message: 'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).' } },
-      422,
-    );
-  }
-
-  let html: string;
-  try {
-    const { text, truncated } = await readCappedText(res, MAX_HTML_BYTES);
-    html = text;
-    if (truncated) warnings.push(PARTIAL_SCAN_WARNING);
-  } catch {
-    return json({ ok: false, error: { code: 'TIMEOUT', message: 'The request timed out while reading the page.' } }, 504);
-  }
-  try {
-    if (res.body) await res.arrayBuffer().catch(() => undefined);
+    const p = new URL(/^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`);
+    logHost = p.hostname.toLowerCase();
   } catch {
     /* noop */
   }
 
-  // Pass 1b: first-party JS bundles (bounded).
-  let bundleJs: string[] = [];
-  try {
-    const bundleUrls = sameOriginScriptUrls(html, finalUrl);
-    if (bundleUrls.length > 0) {
-      const bCtrl = new AbortController();
-      const bTimeout = setTimeout(() => bCtrl.abort(), 8_000);
-      try {
-        const { bodies, truncated } = await fetchBundles(bundleUrls, bCtrl.signal, budget, fetch, {
-          maxBundles: MAX_BUNDLES,
-          maxBytes: MAX_BUNDLE_BYTES,
-          timeoutMs: BUNDLE_TIMEOUT_MS,
-        });
-        bundleJs = bodies;
-        if (truncated) warnings.push(PARTIAL_SCAN_WARNING);
-      } finally {
-        clearTimeout(bTimeout);
-      }
-    }
-  } catch {
-    bundleJs = [];
+  logScan({
+    host: logHost,
+    outcome: collected.ok ? collected.status : collected.code,
+    durationMs,
+    cpuMs: durationMs * 0.08,
+    subrequests: collected.coverage?.subrequests ?? 1,
+    truncated: collected.coverage?.truncated ?? false,
+  });
+
+  if (!collected.ok) {
+    const httpStatus = ERROR_HTTP_STATUS[collected.code] ?? 502;
+    return json(
+      {
+        ok: false,
+        status: 'failed',
+        coverage: collected.coverage,
+        error: {
+          code: collected.code,
+          message: collected.message,
+          retryable: collected.retryable,
+          httpStatus: collected.httpStatus,
+          botProtection: collected.botProtection,
+        },
+      },
+      httpStatus,
+      { 'X-Cache': 'MISS' },
+    );
   }
 
-  // Pass 1c: GTM container expansion (shared module, fail-soft).
-  let gtmContainers: Array<{ id: string; js: string }> = [];
-  try {
-    const gtmIds = extractGtmIds(html, bundleJs);
-    if (gtmIds.length > 0) {
-      const gCtrl = new AbortController();
-      const gTimeout = setTimeout(() => gCtrl.abort(), 8_000);
-      try {
-        const { containers, warnings: gtmWarnings } = await fetchGtmContainers(gtmIds, gCtrl.signal, budget);
-        gtmContainers = containers;
-        warnings.push(...gtmWarnings);
-        if (containers.some((c) => c.truncated)) warnings.push(PARTIAL_SCAN_WARNING);
-      } finally {
-        clearTimeout(gTimeout);
-      }
-    }
-  } catch {
-    warnings.push('GTM container expansion unavailable; kept normal results.');
-  }
-
-  if (budget.truncated) warnings.push(PARTIAL_SCAN_WARNING);
-
-  // Detect (Pass 2 seam left empty → static mode).
-  const ch = extractChannels(html, headers);
-  void ch;
-  const technologies = detectSecurityPrivacy({ html, headers, cookies, bundleJs, gtmContainers });
+  const technologies = detectSecurityPrivacy({
+    html: collected.html,
+    headers: collected.headers,
+    cookies: collected.cookies,
+    bundleJs: collected.bundleJs,
+    gtmContainers: collected.gtmContainers,
+  });
   const categories = groupByCategory(technologies);
 
-  const payload = {
-    ok: true,
+  const payloadData = {
     url: rawUrl,
-    finalUrl,
+    finalUrl: collected.finalUrl,
     scannedAt: new Date().toISOString(),
     mode: 'static' as const,
     categories,
-    warnings: [...new Set(warnings)],
+    warnings: collected.warnings,
   };
 
-  if (cacheKey) {
+  const responsePayload = {
+    ok: true,
+    status: collected.status,
+    coverage: collected.coverage,
+    data: payloadData,
+    // Preserve top-level fields for backwards compatibility with UI
+    ...payloadData,
+  };
+
+  if (cacheKey && collected.status === 'complete') {
     try {
       const cache = await caches.default;
       await cache.put(
         new Request(cacheKey),
-        new Response(JSON.stringify(payload), {
-          headers: { 'Content-Type': 'application/json', 'Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}` },
+        new Response(JSON.stringify(responsePayload), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Cache-Control': `public, max-age=${CACHE_TTL_SECONDS}`,
+          },
         }),
       );
     } catch {
-      memoryCache.set(cacheKey, { body: JSON.stringify(payload), expires: Date.now() + CACHE_TTL_SECONDS * 1000 });
+      memoryCache.set(cacheKey, {
+        body: JSON.stringify(responsePayload),
+        expires: Date.now() + CACHE_TTL_SECONDS * 1000,
+      });
     }
   }
 
-  return json(payload, 200, { 'X-Cache': 'MISS' });
+  return json(responsePayload, 200, { 'X-Cache': 'MISS' });
 };
 
 export const GET: APIRoute = () => {
-  return json({ ok: false, error: { code: 'METHOD_NOT_ALLOWED', message: 'Use POST with { url }.' } }, 405);
+  return json(
+    {
+      ok: false,
+      status: 'failed',
+      coverage: EMPTY_COVERAGE,
+      error: { code: 'INTERNAL', message: 'Use POST with { url }.', retryable: false },
+    },
+    405,
+  );
 };
