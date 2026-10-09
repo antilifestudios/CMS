@@ -126,6 +126,16 @@ const labelsData = JSON.stringify(categoryLabels);
   .fam-report-head { display: flex; flex-direction: column; gap: 8px; }
   .fam-eyebrow { margin: 0; }
   .fam-domain { margin: 0; color: var(--color-on-primary); font-size: clamp(26px, 3vw, 34px); font-weight: 425; line-height: 1.15; letter-spacing: -0.01em; overflow-wrap: anywhere; word-break: break-word; }
+  .fam-notice {
+    margin: 0; font-size: 13px; line-height: 1.5; color: var(--color-ink);
+    background-color: var(--color-surface-blue-bg); border-radius: var(--radius-app-lg);
+    padding: 10px 14px; max-inline-size: 640px;
+  }
+  .fam-variant { margin: 0; font-size: 13px; color: var(--color-ash); line-height: 1.5; }
+  .fam-ids { margin: 6px 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .fam-id { display: flex; align-items: baseline; gap: 8px; background-color: var(--color-canvas); border-radius: var(--radius-app-sm); padding: 7px 8px; min-inline-size: 0; }
+  .fam-id-kind { font-family: var(--font-mono); font-size: 10px; color: var(--color-mute); text-transform: uppercase; letter-spacing: 0.06em; flex-shrink: 0; }
+  .fam-id-val { font-family: var(--font-mono); font-size: 11px; color: var(--color-on-primary); overflow-wrap: anywhere; word-break: break-all; }
   .fam-metrics { display: flex; gap: 0; margin-block-start: 12px; border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); overflow: hidden; background-color: var(--color-canvas-soft); max-inline-size: 560px; }
   .fam-metric { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px 8px; min-inline-size: 0; }
   .fam-metric + .fam-metric { border-inline-start: 1px solid var(--color-hairline-soft); }
@@ -202,6 +212,7 @@ const labelsData = JSON.stringify(categoryLabels);
     NETWORK: 'Headers', HTML: 'HTML markers', ASSET: 'Asset paths',
     SCRIPT: 'Scripts', META: 'Meta tags', COOKIE: 'Cookies',
     PLATFORM_IDENTIFIER: 'Platform identifiers',
+    VIA_GTM: 'Via GTM container',
   };
 
   const ERROR_MESSAGES = {
@@ -234,7 +245,7 @@ const labelsData = JSON.stringify(categoryLabels);
   }
 
   function normLabel(label) {
-    const u = String(label ?? '').toUpperCase();
+    const u = String(label ?? '').toUpperCase().replace(/-/g, ' ');
     if (u === 'VERY HIGH' || u === 'HIGH' || u === 'MEDIUM' || u === 'LOW') return u;
     if (u === 'CONFIRMED') return 'VERY HIGH';
     if (u === 'LIKELY') return 'HIGH';
@@ -283,6 +294,11 @@ const labelsData = JSON.stringify(categoryLabels);
     const fams = typeof d.families === 'number' ? d.families : (d._groupCount ?? 1);
     const famNames = Array.isArray(d._famNames) && d._famNames.length ? d._famNames : null;
     const isLow = label === 'LOW';
+    const ids = Array.isArray(d.extractedIds) ? d.extractedIds.filter((x) => x && x.value) : [];
+    const idsHtml = ids.length
+      ? `<ul class="fam-ids" role="list" aria-label="Extracted identifiers">${ids.map((x) => `<li class="fam-id"><span class="fam-id-kind">${esc(x.kind ?? 'ID')}</span><span class="fam-id-val">${esc(x.value)}</span></li>`).join('')}</ul>`
+      : '';
+    const subNote = typeof d.subNote === 'string' && d.subNote ? `<p class="fam-variant">${esc(d.subNote)}</p>` : '';
     return `
     <article class="fam-card">
       <div class="fam-card-top">
@@ -291,7 +307,9 @@ const labelsData = JSON.stringify(categoryLabels);
       </div>
       <p class="fam-fams">Detected across ${fams} independent evidence famil${fams === 1 ? 'y' : 'ies'}</p>
       ${famNames ? `<p class="fam-fams-list">${esc(famNames.join(' + '))}</p>` : ''}
+      ${subNote}
       ${isLow ? `<p class="fam-low-hint">Limited supporting evidence. Treat as a hint, not a confirmation.</p>` : ''}
+      ${idsHtml}
       ${Array.isArray(d.conflicting) && d.conflicting.length ? `<p class="fam-conflict"><span>Conflicting evidence also resembles: </span>${d.conflicting.map(esc).join(', ')}</p>` : ''}
       <details class="fam-ev">
         <summary class="fam-ev-toggle"><span>Why we think this</span>
@@ -544,6 +562,66 @@ const labelsData = JSON.stringify(categoryLabels);
       });
     }
 
+    // Categories-shape results (growth-marketing + security-privacy API
+    // routes): { categories: [{ id, name, technologies: [...] }] } where
+    // each technology carries a 0–100 score, evidence [{type, detail,
+    // value?, family?}], extractedIds and an optional subNote.
+    function buildCategoryGroups(t) {
+      const byFamily = new Map();
+      for (const e of t.evidence ?? []) {
+        const fam = e.family ?? 'HTML';
+        if (!byFamily.has(fam)) byFamily.set(fam, []);
+        byFamily.get(fam).push({ value: e.value ?? e.artifact ?? e.detail ?? '', description: e.detail ?? e.description ?? '' });
+      }
+      const names = [...byFamily.keys()].map((f) => FAMILY_LABELS[f] ?? f);
+      const html = [...byFamily.entries()].map(([fam, items]) => `
+        <li><span class="type-mono-caps text-mute fam-ev-group-label">${esc(FAMILY_LABELS[fam] ?? fam)}</span>
+        <ul class="fam-ev-rows" role="list">
+          ${items.map((e) => evRowHtml(e.value, e.value, e.description)).join('')}
+        </ul></li>`).join('');
+      return { count: byFamily.size, names, html };
+    }
+
+    function warningsHtml(data) {
+      const list = Array.isArray(data.warnings) ? data.warnings.filter(Boolean) : [];
+      if (!list.length && data.mode !== 'static') return '';
+      const notes = [...list];
+      if (data.mode === 'static' && !notes.some((w) => /static scan/i.test(w))) {
+        notes.unshift('Static scan only: tools loaded later via tag managers may not be detected.');
+      }
+      if (!notes.length) return '';
+      return notes.map((w) => `<p class="fam-notice">${esc(w)}</p>`).join('');
+    }
+
+    function renderCategories(data, url) {
+      const cats = Array.isArray(data.categories) ? data.categories : [];
+      const displayUrl = String(data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
+      const sorted = [];
+      for (const c of cats) {
+        for (const t of c.technologies ?? []) {
+          if (!scored(t).show) continue;
+          const g = buildCategoryGroups(t);
+          sorted.push({ ...t, _cat: c.id, _catName: c.name ?? (CAT_LABELS[c.id] ?? c.id), families: g.count, _groupCount: g.count, _famNames: g.names, _groupsHtml: g.html });
+        }
+      }
+      const byCat = new Map();
+      for (const r of sorted) {
+        if (!byCat.has(r._cat)) byCat.set(r._cat, { name: r._catName, items: [] });
+        byCat.get(r._cat).items.push(r);
+      }
+      const body = sorted.length === 0
+        ? `<div class="fam-empty"><h3 class="fam-empty-title">${esc(EMPTY_TITLE)}</h3><p class="fam-empty-body">${esc(EMPTY_BODY)} <a href="/">Try the full technology scan</a> for the broader stack.</p></div>`
+        : `<p class="type-mono-caps text-mute fam-detected-label">Detected stack</p>` + [...byCat.entries()].map(([cat, g]) => `
+          <section class="fam-cat" aria-label="${esc(g.name)}">
+            <div class="fam-cat-head"><h3 class="fam-cat-title">${esc(g.name)}</h3><span class="type-mono-caps text-mute fam-cat-count">${esc(String(g.items.length))} technolog${g.items.length === 1 ? 'y' : 'ies'}</span></div>
+            <div class="fam-tech-grid">${g.items.map((d) => renderCard(d, {})).join('')}</div>
+          </section>`).join('');
+      return `<div class="fam-report">
+        <div class="fam-report-head"><p class="type-mono-caps text-mute fam-eyebrow">${esc(EYEBROW)}</p>
+        <h2 class="fam-domain">${esc(displayUrl)}</h2>${warningsHtml(data)}${sorted.length ? metricsHtml(sorted) : ''}</div>
+        ${body}${actionsHtml()}</div>`;
+    }
+
     function renderSingle(data, url) {
       const found = (data.results ?? []).filter((r) => WANT.has(r.category) && scored(r).show);
       const displayUrl = String(data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
@@ -566,14 +644,18 @@ const labelsData = JSON.stringify(categoryLabels);
     }
 
     async function runDetect(url) {
+      const endpoint = root.dataset.detector === 'growth' ? '/api/growth-detect' : '/api/detect';
       const token = await getToken();
-      const res = await fetch('/api/detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, token }) });
+      const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, token }) });
       const data = await res.json();
       if (loadEl) loadEl.hidden = true;
       setLoading(false);
       if (data.ok) {
         saveRecent(url); renderRecent();
-        if (resEl) { resEl.innerHTML = renderSingle(data.data, url); resEl.hidden = false; wireActions(resEl); resEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        // Categories shape (growth / security-privacy routes) vs the
+        // legacy single-scan results shape (/api/detect).
+        const html = Array.isArray(data.categories) ? renderCategories(data, url) : renderSingle(data.data, url);
+        if (resEl) { resEl.innerHTML = html; resEl.hidden = false; wireActions(resEl); resEl.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
       } else {
         showError(data.error ?? { code: 'UNKNOWN' }, url);
       }

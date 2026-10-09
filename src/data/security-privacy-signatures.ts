@@ -14,6 +14,9 @@
  * - dom (characteristic element id/class):                      0.65
  * - cookie-storage (vendor cookie or storage key):               0.60
  * - iframe (YouTube, Vimeo, Google Maps embeds):                 0.90
+ * - via-gtm (found in a fetched GTM container, detector-added):  0.70
+ *   (a tag may be paused, consent-gated, or conditionally fired —
+ *   never proof the tool runs; GTM-only caps below High)
  * - Generic string mentions in visible text or <a href>: IGNORED
  *   (weight 0 — never add such a pattern here).
  *
@@ -33,7 +36,8 @@ export type SecurityPrivacyEvidenceType =
   | 'sdk-init'
   | 'dom'
   | 'cookie-storage'
-  | 'iframe';
+  | 'iframe'
+  | 'via-gtm';
 
 export interface SecurityPrivacyEvidenceRule {
   type: SecurityPrivacyEvidenceType;

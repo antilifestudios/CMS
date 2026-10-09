@@ -38,8 +38,17 @@ DOM/cookie-only caps below High; CSP/comment-only caps at Low.
 ## Rendered pass (Pass 2) seam
 
 The endpoint currently runs static-only (`mode: "static"`) plus
-first-party bundle scanning. `detectSecurityPrivacy()` already accepts
-`globals`, `networkRequests`, and `storageKeys` — wire a headless-browser
+first-party bundle scanning **plus GTM container expansion**
+(`src/lib/detect/gtm-expansion.ts`, shared with the growth detector):
+up to 3 public `gtm.js?id=GTM-…` files are fetched (pinned to
+`www.googletagmanager.com`, 5 s timeout, 400 KB cap, short-TTL cache,
+fail-soft with a warning) and scanned with the full signature set —
+hosts, SDK init strings, DSN patterns, and globals written in custom
+HTML tags. Container hits become `via-gtm` evidence (0.70, never the
+top band alone; weak hints such as bare `__tcfapi` stay weak, and tag
+NAMES/comments can never match).
+`detectSecurityPrivacy()` already accepts `globals`, `networkRequests`,
+and `storageKeys` — wire a headless-browser
 pass (Cloudflare Browser Rendering or Playwright) to fill those in and flip
 `mode` to `"rendered"`; no signature or scoring changes required.
 

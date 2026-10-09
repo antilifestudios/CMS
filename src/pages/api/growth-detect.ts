@@ -1,45 +1,35 @@
 /**
- * POST /api/security-privacy-detect
+ * POST /api/growth-detect
  *
  * Request body (JSON):  { url: string }
- * Response body (JSON): { url, finalUrl, scannedAt, mode, categories, warnings }
- *   categories: [{ id, name, count, technologies: [{ id, name, website,
- *                 confidence: "high"|"medium"|"low", score: 0-1,
- *                 score100: 0-100,
- *                 evidence: [{ type, detail }] }] }]
+ * Response body (JSON):
+ *   { url, finalUrl, scannedAt, mode: "static",
+ *     categories: [{ id, name, count,
+ *       technologies: [{ id, name, website, band, confidence,
+ *         score: 0-100, score100: 0-100,
+ *         evidence: [{ type, detail }], extractedIds: [{ kind, value }],
+ *         subNote?, variantNote? }] }],
+ *     warnings: [] }
  *
- * Architecture (v1 + GTM expansion):
- * - Pass 1 (static): fetch HTML (redirects, timeout, size cap, realistic
- *   User-Agent), channel-parse it, then fetch same-origin JS bundles
- *   (size-capped) for bundled SDK init strings. All fetch/SSRF/budget
- *   logic is REUSED from src/lib/detect/static-collect.ts.
- * - Pass 1c (GTM expansion, shared src/lib/detect/gtm-expansion.ts):
- *   extract GTM-XXXXXXX ids from HTML + bundles, fetch up to 3 public
- *   container files (pinned to googletagmanager.com, 5s timeout,
- *   400KB cap, fail-soft with a warning) and scan them with the same
- *   signature set. Container hits become "via GTM container" evidence
- *   (0.70) and can never reach the top band on their own.
- * - Pass 2 (rendered headless browser): NOT available in this runtime —
- *   mode is always "static" and a visible warning is returned. The
- *   detector accepts a Pass-2 seam (globals / networkRequests /
- *   storageKeys) so rendering can be plugged in without touching logic.
+ * Static scan only (same passes as the security-privacy detector):
+ * HTML fetch (SSRF guard, redirects, caps) → first-party JS bundles →
+ * GTM container expansion (shared module; container evidence weighs
+ * 0.70 and never reaches the top band alone). All fetch/SSRF/budget
+ * logic is REUSED from static-collect.ts / gtm-expansion.ts; all vendor
+ * knowledge lives in growth-marketing-signatures.ts.
  *
- * Security: SSRF guard (validateUrl + validateRedirect on every hop,
- * bundle and container URL; Workers egress blocks private ranges as
- * backstop), in-memory per-IP rate limit, strict timeouts,
- * response-size caps, subrequest budget (40/invocation) with a
- * "Partial scan" warning when truncating, fetched JS is scanned as
- * text and never executed. Short-TTL result cache keyed by
- * normalized URL.
+ * "Not detected" never means "not used": consent-gated tags,
+ * server-side tagging, first-party proxies and Zaraz can hide vendor
+ * hosts — surfaced as warnings, never as revenue/business language.
  */
 
 import type { APIRoute } from 'astro';
 import { validateUrl } from '../../lib/detect/ssrf';
 import {
-  detectSecurityPrivacy,
-  extractChannels,
-  groupByCategory,
-} from '../../lib/detect/security-privacy';
+  detectGrowthMarketing,
+  groupGrowthByCategory,
+  serverSideWarning,
+} from '../../lib/detect/growth-marketing';
 import {
   BUNDLE_TIMEOUT_MS,
   FETCH_TIMEOUT_MS,
@@ -62,19 +52,13 @@ import { extractGtmIds, fetchGtmContainers } from '../../lib/detect/gtm-expansio
 
 export const prerender = false;
 
-// ----------------------------------------------------------------
-// Tuning
-// ----------------------------------------------------------------
-
-const CACHE_TTL_SECONDS = 600; // short TTL: 10 min
-const DETECTOR_REVISION = 2; // bumped: GTM container expansion added
+const CACHE_TTL_SECONDS = 600;
+const DETECTOR_REVISION = 1;
 
 const STATIC_ONLY_WARNING =
   'Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected.';
 
-// ----------------------------------------------------------------
-// Small helpers
-// ----------------------------------------------------------------
+const memoryCache = new Map<string, { body: string; expires: number }>();
 
 function cacheKeyFor(rawUrl: string): string | undefined {
   try {
@@ -82,18 +66,11 @@ function cacheKeyFor(rawUrl: string): string | undefined {
     const parsed = new URL(/^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`);
     const host = parsed.hostname.toLowerCase();
     const path = parsed.pathname.replace(/\/+$/, '') || '/';
-    return `https://cmsdetectorai.com/api/security-privacy-detect?rev=${DETECTOR_REVISION}&u=${encodeURIComponent(host + path + parsed.search)}`;
+    return `https://cmsdetectorai.com/api/growth-detect?rev=${DETECTOR_REVISION}&u=${encodeURIComponent(host + path + parsed.search)}`;
   } catch {
     return undefined;
   }
 }
-
-/** Dev fallback when the Cache API is unavailable. */
-const memoryCache = new Map<string, { body: string; expires: number }>();
-
-// ----------------------------------------------------------------
-// Route
-// ----------------------------------------------------------------
 
 export const OPTIONS: APIRoute = () => new Response(null, { status: 204 });
 
@@ -122,7 +99,6 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ ok: false, error: { code, message: validated.message } }, 400);
   }
 
-  // Short-TTL cache (Cache API, in-memory fallback for local dev).
   const cacheKey = cacheKeyFor(rawUrl);
   try {
     const cache = await caches.default;
@@ -185,7 +161,7 @@ export const POST: APIRoute = async ({ request }) => {
     /* noop */
   }
 
-  // Pass 1b: first-party JS bundles (bounded).
+  // Pass 2: largest first-party JS bundles (bounded).
   let bundleJs: string[] = [];
   try {
     const bundleUrls = sameOriginScriptUrls(html, finalUrl);
@@ -208,7 +184,7 @@ export const POST: APIRoute = async ({ request }) => {
     bundleJs = [];
   }
 
-  // Pass 1c: GTM container expansion (shared module, fail-soft).
+  // Pass 3: GTM container expansion (shared module, fail-soft).
   let gtmContainers: Array<{ id: string; js: string }> = [];
   try {
     const gtmIds = extractGtmIds(html, bundleJs);
@@ -228,13 +204,12 @@ export const POST: APIRoute = async ({ request }) => {
     warnings.push('GTM container expansion unavailable; kept normal results.');
   }
 
+  const serverWarning = serverSideWarning(html, bundleJs);
+  if (serverWarning) warnings.push(serverWarning);
   if (budget.truncated) warnings.push(PARTIAL_SCAN_WARNING);
 
-  // Detect (Pass 2 seam left empty → static mode).
-  const ch = extractChannels(html, headers);
-  void ch;
-  const technologies = detectSecurityPrivacy({ html, headers, cookies, bundleJs, gtmContainers });
-  const categories = groupByCategory(technologies);
+  const technologies = detectGrowthMarketing({ html, headers, cookies, bundleJs, gtmContainers });
+  const categories = groupGrowthByCategory(technologies);
 
   const payload = {
     ok: true,

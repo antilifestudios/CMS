@@ -20,6 +20,7 @@ import {
   type SecurityPrivacyEvidenceType,
   type SecurityPrivacySignature,
 } from '../../data/security-privacy-signatures.ts';
+import { sanitizeContainerJs } from './gtm-expansion.ts';
 
 // ----------------------------------------------------------------
 // Public types (mirror the API output schema)
@@ -60,6 +61,8 @@ export interface SecurityPrivacyInput {
   cookies?: string[];
   /** Bodies of fetched first-party JS bundles (Pass 1b). */
   bundleJs?: string[];
+  /** Fetched GTM container sources (container expansion — shared module). */
+  gtmContainers?: Array<{ id: string; js: string }>;
   /** Rendered-pass extras (Pass 2 seam — empty in static mode). */
   globals?: string[];
   networkRequests?: string[];
@@ -230,16 +233,19 @@ export function detectSecurityPrivacy(input: SecurityPrivacyInput): SecurityPriv
   const out: SecurityPrivacyTechnology[] = [];
 
   for (const sig of SECURITY_PRIVACY_SIGNATURES) {
-    const hits = matchSignature(sig, {
-      ch,
-      codeHay,
-      resourceHay,
-      domHay,
-      cookieHay,
-      globalHay,
-      commentHay,
-      csp: ch.csp,
-    });
+    const hits = [
+      ...matchSignature(sig, {
+        ch,
+        codeHay,
+        resourceHay,
+        domHay,
+        cookieHay,
+        globalHay,
+        commentHay,
+        csp: ch.csp,
+      }),
+      ...matchGtmContainers(sig, input.gtmContainers ?? []),
+    ];
     if (hits.length === 0) continue;
 
     // Count each evidence TYPE once (strongest rule wins the type).
@@ -353,6 +359,57 @@ function matchSignature(sig: SecurityPrivacySignature, bags: ChannelBags): TypeH
     }
   }
 
+  return hits;
+}
+
+// ----------------------------------------------------------------
+// GTM container expansion (shared gtm-expansion.ts fetches the files;
+// this maps container-source matches to `via-gtm` evidence).
+//
+// Only host / SDK-init / global rules run against container sources —
+// DOM ids, cookies, tag NAMES and comments can never match, so a
+// technology is never reported just because its name appears in a tag
+// name. Every container hit weighs 0.70 and `via-gtm` is NOT in
+// STRONG_EVIDENCE_TYPES, so GTM-only evidence caps below High.
+// ----------------------------------------------------------------
+
+/** Rule types eligible for container-source matching. */
+const GTM_ELIGIBLE: ReadonlySet<string> = new Set([
+  'script-host',
+  'network-host',
+  'iframe',
+  'sdk-init',
+  'runtime-global',
+]);
+
+export const VIA_GTM_WEIGHT = 0.7;
+
+function matchGtmContainers(
+  sig: SecurityPrivacySignature,
+  containers: Array<{ id: string; js: string }>,
+): TypeHit[] {
+  const hits: TypeHit[] = [];
+  if (containers.length === 0) return hits;
+  for (const c of containers) {
+    // Tag names and comments are stripped first: a name match is not
+    // integration evidence (hosts / init strings / ids only).
+    const js = sanitizeContainerJs(c.js);
+    for (const rule of sig.evidence) {
+      if (!GTM_ELIGIBLE.has(rule.type)) continue;
+      // Generic weak hints (e.g. IAB __tcfapi) stay weak: they can never
+      // become container evidence on their own.
+      if (rule.weight < 0.35) continue;
+      if (rx(rule.pattern).test(js)) {
+        hits.push({
+          type: 'via-gtm',
+          weight: VIA_GTM_WEIGHT,
+          detail: `Found in GTM container ${c.id}: ${rule.description}`,
+          headerOnly: false,
+        });
+        break; // one entry per container per technology
+      }
+    }
+  }
   return hits;
 }
 
