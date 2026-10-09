@@ -237,8 +237,13 @@ const breadcrumbJsonLd = {
 
             <div class="scan-toggle-row">
               <label class="scan-toggle type-caption text-mute" for="multipage-toggle">
-                <input type="checkbox" id="multipage-toggle" checked />
-                {multiPageLabel}
+                <span class="toggle-switch">
+                  <input type="checkbox" id="multipage-toggle" class="toggle-input" />
+                  <span class="toggle-track" aria-hidden="true">
+                    <span class="toggle-thumb"></span>
+                  </span>
+                </span>
+                <span class="toggle-label">{multiPageLabel}</span>
               </label>
               <span class="limit-info-wrap">
                 <button
@@ -283,16 +288,38 @@ const breadcrumbJsonLd = {
             <button type="button" id="recent-clear" class="recent-clear type-caption">{clearRecentLabel}</button>
           </div>
 
-          <!-- Loading skeleton -->
+          <!-- High-Tech Animated Radar Loading Card -->
           <div id="result-loading" class="result-loading" hidden aria-live="polite" aria-busy="true">
-            <div class="skeleton-card">
-              <div class="skeleton sk-row sk-headline"></div>
-              <div class="skeleton sk-row sk-body"></div>
-              <div class="skeleton sk-row sk-body sk-body--short"></div>
+            <div class="cms-loading-card">
+              <div class="cms-loading-head">
+                <div class="cms-radar-spinner" aria-hidden="true"></div>
+                <div class="cms-loading-titles">
+                  <span class="type-mono-caps text-brand" id="cms-loading-badge">Deterministic Web Intelligence</span>
+                  <h3 class="cms-loading-headline" id="cms-loading-status-text">Connecting to destination edge node…</h3>
+                </div>
+              </div>
+              <div class="cms-scan-progress-bar">
+                <div class="cms-scan-progress-fill"></div>
+              </div>
+              <div class="cms-scan-steps">
+                <div class="cms-scan-step active" id="cms-step-1">
+                  <span class="cms-step-dot"></span>
+                  <span id="cms-step-text-1">Analyzing HTML DOM structure, generator tags &amp; layout signatures</span>
+                </div>
+                <div class="cms-scan-step" id="cms-step-2">
+                  <span class="cms-step-dot"></span>
+                  <span id="cms-step-text-2">Inspecting JavaScript bundles, asset paths &amp; client runtimes</span>
+                </div>
+                <div class="cms-scan-step" id="cms-step-3">
+                  <span class="cms-step-dot"></span>
+                  <span id="cms-step-text-3">Auditing HTTP response headers, cookies &amp; CDN edge layers</span>
+                </div>
+                <div class="cms-scan-step" id="cms-step-4">
+                  <span class="cms-step-dot"></span>
+                  <span id="cms-step-text-4">Cross-verifying multi-path consistency across discovered pages</span>
+                </div>
+              </div>
             </div>
-            <p class="type-caption text-mute" style="margin-block-start: 12px;">
-              Analysing — this usually takes under 3 seconds…
-            </p>
           </div>
 
           <!-- Result panel -->
@@ -498,20 +525,96 @@ const breadcrumbJsonLd = {
   .scan-toggle-row {
     display: flex;
     align-items: center;
-    gap: var(--spacing-xs);
-    margin-block-start: 4px;
-    padding-inline-start: 4px;
+    gap: 10px;
+    margin-block-start: 6px;
+    padding-inline-start: 2px;
   }
   .scan-toggle {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     cursor: pointer;
+    user-select: none;
   }
-  .scan-toggle input {
-    inline-size: 16px;
-    block-size: 16px;
-    accent-color: var(--color-canvas-light);
+  .toggle-switch {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+  .toggle-input {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  .toggle-track {
+    inline-size: 34px;
+    block-size: 20px;
+    background-color: #262626;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-full);
+    position: relative;
+    flex-shrink: 0;
+    transition: background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease;
+  }
+  .toggle-thumb {
+    position: absolute;
+    inset-block-start: 2px;
+    inset-inline-start: 2px;
+    inline-size: 14px;
+    block-size: 14px;
+    border-radius: 50%;
+    background-color: #888888;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                box-shadow 0.25s ease;
+  }
+  .scan-toggle:hover .toggle-track {
+    border-color: rgba(255, 255, 255, 0.25);
+    background-color: #303030;
+  }
+  .scan-toggle:hover .toggle-thumb {
+    background-color: #aaaaaa;
+  }
+  .toggle-input:focus-visible + .toggle-track {
+    outline: 2px solid var(--color-link-blue-soft);
+    outline-offset: 2px;
+  }
+  .toggle-input:checked + .toggle-track {
+    background-color: var(--color-brand);
+    border-color: var(--color-brand);
+    box-shadow: 0 0 12px rgba(243, 100, 88, 0.35);
+  }
+  .toggle-input:checked + .toggle-track .toggle-thumb {
+    transform: translateX(14px);
+    background-color: #ffffff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  }
+  .toggle-label {
+    font-size: 13px;
+    color: var(--color-mute);
+    transition: color 0.2s ease;
+  }
+  .scan-toggle:hover .toggle-label {
+    color: var(--color-ash);
+  }
+  .scan-toggle:has(.toggle-input:checked) .toggle-label {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toggle-track,
+    .toggle-thumb {
+      transition: none;
+    }
   }
   .advanced-opts { margin-block-start: 4px; }
   .advanced-opts summary {
@@ -566,23 +669,98 @@ const breadcrumbJsonLd = {
   }
   .recent-clear:hover { color: var(--color-ash); }
 
-  /* Loading skeleton */
-  .result-loading { margin-block-start: var(--spacing-xl); }
-
-  .skeleton-card {
-    background-color: var(--color-canvas-soft);
-    border-radius: var(--radius-marketing);
+  /* High-Tech Animated Radar Loading Card */
+  .result-loading {
+    margin-block-start: var(--spacing-xl);
+    min-inline-size: 0;
+  }
+  .cms-loading-card {
+    background-color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-lg);
     padding: var(--spacing-xl);
-    border: 1px solid var(--color-hairline-soft);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-lg);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   }
-
-  .sk-row { block-size: 20px; }
-  .sk-headline { inline-size: 60%; block-size: 32px; border-radius: var(--radius-app-sm); }
-  .sk-body { inline-size: 85%; }
-  .sk-body--short { inline-size: 50%; }
+  .cms-loading-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .cms-radar-spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(243, 100, 88, 0.2);
+    border-top-color: var(--color-brand);
+    animation: cms-spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes cms-spin {
+    to { transform: rotate(360deg); }
+  }
+  .cms-loading-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .cms-loading-headline {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+  }
+  .cms-scan-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+  .cms-scan-progress-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-brand), #ffffff);
+    animation: cms-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform-origin: 0% 50%;
+  }
+  @keyframes cms-progress {
+    0%   { transform: scaleX(0.1) translateX(-50%); }
+    50%  { transform: scaleX(0.6) translateX(50%); }
+    100% { transform: scaleX(0.9) translateX(120%); }
+  }
+  .cms-scan-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.06);
+    padding-block-start: 14px;
+  }
+  .cms-scan-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--color-mute);
+    transition: color 0.3s ease;
+  }
+  .cms-scan-step.active {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  .cms-step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-mute);
+    transition: all 0.3s ease;
+  }
+  .cms-scan-step.active .cms-step-dot {
+    background: var(--color-brand);
+    box-shadow: 0 0 6px var(--color-brand);
+  }
 
   /* Stat strip */
   .stat-strip-section {
@@ -988,7 +1166,7 @@ function clearRecent(): void {
 }
 
 function runCurrentMode(url: string): void {
-  const multi = (document.getElementById('multipage-toggle') as HTMLInputElement | null)?.checked ?? true;
+  const multi = (document.getElementById('multipage-toggle') as HTMLInputElement | null)?.checked ?? false;
   if (multi) void runSiteScan(url);
   else void runDetect(url);
 }
@@ -1260,22 +1438,64 @@ async function getTurnstileToken(): Promise<string> {
 // ----------------------------------------------------------------
 // Detection runner
 // ----------------------------------------------------------------
+const CMS_SCAN_STAGES = [
+  'Connecting to destination edge node…',
+  'Analyzing HTML DOM structure & generator meta tags…',
+  'Inspecting JavaScript bundles, asset paths & client runtimes…',
+  'Auditing HTTP response headers, cookies & CDN edge layers…',
+  'Cross-verifying multi-path consistency across discovered pages…',
+  'Evaluating deterministic technology signatures…'
+];
+let cmsTickerInterval: any = null;
+
+function startCmsTicker(): void {
+  if (cmsTickerInterval) clearInterval(cmsTickerInterval);
+  let idx = 0;
+  const statusEl = document.getElementById('cms-loading-status-text');
+  if (statusEl) statusEl.textContent = CMS_SCAN_STAGES[0];
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById(`cms-step-${i}`);
+    if (el) el.classList.toggle('active', i === 1);
+  }
+  cmsTickerInterval = setInterval(() => {
+    idx = (idx + 1) % CMS_SCAN_STAGES.length;
+    if (statusEl && (!activeScan || activeScan.sampleUrls.length <= 1)) {
+      statusEl.textContent = CMS_SCAN_STAGES[idx];
+    }
+    const stepIdx = (idx % 4) + 1;
+    for (let i = 1; i <= 4; i++) {
+      const el = document.getElementById(`cms-step-${i}`);
+      if (el) el.classList.toggle('active', i === stepIdx);
+    }
+  }, 1400);
+}
+
+function stopCmsTicker(): void {
+  if (cmsTickerInterval) {
+    clearInterval(cmsTickerInterval);
+    cmsTickerInterval = null;
+  }
+}
+
 function setLoading(loading: boolean): void {
   if (!submitBtn || !loadingEl || !resultEl || !errorEl) return;
   if (loading) {
     submitBtn.disabled = true;
-    submitBtn.textContent = 'Detecting…';
+    submitBtn.innerHTML = `<span>Detecting…</span>`;
     loadingEl.hidden = false;
     resultEl.hidden  = true;
     errorEl.hidden   = true;
+    startCmsTicker();
   } else {
     submitBtn.disabled = false;
     submitBtn.innerHTML = `
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path d="M6.5 1a5.5 5.5 0 1 0 3.457 9.82l3.362 3.361a.75.75 0 1 0 1.06-1.06L11.02 9.76A5.5 5.5 0 0 0 6.5 1zM2.5 6.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0z" fill="currentColor"/>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      Detect`;
+      <span>Detect</span>`;
     loadingEl.hidden = true;
+    stopCmsTicker();
   }
 }
 
@@ -1413,8 +1633,14 @@ function wireScanActions(scope: ParentNode): void {
     btn.addEventListener('click', () => {
       if (resultEl) resultEl.hidden = true;
       if (errorEl) errorEl.hidden = true;
-      if (input) { input.value = ''; input.focus(); }
+      if (input) {
+        input.value = '';
+        input.focus();
+        const clearBtn = document.getElementById('detect-clear-btn');
+        if (clearBtn) clearBtn.hidden = true;
+      }
       try { window.history.replaceState({}, '', '/'); } catch { /* noop */ }
+      document.getElementById('detector-root')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
   scope.querySelectorAll('[data-copy-link]').forEach((btn) => {
@@ -1427,6 +1653,50 @@ function wireScanActions(scope: ParentNode): void {
       b.textContent = ok ? t.copiedLabel : t.copyLink;
       b.disabled = false;
       window.setTimeout(() => { b.textContent = original; }, 1600);
+    });
+  });
+
+  // Export all discovered unscanned URLs to clipboard
+  scope.querySelectorAll('#export-unscanned-copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const b = btn as HTMLButtonElement;
+      const urls = b.dataset.urls ?? '';
+      const ok = await copyText(urls);
+      const span = b.querySelector('span');
+      if (span) {
+        const orig = span.textContent;
+        span.textContent = ok ? 'Copied URLs!' : 'Failed to Copy';
+        setTimeout(() => { span.textContent = orig; }, 1800);
+      }
+    });
+  });
+
+  // Download discovered unscanned URLs as a text file
+  scope.querySelectorAll('#export-unscanned-download').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const b = btn as HTMLButtonElement;
+      const host = b.dataset.host || 'website';
+      const urls = b.dataset.urls ?? '';
+      const blob = new Blob([urls], { type: 'text/plain;charset=utf-8' });
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = `unscanned-urls-${host}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(dlUrl);
+    });
+  });
+
+  // Copy single unscanned URL
+  scope.querySelectorAll('[data-single-url]').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const b = btn as HTMLButtonElement;
+      const u = b.dataset.singleUrl ?? '';
+      const ok = await copyText(u);
+      b.style.color = ok ? 'var(--color-brand)' : 'var(--color-mute)';
+      setTimeout(() => { b.style.color = ''; }, 1200);
     });
   });
 }
@@ -1558,6 +1828,7 @@ function renderScanSummary(data: {
     differsFramework?: boolean; differsProvider?: boolean; isOddOneOut?: boolean;
     crossDomainRedirect?: boolean; error?: string;
   }>;
+  unscannedUrls?: string[];
 }): string {
   const t = getScanCopy();
   const isMixed = data.verdict !== 'consistent';
@@ -1737,6 +2008,61 @@ function renderScanSummary(data: {
   const shareUrl = `/result/${encodeURIComponent(data.rootHost)}`;
   const mailtoBody = encodeURIComponent(`URL: ${data.rootHost}\nDetected: ${data.baselineFramework} + ${data.baselineProvider}\nExpected: `);
 
+  const unscannedUrls = data.unscannedUrls ?? [];
+  const unscannedDropdownHtml = unscannedUrls.length > 0
+    ? `
+      <details class="unscanned-dropdown">
+        <summary class="unscanned-summary type-caption-tight">
+          <div class="unscanned-summary-left">
+            <svg class="toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="unscanned-title">Preview: Discovered Unscanned URLs</span>
+            <span class="unscanned-count-badge">${unscannedUrls.length} Discovered</span>
+          </div>
+          <span class="type-caption text-mute unscanned-note">Discovered via sitemap &amp; homepage links</span>
+        </summary>
+        <div class="unscanned-panel">
+          <div class="unscanned-panel-bar">
+            <p class="type-caption text-ash unscanned-desc">
+              These URLs were discovered on <code>${esc(data.rootHost)}</code> but were not inspected because the multi-page scan sample limit was reached.
+            </p>
+            <div class="unscanned-actions">
+              <button type="button" class="btn btn-secondary-dark unscanned-export-btn" id="export-unscanned-copy" data-urls="${esc(unscannedUrls.join('\n'))}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+                <span>Copy ${unscannedUrls.length} URLs</span>
+              </button>
+              <button type="button" class="btn btn-secondary-dark unscanned-export-btn" id="export-unscanned-download" data-host="${esc(data.rootHost)}" data-urls="${esc(unscannedUrls.join('\n'))}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Export .txt</span>
+              </button>
+            </div>
+          </div>
+          <ul class="unscanned-url-list" role="list">
+            ${unscannedUrls.map((u, i) => `
+              <li class="unscanned-url-item">
+                <span class="unscanned-idx type-mono">${i + 1}</span>
+                <span class="unscanned-url type-mono" title="${esc(u)}">${esc(u)}</span>
+                <button type="button" class="unscanned-item-copy-btn" title="Copy URL" data-single-url="${esc(u)}" aria-label="Copy ${esc(u)}">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                  </svg>
+                </button>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      </details>`
+    : '';
+
   return `
     <div class="result-card scan-result">
       <div class="verdict ${isMixed ? 'verdict-mixed' : 'verdict-ok'}" role="status">
@@ -1760,6 +2086,7 @@ function renderScanSummary(data: {
           </table>
         </div>
       </details>
+      ${unscannedDropdownHtml}
       <div class="result-actions-row">
         <button type="button" class="btn btn-secondary-dark result-action" data-check-another>${esc(t.checkAnother)}</button>
         <button type="button" class="btn btn-secondary-dark result-action" data-copy-link data-url="${esc(shareUrl)}">${esc(t.copyLink)}</button>
@@ -1772,6 +2099,7 @@ interface ActiveScanState {
   rootUrl: string;
   rootHost: string;
   sampleUrls: string[];
+  unscannedUrls?: string[];
   foundApprox: number;
   robotsTxt: string;
   currentIndex: number;
@@ -1840,7 +2168,18 @@ async function resumeScanLoop(): Promise<void> {
       const idx = activeScan.currentIndex;
       const pageUrl = activeScan.sampleUrls[idx];
       if (submitBtn) {
-        submitBtn.textContent = `Scanning path ${idx + 1}/${activeScan.sampleUrls.length}…`;
+        submitBtn.innerHTML = `<span>Scanning path ${idx + 1}/${activeScan.sampleUrls.length}…</span>`;
+      }
+      const statusTicker = document.getElementById('cms-loading-status-text');
+      if (statusTicker) {
+        let displayPth = pageUrl;
+        try { displayPth = new URL(pageUrl).pathname || '/'; } catch {}
+        statusTicker.textContent = `Scanning path ${idx + 1} of ${activeScan.sampleUrls.length}: ${displayPth}`;
+      }
+      const stepIdx = (idx % 4) + 1;
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`cms-step-${i}`);
+        if (el) el.classList.toggle('active', i === stepIdx);
       }
 
       // Step fetch with 1 retry on network error/5xx
@@ -1889,7 +2228,10 @@ async function resumeScanLoop(): Promise<void> {
     }
 
     // All steps completed -> call /api/scan/complete
-    if (submitBtn) submitBtn.textContent = 'Analysing results…';
+    if (submitBtn) submitBtn.innerHTML = '<span>Analysing results…</span>';
+    const statusTicker = document.getElementById('cms-loading-status-text');
+    if (statusTicker) statusTicker.textContent = 'Aggregating deterministic evidence across paths…';
+
     const compRes = await fetch('/api/scan/complete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1910,10 +2252,14 @@ async function resumeScanLoop(): Promise<void> {
 
     if (compJson.ok && compJson.data && resultEl) {
       const finishedRoot = activeScan.rootUrl;
+      const unscanned = activeScan.unscannedUrls || [];
       saveActiveScan(null);
       saveRecent(finishedRoot);
       renderRecent();
-      resultEl.innerHTML = renderScanSummary(compJson.data);
+      resultEl.innerHTML = renderScanSummary({
+        ...compJson.data,
+        unscannedUrls: unscanned,
+      });
       resultEl.hidden = false;
       initLimitInfo(resultEl);
       wireScanActions(resultEl);
@@ -1946,7 +2292,7 @@ async function runSiteScan(rawUrl: string): Promise<void> {
   const url = rawUrl.trim();
   if (!url) return;
   setLoading(true);
-  if (submitBtn) submitBtn.textContent = 'Planning scan…';
+  if (submitBtn) submitBtn.innerHTML = '<span>Planning scan…</span>';
 
   try {
     const token = await getTurnstileToken();
@@ -1972,11 +2318,12 @@ async function runSiteScan(rawUrl: string): Promise<void> {
       return;
     }
 
-    const { rootUrl, rootHost, sampleUrls, foundApprox, robotsTxt } = planData.data;
+    const { rootUrl, rootHost, sampleUrls, unscannedUrls = [], foundApprox, robotsTxt } = planData.data;
     saveActiveScan({
       rootUrl,
       rootHost,
       sampleUrls,
+      unscannedUrls,
       foundApprox,
       robotsTxt,
       currentIndex: 0,
@@ -2042,12 +2389,12 @@ function init(): void {
     runDetect(urlParam);
   }
 
-  // Form submit — single primary action: multi-path scan by default.
+  // Form submit — single-page scan by default (multi-path scan when toggled on).
   form?.addEventListener('submit', (e) => {
     e.preventDefault();
     const url = input?.value.trim() ?? '';
     if (!url) return;
-    const multi = (document.getElementById('multipage-toggle') as HTMLInputElement | null)?.checked ?? true;
+    const multi = (document.getElementById('multipage-toggle') as HTMLInputElement | null)?.checked ?? false;
     if (multi) runSiteScan(url);
     else runDetect(url);
   });
@@ -2466,5 +2813,157 @@ init();
   .section--light .limit-pop-title { color: var(--color-ink); }
   @media (prefers-reduced-motion: reduce) {
     .limit-pop { transition: none; }
+  }
+
+  /* Discovered Unscanned URLs Dropdown & Export (Vercel dark style) */
+  .unscanned-dropdown {
+    margin-block-start: var(--spacing-sm);
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-lg);
+    overflow: hidden;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .unscanned-dropdown:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .unscanned-summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    color: var(--color-on-primary);
+    user-select: none;
+    list-style: none;
+    transition: background-color 0.15s ease;
+  }
+  .unscanned-summary:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+  .unscanned-summary::-webkit-details-marker { display: none; }
+  .unscanned-summary-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .unscanned-title {
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--color-on-primary);
+  }
+  .unscanned-count-badge {
+    background: rgba(243, 100, 88, 0.12);
+    color: var(--color-brand);
+    border: 1px solid rgba(243, 100, 88, 0.25);
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+  }
+  .unscanned-note {
+    font-size: 12px;
+  }
+  .unscanned-panel {
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #0d0d0d;
+  }
+  .unscanned-panel-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .unscanned-desc {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.5;
+    max-inline-size: 600px;
+  }
+  .unscanned-desc code {
+    color: var(--color-on-primary);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+  }
+  .unscanned-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .unscanned-export-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    block-size: 32px;
+    padding-inline: 12px;
+  }
+  .unscanned-url-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-block-size: 320px;
+    overflow-y: auto;
+  }
+  .unscanned-url-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    border-radius: var(--radius-app-sm);
+    font-size: 12px;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .unscanned-url-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  .unscanned-idx {
+    color: var(--color-mute);
+    font-size: 11px;
+    inline-size: 20px;
+    flex-shrink: 0;
+  }
+  .unscanned-url {
+    color: var(--color-ash);
+    word-break: break-all;
+    flex-grow: 1;
+    font-size: 12px;
+  }
+  .unscanned-item-copy-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-mute);
+    cursor: pointer;
+    border-radius: 4px;
+    inline-size: 26px;
+    block-size: 26px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .unscanned-item-copy-btn:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
   }
 </style>

@@ -107,6 +107,7 @@ export function extractInternalLinks(html: string, origin: string, cap = 100): s
 
 export interface SamplePlan {
   sample: string[];
+  unscannedUrls: string[];
   foundApprox: number;
 }
 
@@ -144,9 +145,12 @@ export function buildSample(opts: {
     push(u);
   }
 
-  if (opts.homepageHtml && sample.length < maxPages) {
-    const links = extractInternalLinks(opts.homepageHtml, opts.origin);
-    for (const u of links) {
+  const homepageLinks = opts.homepageHtml
+    ? extractInternalLinks(opts.homepageHtml, opts.origin, 1000)
+    : [];
+
+  if (sample.length < maxPages) {
+    for (const u of homepageLinks) {
       if (sample.length >= maxPages) break;
       push(u);
     }
@@ -166,10 +170,26 @@ export function buildSample(opts: {
     }
   }
 
-  const homepageLinkCount = opts.homepageHtml
-    ? extractInternalLinks(opts.homepageHtml, opts.origin, 1000).length
-    : 0;
-  const foundApprox = Math.max(sitemapLocs.length, homepageLinkCount, sample.length);
+  // Collect discovered unscanned URLs (preview of up to 15 additional discovered URLs)
+  const unscannedUrls: string[] = [];
+  const unscannedSeen = new Set<string>(seen);
+  const addUnscanned = (u: string) => {
+    const n = normalisePath(u);
+    if (unscannedSeen.has(n) || unscannedUrls.length >= 15) return;
+    unscannedSeen.add(n);
+    unscannedUrls.push(n);
+  };
 
-  return { sample, foundApprox };
+  for (const u of sitemapLocs) {
+    addUnscanned(u);
+    if (unscannedUrls.length >= 15) break;
+  }
+  for (const u of homepageLinks) {
+    addUnscanned(u);
+    if (unscannedUrls.length >= 15) break;
+  }
+
+  const foundApprox = Math.max(sitemapLocs.length, homepageLinks.length, sample.length);
+
+  return { sample, unscannedUrls, foundApprox };
 }

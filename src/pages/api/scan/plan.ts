@@ -107,7 +107,7 @@ export const POST: APIRoute = async ({ request }) => {
     fetchCappedText(validated.url.toString(), 100_000),
   ]);
 
-  const { sample, foundApprox } = buildSample({
+  const { sample, unscannedUrls, foundApprox } = buildSample({
     origin,
     homepageUrl: validated.url.toString(),
     sitemapXml: sitemapXml.includes('<url') ? sitemapXml : undefined,
@@ -121,6 +121,7 @@ export const POST: APIRoute = async ({ request }) => {
       rootUrl: validated.url.toString(),
       rootHost,
       sampleUrls: sample,
+      unscannedUrls,
       foundApprox: Math.max(foundApprox, sample.length),
       robotsTxt,
     },
