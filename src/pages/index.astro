@@ -10,13 +10,12 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
 import ToolIntro from '../components/home/ToolIntro.astro';
-import StatsStrip from '../components/home/StatsStrip.astro';
+import LogoTicker from '../components/home/LogoTicker.astro';
 import SupportedCmsGrid from '../components/home/SupportedCmsGrid.astro';
 import HowItWorksSteps from '../components/home/HowItWorksSteps.astro';
 import CmsExplainer from '../components/home/CmsExplainer.astro';
 import CdnSecondarySection from '../components/home/CdnSecondarySection.astro';
 import BlogArticlesSection from '../components/home/BlogArticlesSection.astro';
-import CmsFaqSection, { CMS_FAQ_ITEMS } from '../components/home/CmsFaqSection.astro';
 import ExternalSourcesSection from '../components/home/ExternalSourcesSection.astro';
 import { SCAN_CONFIG } from '../lib/scan/config';
 import en from '../i18n/en.json';
@@ -93,20 +92,6 @@ const webAppJsonLd = {
   inLanguage: 'en',
 };
 
-const faqJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: CMS_FAQ_ITEMS.map((item) => ({
-    '@type': 'Question',
-    name: item.question,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: item.answer,
-    },
-  })),
-  inLanguage: 'en',
-};
-
 const breadcrumbJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -126,7 +111,7 @@ const breadcrumbJsonLd = {
   description="Use our CMS detector to identify the content management system behind a website. Scan a domain to discover supported CMS platforms and CDN providers."
   pagePath="/"
   noindex={isShareView}
-  jsonLd={[webAppJsonLd, breadcrumbJsonLd, faqJsonLd]}
+  jsonLd={[webAppJsonLd, breadcrumbJsonLd]}
 >
   <!-- ============================================================
     HERO  (dark section)
@@ -297,9 +282,9 @@ const breadcrumbJsonLd = {
   <ToolIntro />
 
   <!-- ============================================================
-    3. SUBSTANTIATED STATS STRIP
+    3. MONOCHROME TECHNOLOGY LOGO TICKER
     ============================================================ -->
-  <StatsStrip />
+  <LogoTicker />
 
   <!-- ============================================================
     4. SUPPORTED CMS PLATFORMS & BUILDERS
@@ -371,10 +356,7 @@ const breadcrumbJsonLd = {
     </div>
   </Section>
 
-  <!-- ============================================================
-    10. CMS-FIRST FAQ ACCORDION
-    ============================================================ -->
-  <CmsFaqSection />
+
 
   <!-- ============================================================
     11. AUTHORITATIVE EXTERNAL SOURCES
@@ -1062,10 +1044,7 @@ function renderDetection(d: Detection): string {
       <div class="detection-header">
         <div class="detection-name-row">
           <span class="type-heading-sm detection-name">
-            ${d.pageSlug
-              ? `<a href="/cms/${esc(slug)}" class="text-link-dark">${esc(d.name)}</a>`
-              : esc(d.name)
-            }
+            ${esc(d.name)}
             ${versionStr}
           </span>
           ${renderConfidenceChip(d.confidenceLabel, `conf-tip-single-${esc(d.id)}`)}
@@ -1653,10 +1632,8 @@ function renderScanSummary(data: {
     }).join('');
   };
 
-  const cardName = (name: string, pageSlug?: string): string =>
-    pageSlug
-      ? `<a href="/cms/${esc(pageSlug)}" class="text-link-dark">${esc(name)}</a>`
-      : esc(name);
+  const cardName = (name: string, _pageSlug?: string): string =>
+    esc(name);
 
   const catLabel = (kind: string): string =>
     kind === 'hosting' ? t.hostingCat : t.frameworkCat;

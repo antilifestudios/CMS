@@ -51,6 +51,8 @@ export default defineConfig({
     '/methodology': { status: 301, destination: '/blog/how-it-works' },
     '/privacy-policy': { status: 301, destination: '/privacy' },
     '/terms-of-service': { status: 301, destination: '/terms' },
+    '/cms/wordpress': { status: 301, destination: '/blog/wordpress-signatures' },
+    '/cms/shopify': { status: 301, destination: '/blog/shopify-signatures' },
     '/learn': { status: 301, destination: '/blog' },
     '/guides': { status: 301, destination: '/blog' },
   },

@@ -1,7 +1,7 @@
 ---
 /**
  * SupportedCmsGrid.astro — Showcase genuinely supported CMS platforms and builders.
- * Connects directly to dedicated deep-dive guides at /cms/[slug].
+ * Informational cards explaining supported technologies and detection signals.
  */
 
 interface CmsItem {
@@ -122,14 +122,14 @@ const SUPPORTED_CMS: CmsItem[] = [
           Supported CMS Platforms & Site Builders
         </h2>
         <p class="type-subtitle text-ash section-subtitle">
-          Our detection engine recognizes major content management systems and builders through verified, deterministic signatures. Explore our in-depth guides for each platform:
+          Our detection engine recognizes major content management systems and website builders through verified, deterministic signatures.
         </p>
       </div>
     </div>
 
     <div class="cms-grid">
       {SUPPORTED_CMS.map((cms) => (
-        <a href={`/cms/${cms.slug}`} class="cms-card card-dark" title={`View ${cms.name} detection guide`}>
+        <div class="cms-card card-dark">
           <div class="cms-card-top">
             <span class="cms-category type-mono-micro text-mute">{cms.category}</span>
             <span class="cms-share type-mono-micro text-brand">{cms.share}</span>
@@ -137,9 +137,6 @@ const SUPPORTED_CMS: CmsItem[] = [
 
           <h3 class="type-heading-sm cms-name">
             {cms.name}
-            <svg class="cms-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-              <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
           </h3>
 
           <p class="type-body-sm text-ash cms-desc">
@@ -154,7 +151,7 @@ const SUPPORTED_CMS: CmsItem[] = [
               ))}
             </div>
           </div>
-        </a>
+        </div>
       ))}
     </div>
 
@@ -247,21 +244,8 @@ const SUPPORTED_CMS: CmsItem[] = [
   }
 
   .cms-name {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     color: var(--color-on-primary);
     margin: 0 0 var(--spacing-xs) 0;
-  }
-
-  .cms-arrow {
-    color: var(--color-mute);
-    transition: transform 0.2s ease, color 0.2s ease;
-  }
-
-  .cms-card:hover .cms-arrow {
-    color: var(--color-brand);
-    transform: translateX(3px);
   }
 
   .cms-desc {

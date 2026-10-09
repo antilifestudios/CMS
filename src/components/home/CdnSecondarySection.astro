@@ -74,7 +74,7 @@ const CDN_PROVIDERS = [
 
       <div class="cdn-grid">
         {CDN_PROVIDERS.map((provider) => (
-          <a href={`/cms/${provider.slug}`} class="cdn-item-card" title={`View ${provider.name} detection details`}>
+          <div class="cdn-item-card">
             <div class="cdn-item-top">
               <span class="type-heading-sm cdn-provider-name">{provider.name}</span>
               <span class="type-mono-micro text-mute">{provider.tag}</span>
@@ -86,7 +86,7 @@ const CDN_PROVIDERS = [
               <span class="type-mono-micro text-mute">Headers:</span>
               <code class="cdn-sig-code">{provider.signals}</code>
             </div>
-          </a>
+          </div>
         ))}
       </div>
 
