@@ -379,27 +379,19 @@ const faqs = [
           </p>
           <ul class="sp-cues-list">
             <li>
-              <span class="sp-cue-bullet" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
+              <span class="sp-cue-bullet" aria-hidden="true">01</span>
               <div><strong>Inspect the exact spelling of the domain:</strong> Phishers often create deceptive lookalike domains with subtle typos or extra hyphens (e.g., <code>paypa1.com</code> or <code>apple-support-verify.com</code>).</div>
             </li>
             <li>
-              <span class="sp-cue-bullet" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
+              <span class="sp-cue-bullet" aria-hidden="true">02</span>
               <div><strong>Watch for unexpected cross-domain redirects:</strong> If clicking a link for one site immediately redirects you to a totally unfamiliar domain, proceed with high caution.</div>
             </li>
             <li>
-              <span class="sp-cue-bullet" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
+              <span class="sp-cue-bullet" aria-hidden="true">03</span>
               <div><strong>Be skeptical of unsolicited download prompts:</strong> Authentic websites rarely trigger immediate software downloads without clear user interaction.</div>
             </li>
             <li>
-              <span class="sp-cue-bullet" aria-hidden="true">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-              </span>
+              <span class="sp-cue-bullet" aria-hidden="true">04</span>
               <div><strong>Verify company details &amp; contact transparency:</strong> Legitimate web services provide valid corporate identities, physical addresses, and clear privacy policies.</div>
             </li>
           </ul>
@@ -652,15 +644,19 @@ const faqs = [
   }
   .sp-cue-bullet {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.05);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-brand);
+    background: rgba(243, 100, 88, 0.08);
+    border: 1px solid rgba(243, 100, 88, 0.2);
+    border-radius: var(--radius-app-xs);
+    padding: 2px 5px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-ink);
     margin-block-start: 2px;
+    letter-spacing: 0.03em;
   }
   .sp-callout-card {
     background: var(--color-canvas-paper);
@@ -1665,19 +1661,15 @@ const faqs = [
 
     let verdictPillClass = 'sp-pill-clean';
     let meterColor = '#10b981';
-    let verdictIcon = '✓';
     if (verdict === 'known_threat') {
       verdictPillClass = 'sp-pill-threat';
       meterColor = '#ef4444';
-      verdictIcon = '✖';
     } else if (verdict === 'potential_concerns') {
       verdictPillClass = 'sp-pill-concern';
       meterColor = '#f59e0b';
-      verdictIcon = '⚠';
     } else if (verdict === 'incomplete') {
       verdictPillClass = 'sp-pill-inc';
       meterColor = '#9ca3af';
-      verdictIcon = 'ℹ';
     }
 
     const stats = safety?.stats ?? { passed: 0, concerns: 0, threats: 0, unavailable: 0 };
@@ -1756,7 +1748,7 @@ const faqs = [
       + '</div>'
       + '</div>'
       + '<div class="sp-verdict-banner-box">'
-      + '<span class="sp-verdict-pill ' + verdictPillClass + '">' + verdictIcon + ' ' + esc(safety?.verdictTitle ?? 'No Known Threats Detected') + '</span>'
+      + '<span class="sp-verdict-pill ' + verdictPillClass + '">' + esc(safety?.verdictTitle ?? 'No Known Threats Detected') + '</span>'
       + '<span class="type-mono-caps text-mute" style="font-size: 11px;">Rating: ' + esc(safety?.ratingLabel ?? 'Low Risk') + '</span>'
       + '</div>'
       + '</div>'
@@ -1764,10 +1756,10 @@ const faqs = [
       + '<p class="sp-verdict-summary">' + esc(safety?.verdictSummary ?? '') + '</p>'
       // Telemetry Metric Strip
       + '<div class="sp-telemetry-grid">'
-      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">Threat Intel</span><span class="sp-telemetry-value" style="color: #34d399;">✓ Clean</span></div>'
-      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">HTTPS Transport</span><span class="sp-telemetry-value">' + (conn?.isHttps ? '<span style="color: #34d399;">✓ Encrypted</span>' : '<span style="color: #f87171;">✖ Insecure</span>') + '</span></div>'
-      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">HSTS &amp; CSP</span><span class="sp-telemetry-value">' + (hdrs?.csp?.present ? '<span style="color: #34d399;">✓ Audited</span>' : '<span style="color: #fbbf24;">⚠ Missing CSP</span>') + '</span></div>'
-      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">Redirect Routing</span><span class="sp-telemetry-value">' + (redirs?.hasDowngrade ? '<span style="color: #f87171;">✖ Downgrade</span>' : '<span style="color: #34d399;">✓ ' + (redirs?.hopsCount ?? 0) + ' Hops</span>') + '</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">Threat Intel</span><span class="sp-telemetry-value" style="color: #34d399;">Clean</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">HTTPS Transport</span><span class="sp-telemetry-value">' + (conn?.isHttps ? '<span style="color: #34d399;">Encrypted</span>' : '<span style="color: #f87171;">Insecure</span>') + '</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">HSTS &amp; CSP</span><span class="sp-telemetry-value">' + (hdrs?.csp?.present ? '<span style="color: #34d399;">Audited</span>' : '<span style="color: #fbbf24;">Missing CSP</span>') + '</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">Redirect Routing</span><span class="sp-telemetry-value">' + (redirs?.hasDowngrade ? '<span style="color: #f87171;">Downgrade</span>' : '<span style="color: #34d399;">' + (redirs?.hopsCount ?? 0) + ' Hops</span>') + '</span></div>'
       + '</div>'
       + '</section>'
 
@@ -1891,7 +1883,7 @@ const faqs = [
         try {
           await navigator.clipboard.writeText(text);
           const origHtml = b.innerHTML;
-          b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied report to clipboard!';
+          b.textContent = 'Copied to clipboard!';
           setTimeout(() => { b.innerHTML = origHtml; }, 2500);
         } catch {
           b.textContent = 'Unable to copy';

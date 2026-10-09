@@ -17,6 +17,14 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ['astro:content', 'astro/content/runtime'],
+    },
+    ssr: {
+      optimizeDeps: {
+        exclude: ['astro:content', 'astro/content/runtime'],
+      },
+    },
   },
 
   // i18n routing

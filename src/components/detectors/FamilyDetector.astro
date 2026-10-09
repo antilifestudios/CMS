@@ -99,10 +99,11 @@ const labelsData = JSON.stringify(categoryLabels);
     <div class="preset-bar">
       <span class="type-mono-caps text-mute preset-lbl">Try:</span>
       <div class="preset-chips">
-        <button type="button" class="preset-chip" data-fam-preset="stripe.com">stripe.com</button>
+        <button type="button" class="preset-chip" data-fam-preset="loom.com">loom.com</button>
+        <button type="button" class="preset-chip" data-fam-preset="notion.so">notion.so</button>
+        <button type="button" class="preset-chip" data-fam-preset="grammarly.com">grammarly.com</button>
+        <button type="button" class="preset-chip" data-fam-preset="zapier.com">zapier.com</button>
         <button type="button" class="preset-chip" data-fam-preset="linear.app">linear.app</button>
-        <button type="button" class="preset-chip" data-fam-preset="shopify.com">shopify.com</button>
-        <button type="button" class="preset-chip" data-fam-preset="airbnb.com">airbnb.com</button>
       </div>
     </div>
 
@@ -730,7 +731,7 @@ const labelsData = JSON.stringify(categoryLabels);
       }
     }
 
-    const clearBtn = document.getElementById(`${prefix}-clear-btn`);
+    const clearBtn = root.querySelector<HTMLButtonElement>('[id$="-clear-btn"]');
     function updateClearBtn() {
       if (!clearBtn || !input) return;
       clearBtn.hidden = !input.value.trim();

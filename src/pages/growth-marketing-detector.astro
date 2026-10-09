@@ -4,7 +4,6 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
-import FamilyDetector from '../components/detectors/FamilyDetector.astro';
 
 const groups = [
   {
@@ -18,136 +17,2146 @@ const groups = [
     items: ['Google Ads', 'Google AdSense', 'Meta Pixel', 'TikTok Pixel', 'LinkedIn Insight Tag', 'Pinterest Tag', 'Reddit Pixel', 'Snapchat Pixel'],
   },
   {
-    label: 'Marketing',
+    label: 'Marketing & CRM',
     blurb: 'Automation and CRM platforms matched by SDK and asset evidence.',
     items: ['HubSpot', 'Klaviyo', 'Mailchimp', 'ActiveCampaign', 'Marketo', 'Salesforce'],
   },
   {
-    label: 'Payments',
+    label: 'Payments & Checkout',
     blurb: 'Checkout and wallet providers matched by SDK scripts.',
     items: ['Stripe', 'PayPal', 'Razorpay', 'Square', 'Adyen', 'Apple Pay', 'Google Pay'],
   },
   {
     label: 'Chat & Support',
-    blurb: 'Live-chat and support widgets matched by embed scripts.',
+    blurb: 'Live-chat and customer support widgets matched by embed scripts.',
     items: ['Intercom', 'Zendesk', 'Crisp', 'Tawk.to', 'Drift', 'LiveChat', 'HubSpot Chat'],
+  },
+];
+
+const faqs = [
+  {
+    q: 'How do you detect marketing technology on a website?',
+    a: 'We perform a real-time, isolated edge inspection of the website. We match known vendor script hosts, SDK initialization calls, DOM elements, asset paths, tracking cookies, and Google Tag Manager (GTM) container tags. Passing mentions of a brand name in page copy or footer links are never counted.',
+  },
+  {
+    q: 'Can this tool detect server-side tracking (GTM Server-Side, Segment, or CNAME cloaking)?',
+    a: 'Server-side tagging routes data through first-party domains or backend APIs rather than loading third-party vendor scripts in the browser. When a site uses purely server-side tracking, third-party client scripts are intentionally absent from the DOM, so client-side scanners will not observe them. However, if any client SDK, cookie, or container hook remains, our scanner detects it.',
+  },
+  {
+    q: 'How do you decompile or inspect Google Tag Manager (GTM) containers?',
+    a: 'When our edge scanner detects a Google Tag Manager container ID (e.g. GTM-XXXX), we fetch the public container JavaScript bundle and parse the tags, triggers, and vendor endpoints registered inside it. This allows us to reveal advertising pixels and analytics tags that were bundled inside GTM.',
+  },
+  {
+    q: 'What do the confidence ratings (Very High, High, Medium, Low) mean?',
+    a: 'Confidence is computed mathematically using noisy-OR over distinct evidence types. "Very High" (90%+) indicates multiple independent technical evidence families (e.g., vendor script host + SDK initialization + extracted ID). "High" (75–89%) reflects direct canonical script loaders. "Medium" (60–74%) stems from verified DOM elements or container tags. "Low" (40–59%) indicates a single supporting hook or partial match.',
+  },
+  {
+    q: 'Can this tool extract public measurement IDs like GA4 IDs or Meta Pixel IDs?',
+    a: 'Yes. Wherever supported vendors expose initializers or embed parameters (such as Google Analytics Measurement IDs G-XXXXX, GTM container IDs GTM-XXXXX, Meta Pixel IDs, or Stripe publishable keys), our analyzer extracts and formats them for one-click copying.',
+  },
+  {
+    q: 'Does this tool store the websites or URLs I submit?',
+    a: 'No. Submitted URLs are evaluated in real time at the Cloudflare edge purely to execute the requested stack analysis. We do not store browsing history, track user identifiers, or log sensitive authentication tokens.',
   },
 ];
 ---
 <Base
-  title="Growth & Marketing Detector — Analytics, Ads, Payments & Chat | CMS Detector AI"
+  title="What Marketing Tech Is This Site Using? Free MarTech Detector | CMS Detector AI"
   description="Detect the analytics, advertising pixels, marketing platforms, payment providers, and chat widgets any website uses — free, evidence-based, no sign-up."
   pagePath="/growth-marketing-detector"
+  canonical="https://cmsdetectorai.com/growth-marketing-detector"
   jsonLd={[
     {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Growth & Marketing Detector',
+      name: 'Growth & Marketing Tech Detector',
       url: 'https://cmsdetectorai.com/growth-marketing-detector',
       applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'All',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: 'Detect the analytics, advertising pixels, marketing platforms, payment providers, and chat widgets any website uses — free, evidence-based, no sign-up.',
       inLanguage: 'en',
     },
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'How do you detect marketing technology?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'We match script hosts, JavaScript globals, asset paths, and cookies — for example js.stripe.com for Stripe or connect.facebook.net fbevents.js for Meta Pixel. A passing mention of a brand name is never enough.',
-          },
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.a,
         },
-        {
-          '@type': 'Question',
-          name: 'What if a site mentions Stripe but does not use it?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'Then we report "Not confidently detected". Detection requires technical usage evidence such as the Stripe JavaScript SDK or checkout URLs — not page text.',
-          },
-        },
-      ],
+      })),
       inLanguage: 'en',
     },
   ]}
 >
-  <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="growth-h1">
+  {/* Hero / Interactive Checker */}
+  <Section theme="dark" class="gm-hero-section" ariaLabelledby="growth-h1">
     <div class="container">
-      <div style="max-inline-size: 860px;">
+      <div class="gm-hero-shell">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="growth" size={16} />Growth & Marketing Detector</span>
-          <h1 id="growth-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
+          <div class="badge-glow" style="margin-block-end: 2px; align-self: flex-start;">
+            <span class="dot"></span>
+            <span>Real-Time MarTech Intelligence · Cloudflare Edge</span>
+          </div>
+          <div class="gm-eyebrow-row">
+            <span class="eyebrow type-mono-eyebrow eyebrow-with-icon">
+              <NavIcon name="growth" size={16} />Growth &amp; Marketing Tech Detector
+            </span>
+          </div>
+          <h1 id="growth-h1" class="type-display-xl gm-hero-title">
             What Marketing Tech<br />Is This Site Using?
-            <span
-              class="growth-info"
-              tabindex="0"
-              role="img"
-              aria-label="Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected."
-              data-tip="Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected."
-            ><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 8.2v3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="5.4" r="1" fill="currentColor"/></svg></span>
           </h1>
-          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 580px;">
+          <p class="type-subtitle text-ash gm-hero-sub">
             Detect analytics, advertising pixels, marketing platforms, payment
             providers, and chat widgets — with the exact evidence behind every
             finding. Free, instant, no sign-up.
           </p>
         </div>
-        <div style="margin-block-start: var(--spacing-xxl);">
-          <FamilyDetector
-            detector="growth"
-            detectorEyebrow="Growth & Marketing Detector"
-            resultEyebrow="Growth & marketing stack for"
-            categories={['analytics', 'advertising', 'marketing', 'payments', 'chat']}
-            categoryLabels={{ analytics: 'Analytics', advertising: 'Advertising', marketing: 'Marketing', payments: 'Payments', chat: 'Chat & Support' }}
-            emptyTitle="No growth & marketing technologies detected"
-            emptyBody="We found no confident analytics, advertising, marketing, payment, or chat signals on this site. This means no supported technical signals were found — not that these technologies are definitely absent."
-            storageKey="growth_recent"
-            submitLabel="Detect Stack"
-          />
+
+        <div class="gm-scanner-container">
+          <div class="gm-detector" id="gm-root">
+            <form id="gm-form" class="gm-form" novalidate aria-label="Marketing Tech Detector">
+              <div class="gm-search-bar">
+                <div class="gm-search-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </div>
+                <label for="gm-input" class="sr-only">Website URL or Domain</label>
+                <input
+                  id="gm-input"
+                  type="url"
+                  inputmode="url"
+                  autocomplete="url"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  class="gm-url-input"
+                  placeholder="https://example.com or domain.com"
+                  required
+                />
+                <button type="button" id="gm-clear-btn" class="gm-clear-btn" aria-label="Clear input" hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+                <button type="submit" class="btn btn-primary gm-detect-btn" id="gm-submit">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <span>Detect Stack</span>
+                </button>
+              </div>
+
+              {/* Quick Presets (Verified Rich Working Examples) */}
+              <div class="gm-preset-bar">
+                <span class="type-mono-caps text-mute gm-preset-lbl">Try:</span>
+                <div class="gm-preset-chips">
+                  <button type="button" class="gm-preset-chip" data-preset="loom.com">loom.com</button>
+                  <button type="button" class="gm-preset-chip" data-preset="notion.so">notion.so</button>
+                  <button type="button" class="gm-preset-chip" data-preset="grammarly.com">grammarly.com</button>
+                  <button type="button" class="gm-preset-chip" data-preset="zapier.com">zapier.com</button>
+                  <button type="button" class="gm-preset-chip" data-preset="linear.app">linear.app</button>
+                </div>
+              </div>
+
+              {/* Privacy Reassurance Note */}
+              <div class="gm-privacy-note type-caption text-mute">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Automated &amp; private stack analysis. Submitted domains are evaluated in real time without storing browsing history.</span>
+              </div>
+            </form>
+
+            {/* Recent Searches */}
+            <div id="gm-recent" class="gm-recent" hidden>
+              <span class="type-mono-caps text-mute">Recent:</span>
+              <ul id="gm-recent-list" role="list" class="gm-recent-list"></ul>
+              <button type="button" id="gm-recent-clear" class="gm-recent-clear type-caption">Clear</button>
+            </div>
+
+            {/* High-Tech Animated Radar Loading Card */}
+            <div id="gm-loading" class="gm-loading" hidden aria-live="polite" aria-busy="true">
+              <div class="gm-loading-card">
+                <div class="gm-loading-head">
+                  <div class="gm-radar-spinner" aria-hidden="true"></div>
+                  <div class="gm-loading-titles">
+                    <span class="type-mono-caps text-brand">Running Multi-Channel MarTech Audit</span>
+                    <h3 class="gm-loading-headline" id="gm-loading-status-text">Connecting to destination edge node…</h3>
+                  </div>
+                </div>
+                <div class="gm-scan-progress-bar">
+                  <div class="gm-scan-progress-fill"></div>
+                </div>
+                <div class="gm-scan-steps">
+                  <div class="gm-scan-step active" id="gm-step-1">
+                    <span class="gm-step-dot"></span>
+                    <span>Scanning HTML DOM, script sources &amp; iframe hosts for tracking tags</span>
+                  </div>
+                  <div class="gm-scan-step" id="gm-step-2">
+                    <span class="gm-step-dot"></span>
+                    <span>Auditing Google Tag Manager containers &amp; deobfuscating tags</span>
+                  </div>
+                  <div class="gm-scan-step" id="gm-step-3">
+                    <span class="gm-step-dot"></span>
+                    <span>Inspecting advertising pixels, payment SDKs &amp; live-chat widgets</span>
+                  </div>
+                  <div class="gm-scan-step" id="gm-step-4">
+                    <span class="gm-step-dot"></span>
+                    <span>Extracting measurement IDs (GA4, GTM, Meta Pixel, Stripe keys)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Result Report Container */}
+            <div id="gm-result" class="gm-result" hidden aria-live="polite"></div>
+
+            {/* Error Message Alert */}
+            <div id="gm-error" class="gm-error" hidden aria-live="assertive" role="alert"></div>
+          </div>
         </div>
       </div>
     </div>
   </Section>
 
-  <Section theme="light" ariaLabelledby="growth-coverage">
+  {/* Educational Section 1: How to check */}
+  <Section theme="light" ariaLabelledby="growth-how-to" class="gm-how-to-section">
+    <div class="container">
+      <div style="max-inline-size: 860px;">
+        <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xl);">
+          <span class="eyebrow" style="color: var(--color-mute);">Step-by-step discovery</span>
+          <h2 id="growth-how-to" class="type-display-sm" style="color: var(--color-ink);">
+            How to Detect What Marketing Tech a Website Uses
+          </h2>
+          <p class="type-subtitle" style="color: var(--color-slate);">
+            Modern websites orchestrate dozens of third-party scripts for measurement, attribution, payments, and customer support. Follow these three verification steps:
+          </p>
+        </div>
+
+        <div class="gm-guide-grid">
+          <div class="gm-guide-card">
+            <div class="gm-guide-num">01</div>
+            <h3 class="gm-guide-title">Submit the Exact Domain or URL</h3>
+            <p class="gm-guide-text">
+              Paste the target URL (e.g. <code>https://example.com</code> or <code>example.com</code>) into the detector. Our edge worker safely downloads the document, first-party bundles, and GTM container files without running untrusted scripts in your browser.
+            </p>
+          </div>
+          <div class="gm-guide-card">
+            <div class="gm-guide-num">02</div>
+            <h3 class="gm-guide-title">Explore Grouped Categories &amp; Tools</h3>
+            <p class="gm-guide-text">
+              Filter findings across five key growth pillars: Analytics, Advertising, Marketing &amp; CRM, Payments, and Live Chat. Each finding is tagged with a transparent confidence rating.
+            </p>
+          </div>
+          <div class="gm-guide-card">
+            <div class="gm-guide-num">03</div>
+            <h3 class="gm-guide-title">Inspect Raw Script Evidence &amp; IDs</h3>
+            <p class="gm-guide-text">
+              Expand any tool card to see the verbatim technical evidence: matched script hosts, SDK initialization code, container tags, and extracted IDs (such as GA4 measurement IDs or Stripe keys) with one-click copying.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Educational Section 2: What we check */}
+  <Section theme="dark" ariaLabelledby="growth-checks" class="gm-checks-section">
     <div class="container">
       <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
-        <span class="eyebrow" style="color: var(--color-mute);">What we check</span>
-        <h2 id="growth-coverage" class="type-display-sm" style="color: var(--color-ink);">
-          One detector, five growth categories
+        <span class="eyebrow type-mono-eyebrow">Comprehensive Inspection Engine</span>
+        <h2 id="growth-checks" class="type-display-sm" style="color: var(--color-on-primary);">
+          What Marketing Technologies Can You Detect?
         </h2>
-        <p class="type-subtitle" style="color: var(--color-slate); max-width: 620px;">
-          Every finding needs technical usage evidence — SDK scripts, tracking
-          endpoints, platform cookies. Mentioning a brand in page text is never
-          enough. If we can't tell, we say so.
+        <p class="type-subtitle text-ash" style="max-inline-size: 680px;">
+          Rather than relying on keyword guessing, our analyzer verifies technical evidence across 38+ industry-standard marketing and growth platforms:
+        </p>
+      </div>
+
+      <div class="gm-checks-grid">
+        <div class="gm-check-box">
+          <div class="gm-check-head">
+            <span class="gm-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Measurement</span>
+          </div>
+          <h3 class="gm-check-title">Web &amp; Product Analytics</h3>
+          <p class="gm-check-desc">
+            Identifies Google Analytics (GA4), Plausible, PostHog, Mixpanel, Hotjar, Microsoft Clarity, Matomo, Heap, and Segment by tracking script hosts and global initializers.
+          </p>
+        </div>
+
+        <div class="gm-check-box">
+          <div class="gm-check-head">
+            <span class="gm-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Attribution</span>
+          </div>
+          <h3 class="gm-check-title">Ad Pixels &amp; Retargeting</h3>
+          <p class="gm-check-desc">
+            Detects Meta Pixel (Facebook), Google Ads, LinkedIn Insight Tag, TikTok Pixel, Reddit Pixel, Pinterest Tag, and Snapchat Pixel conversion tracking beacons.
+          </p>
+        </div>
+
+        <div class="gm-check-box">
+          <div class="gm-check-head">
+            <span class="gm-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Automation</span>
+          </div>
+          <h3 class="gm-check-title">Marketing Automation &amp; CRM</h3>
+          <p class="gm-check-desc">
+            Audits inbound marketing forms and tracking scripts from HubSpot, Klaviyo, Mailchimp, Marketo, ActiveCampaign, and Salesforce Marketing Cloud.
+          </p>
+        </div>
+
+        <div class="gm-check-box">
+          <div class="gm-check-head">
+            <span class="gm-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Checkout</span>
+          </div>
+          <h3 class="gm-check-title">Payment Gateways &amp; Wallets</h3>
+          <p class="gm-check-desc">
+            Verifies billing SDKs and digital wallet hooks including Stripe (Elements &amp; Checkout), PayPal SDK, Apple Pay, Google Pay, Adyen, Razorpay, and Square.
+          </p>
+        </div>
+
+        <div class="gm-check-box">
+          <div class="gm-check-head">
+            <span class="gm-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Messaging</span>
+          </div>
+          <h3 class="gm-check-title">Customer Chat &amp; Support</h3>
+          <p class="gm-check-desc">
+            Finds live-chat widgets, support hubs, and conversational bots including Intercom, Zendesk Web Widget, Crisp, Drift, Tawk.to, LiveChat, and HubSpot Chat.
+          </p>
+        </div>
+
+        <div class="gm-check-box">
+          <div class="gm-check-head">
+            <span class="gm-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Containers</span>
+          </div>
+          <h3 class="gm-check-title">Tag Management &amp; Containers</h3>
+          <p class="gm-check-desc">
+            Expands and deobfuscates Google Tag Manager (GTM) containers to discover nested analytics tags, third-party triggers, Segment events, and Adobe Launch suites.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Educational Section 3: Client vs Server side & methodology */}
+  <Section theme="light" ariaLabelledby="growth-methodology" class="gm-safety-guide-section">
+    <div class="container">
+      <div style="max-inline-size: 860px; display: flex; flex-direction: column; gap: var(--spacing-xxl);">
+        <div>
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+            <span class="eyebrow" style="color: var(--color-mute);">Methodology &amp; Architecture</span>
+            <h2 id="growth-methodology" class="type-display-sm" style="color: var(--color-ink);">
+              Understanding Client-Side vs. Server-Side Marketing Tech
+            </h2>
+          </div>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7;">
+            How marketing technology is loaded has changed dramatically over recent years. Understanding these patterns helps you interpret scanner results accurately:
+          </p>
+          <ul class="gm-cues-list">
+            <li>
+              <span class="gm-cue-bullet" aria-hidden="true">01</span>
+              <div><strong>Client-Side Tagging (Standard):</strong> The browser directly fetches JavaScript files from vendor CDNs (e.g., <code>connect.facebook.net</code> or <code>js.stripe.com</code>). These are reliably detected with High or Very High confidence.</div>
+            </li>
+            <li>
+              <span class="gm-cue-bullet" aria-hidden="true">02</span>
+              <div><strong>Tag Manager Containers:</strong> Rather than hardcoding 10 different scripts into the HTML, developers bundle them inside Google Tag Manager. Our scanner expands GTM containers in real time to reveal what tags are active inside.</div>
+            </li>
+            <li>
+              <span class="gm-cue-bullet" aria-hidden="true">03</span>
+              <div><strong>Consent Management Delays:</strong> Under GDPR or CCPA rules, some platforms defer loading marketing pixels until a visitor gives cookie consent. If tags are strictly withheld prior to consent, our static scan reports what is present at initial load.</div>
+            </li>
+            <li>
+              <span class="gm-cue-bullet" aria-hidden="true">04</span>
+              <div><strong>Server-Side Tagging (SS-GTM):</strong> Tracking events sent through custom first-party reverse proxies or backend API endpoints emit no third-party script URLs, keeping them invisible to client DOM analysis.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="gm-callout-card">
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-sm);">
+            <span class="type-mono-caps text-brand">Core Detection Principle</span>
+            <h2 id="growth-truth" class="type-heading-sm" style="color: var(--color-ink); margin: 0;">
+              Why Technical Evidence Matters (No Keyword Guessing)
+            </h2>
+          </div>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7; margin: 0;">
+            A common flaw of generic web tools is reporting a technology merely because its name appears in an article, a footer paragraph, or a standard link like <code>buy.stripe.com</code>.
+          </p>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7; margin: 0;">
+            <strong>We never do that.</strong> Every single finding in our detector requires active, verifiable technical usage evidence: a dedicated SDK script host, an initialization snippet with product keys, DOM form hooks, or platform cookies. If we cannot prove usage with verifiable technical evidence, we report <em>Not confidently detected</em>.
+          </p>
+        </div>
+
+        <div style="border-block-start: 1px solid var(--color-hairline); padding-block-start: var(--spacing-xxl);">
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+            <span class="eyebrow" style="color: var(--color-mute);">Interpreting confidence</span>
+            <h2 id="growth-conf-explained" class="type-display-sm" style="color: var(--color-ink);">
+              How Confidence Bands Are Calculated
+            </h2>
+          </div>
+          <div class="gm-verdict-grid">
+            <div class="gm-verdict-card-light">
+              <div class="gm-verdict-card-top">
+                <span class="gm-status-dot-glow dot-green"></span>
+                <span class="gm-status-title-clean">VERY HIGH (90%+)</span>
+              </div>
+              <p class="gm-verdict-card-desc">Confirmed across multiple independent technical evidence families (e.g. verified script host + SDK initialization code + extracted identifier).</p>
+            </div>
+            <div class="gm-verdict-card-light">
+              <div class="gm-verdict-card-top">
+                <span class="gm-status-dot-glow dot-mint"></span>
+                <span class="gm-status-title-mint">HIGH (75–89%)</span>
+              </div>
+              <p class="gm-verdict-card-desc">Verified by canonical third-party vendor script host, official embed endpoint, or primary SDK bundle with high specificity.</p>
+            </div>
+            <div class="gm-verdict-card-light">
+              <div class="gm-verdict-card-top">
+                <span class="gm-status-dot-glow dot-amber"></span>
+                <span class="gm-status-title-warn">MEDIUM (60–74%)</span>
+              </div>
+              <p class="gm-verdict-card-desc">Solid technical signal from characteristic DOM element, deobfuscated GTM container tag, or platform tracking cookie.</p>
+            </div>
+            <div class="gm-verdict-card-light">
+              <div class="gm-verdict-card-top">
+                <span class="gm-status-dot-glow dot-gray"></span>
+                <span class="gm-status-title-info">LOW (40–59%)</span>
+              </div>
+              <p class="gm-verdict-card-desc">Limited supporting signal (e.g. CSP header policy or generic SDK hook). Treated as a hint rather than a definitive confirmation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Supported Technologies Directory */}
+  <Section theme="dark" ariaLabelledby="growth-coverage" class="gm-coverage-section">
+    <div class="container">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+        <span class="eyebrow type-mono-eyebrow">Comprehensive Directory</span>
+        <h2 id="growth-coverage" class="type-display-sm" style="color: var(--color-on-primary);">
+          One Detector, Five Growth Categories
+        </h2>
+        <p class="type-subtitle text-ash" style="max-width: 620px;">
+          Explore the 38+ analytics engines, advertising pixels, CRMs, payment providers, and customer support widgets supported by our scanner:
         </p>
       </div>
       <CoverageDirectory groups={groups} />
     </div>
   </Section>
+
+  {/* Frequently Asked Questions */}
+  <Section theme="light" ariaLabelledby="growth-faq">
+    <div class="container">
+      <div style="max-inline-size: 860px;">
+        <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+          <span class="eyebrow" style="color: var(--color-mute);">Common questions</span>
+          <h2 id="growth-faq" class="type-display-sm" style="color: var(--color-ink);">
+            Frequently Asked Questions
+          </h2>
+          <p class="type-subtitle" style="color: var(--color-slate);">
+            Clear, honest answers about marketing technology detection, tag decompilation, and privacy standards.
+          </p>
+        </div>
+
+        <div class="gm-faqs">
+          {faqs.map((f, i) => (
+            <details class="gm-faq-item" id={`faq-${i}`}>
+              <summary class="gm-faq-summary">
+                <span class="gm-faq-q">{f.q}</span>
+                <svg class="gm-faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="gm-faq-answer">
+                <p>{f.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Section>
 </Base>
 
 <style>
+  /* Eyebrows & Layout */
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
-  .growth-info {
-    position: relative; display: inline-flex; vertical-align: middle;
-    margin-inline-start: 10px; color: var(--color-mute); cursor: help;
-    outline-offset: 4px;
+  .gm-hero-section {
+    min-block-size: 70vh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--spacing-section-lg);
   }
-  .growth-info:hover, .growth-info:focus-visible { color: var(--color-on-primary); }
-  .growth-info::after {
-    content: attr(data-tip);
-    position: absolute; inset-block-end: calc(100% + 10px); inset-inline-start: 50%;
-    transform: translateX(-50%); inline-size: max-content; max-inline-size: 260px;
-    background-color: var(--color-canvas-light); color: var(--color-ink);
-    font-size: 13px; font-weight: 400; line-height: 1.5; letter-spacing: normal;
-    border-radius: var(--radius-app-lg); padding: 10px 12px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
-    opacity: 0; visibility: hidden; transition: opacity 0.15s ease; z-index: 50;
-    pointer-events: none; white-space: normal;
+  .gm-hero-shell {
+    max-inline-size: 880px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
   }
-  .growth-info:hover::after, .growth-info:focus-visible::after { opacity: 1; visibility: visible; }
+  .gm-hero-title {
+    color: var(--color-on-primary);
+    margin: 0;
+    letter-spacing: -0.04em;
+  }
+  .gm-hero-sub {
+    margin: 0;
+    max-inline-size: 640px;
+    line-height: 1.6;
+  }
+  .gm-scanner-container {
+    margin-block-start: var(--spacing-sm);
+  }
+
+  /* Guide grid (Section 1) */
+  .gm-guide-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-block-start: var(--spacing-xl);
+  }
+  .gm-guide-card {
+    background-color: var(--color-canvas-light);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gm-guide-card:hover {
+    border-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  .gm-guide-num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-brand);
+    letter-spacing: 0.06em;
+  }
+  .gm-guide-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.35;
+  }
+  .gm-guide-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-slate);
+    line-height: 1.6;
+  }
+
+  /* Checks grid (Section 2) */
+  .gm-checks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+  }
+  .gm-check-box {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .gm-check-box:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+  .gm-check-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .gm-check-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-app-sm);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-brand);
+  }
+  .gm-check-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    line-height: 1.35;
+  }
+  .gm-check-desc {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-ash);
+    line-height: 1.6;
+  }
+
+  /* Cues & Callout (Section 3) */
+  .gm-cues-list {
+    margin: 18px 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .gm-cues-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-ink);
+  }
+  .gm-cue-bullet {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-brand);
+    background: rgba(243, 100, 88, 0.08);
+    border: 1px solid rgba(243, 100, 88, 0.2);
+    border-radius: var(--radius-app-xs);
+    padding: 2px 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-block-start: 2px;
+    letter-spacing: 0.03em;
+  }
+  .gm-callout-card {
+    background: var(--color-canvas-paper);
+    border-left: 3px solid var(--color-brand);
+    border-radius: 0 var(--radius-app-lg) var(--radius-app-lg) 0;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Confidence Grid */
+  .gm-verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-block-start: var(--spacing-lg);
+  }
+  .gm-verdict-card-light {
+    background: #ffffff;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.15s ease;
+  }
+  .gm-verdict-card-light:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+  .gm-verdict-card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .gm-status-dot-glow {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+  .dot-mint  { background-color: #34d399; box-shadow: 0 0 8px #34d399; }
+  .dot-amber { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+  .dot-gray  { background-color: #6b7280; box-shadow: 0 0 6px #6b7280; }
+
+  .gm-status-title-clean { font-size: 15px; font-weight: 600; color: #065f46; }
+  .gm-status-title-mint  { font-size: 15px; font-weight: 600; color: #047857; }
+  .gm-status-title-warn  { font-size: 15px; font-weight: 600; color: #92400e; }
+  .gm-status-title-info  { font-size: 15px; font-weight: 600; color: #374151; }
+  .gm-verdict-card-desc {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--color-slate);
+    line-height: 1.55;
+  }
+
+  /* FAQ Accordions */
+  .gm-faqs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gm-faq-item {
+    background: var(--color-canvas-light);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .gm-faq-item:hover {
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+  .gm-faq-summary {
+    padding: 18px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    user-select: none;
+  }
+  .gm-faq-summary::-webkit-details-marker { display: none; }
+  .gm-faq-arrow {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--color-mute);
+    flex-shrink: 0;
+  }
+  details[open] .gm-faq-arrow {
+    transform: rotate(180deg);
+  }
+  .gm-faq-answer {
+    padding: 0 20px 20px 20px;
+    font-size: 15px;
+    color: var(--color-slate);
+    line-height: 1.6;
+  }
+  .gm-faq-answer p { margin: 0; }
+
+  @media (max-width: 900px) {
+    .gm-guide-grid, .gm-checks-grid, .gm-verdict-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
+
+<style is:global>
+  /* ============================================================
+     Vercel-Inspired Interactive Detector Styles
+     ============================================================ */
+  .gm-detector { display: flex; flex-direction: column; gap: 14px; min-inline-size: 0; width: 100%; }
+  .gm-form { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Vercel Composite Search Bar */
+  .gm-search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-full);
+    padding: 4px 6px 4px 18px;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gm-search-bar:focus-within {
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+  }
+  .gm-search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+  .gm-url-input {
+    flex: 1;
+    height: 48px;
+    border: none;
+    background: transparent;
+    color: var(--color-on-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    min-inline-size: 0;
+  }
+  .gm-url-input:focus {
+    outline: none;
+  }
+  .gm-url-input::placeholder {
+    color: var(--color-slate-soft);
+  }
+  .gm-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-mute);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    transition: color 0.15s ease;
+  }
+  .gm-clear-btn:hover { color: var(--color-on-primary); }
+  .gm-detect-btn {
+    flex-shrink: 0;
+    height: 48px;
+    padding-inline: 22px;
+    font-size: 15px;
+    font-weight: 500;
+    gap: 8px;
+    background-color: var(--color-canvas-light);
+    color: var(--color-ink);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-canvas-light);
+    transition: transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease;
+  }
+  .gm-detect-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  /* Preset quick test chips */
+  .gm-preset-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-block-start: 2px;
+  }
+  .gm-preset-lbl {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+  .gm-preset-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .gm-preset-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .gm-preset-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-on-primary);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Privacy Note */
+  .gm-privacy-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-mute);
+  }
+
+  /* Recent scans */
+  .gm-recent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-block-start: 6px;
+  }
+  .gm-recent-list { list-style: none; padding: 0; margin: 0; display: flex; gap: 6px; flex-wrap: wrap; }
+  .gm-recent-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    height: 28px;
+    padding-inline: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-ash);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .gm-recent-btn:hover {
+    color: var(--color-on-primary);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .gm-recent-clear {
+    background: transparent;
+    border: none;
+    color: var(--color-mute);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 12px;
+    padding: 4px;
+  }
+  .gm-recent-clear:hover { color: var(--color-ash); }
+
+  /* Loading Radar Card */
+  .gm-loading { margin-block-start: 18px; }
+  .gm-loading-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  }
+  .gm-loading-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .gm-radar-spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(243, 100, 88, 0.2);
+    border-top-color: var(--color-brand);
+    animation: gm-spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes gm-spin {
+    to { transform: rotate(360deg); }
+  }
+  .gm-loading-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .gm-loading-headline {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+  }
+  .gm-scan-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+  .gm-scan-progress-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-brand), #ffffff);
+    animation: gm-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform-origin: 0% 50%;
+  }
+  @keyframes gm-progress {
+    0%   { transform: scaleX(0.1) translateX(-50%); }
+    50%  { transform: scaleX(0.6) translateX(50%); }
+    100% { transform: scaleX(0.9) translateX(120%); }
+  }
+  .gm-scan-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.06);
+    padding-block-start: 14px;
+  }
+  .gm-scan-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--color-mute);
+    transition: color 0.3s ease;
+  }
+  .gm-scan-step.active {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  .gm-step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-mute);
+  }
+  .gm-scan-step.active .gm-step-dot {
+    background: var(--color-brand);
+    box-shadow: 0 0 6px var(--color-brand);
+  }
+
+  /* Result Report Presentation */
+  .gm-result { margin-block-start: 24px; min-inline-size: 0; }
+  .gm-report { display: flex; flex-direction: column; gap: var(--spacing-xl); min-inline-size: 0; }
+
+  /* Hero Overview Card (Vercel Style) */
+  .gm-overview-card {
+    background-color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+  .gm-overview-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .gm-domain-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-inline-size: 0;
+  }
+  .gm-domain-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+  .gm-domain-eyebrow .edge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+  .gm-domain-headline-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .gm-domain-title {
+    margin: 0;
+    color: var(--color-on-primary);
+    font-size: clamp(26px, 3.8vw, 36px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    word-break: break-all;
+  }
+  .gm-domain-protocol-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--color-ash);
+  }
+  .gm-domain-meta {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--color-mute);
+    font-family: var(--font-mono);
+  }
+
+  /* Telemetry Stat Strip */
+  .gm-telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+    padding-block-start: 18px;
+  }
+  .gm-telemetry-tile {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-sm);
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .gm-telemetry-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .gm-telemetry-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Notices */
+  .gm-notice {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-ink);
+    background-color: var(--color-surface-blue-bg);
+    border-radius: var(--radius-app-sm);
+    padding: 10px 14px;
+  }
+
+  /* Category Filter Tabs */
+  .gm-tabs-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+    padding-block-end: 12px;
+  }
+  .gm-tab-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-ash);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .gm-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-on-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .gm-tab-btn.active {
+    background: var(--color-canvas-light);
+    color: var(--color-ink);
+    border-color: var(--color-canvas-light);
+    font-weight: 600;
+  }
+  .gm-tab-count {
+    opacity: 0.8;
+    font-size: 11px;
+  }
+  .gm-tab-btn.active .gm-tab-count {
+    opacity: 0.7;
+    color: var(--color-ink);
+  }
+
+  /* Category Section & Technology Cards Grid */
+  .gm-cat-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  .gm-cat-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    border-block-end: 1px solid rgba(255, 255, 255, 0.06);
+    padding-block-end: 8px;
+  }
+  .gm-cat-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-on-primary);
+  }
+  .gm-cat-count {
+    color: var(--color-mute);
+  }
+
+  .gm-tech-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+    align-items: start;
+  }
+  .gm-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-inline-size: 0;
+    overflow: hidden;
+    transition: border-color 0.15s ease, transform 0.15s ease;
+  }
+  .gm-card:hover {
+    border-color: var(--color-graphite);
+    transform: translateY(-1px);
+  }
+  .gm-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .gm-tech-name-lockup {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-inline-size: 0;
+  }
+  .gm-tech-name {
+    color: var(--color-on-primary);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+  .gm-tech-link {
+    color: var(--color-mute);
+    display: inline-flex;
+    align-items: center;
+    transition: color 0.15s ease;
+  }
+  .gm-tech-link:hover {
+    color: var(--color-brand);
+  }
+
+  /* Confidence Badges */
+  .gm-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    letter-spacing: 0.03em;
+  }
+  .gm-badge-very-high {
+    background-color: #052e16;
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+  }
+  .gm-badge-high {
+    background-color: #064e3b;
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  .gm-badge-medium {
+    background-color: #451a03;
+    color: #fbbf24;
+    border: 1px solid rgba(251, 191, 36, 0.3);
+  }
+  .gm-badge-low {
+    background-color: #1f2937;
+    color: #9ca3af;
+    border: 1px solid rgba(156, 163, 175, 0.25);
+  }
+
+  .gm-fams-summary {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--color-mute);
+    line-height: 1.5;
+  }
+  .gm-fams-list {
+    margin: 0;
+    font-size: 11px;
+    color: var(--color-slate-soft);
+    font-family: var(--font-mono);
+  }
+  .gm-variant-note {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--color-ash);
+    line-height: 1.5;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-app-sm);
+    padding: 6px 10px;
+    border-left: 2px solid var(--color-brand);
+  }
+  .gm-low-hint {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-ash);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-sm);
+    padding: 6px 10px;
+  }
+
+  /* Extracted Identifiers */
+  .gm-ids-box {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-block-start: 4px;
+  }
+  .gm-ids-lbl {
+    font-size: 10px;
+    letter-spacing: 0.06em;
+  }
+  .gm-ids-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gm-id-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background-color: var(--color-canvas);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-sm);
+    padding: 6px 10px;
+    min-inline-size: 0;
+  }
+  .gm-id-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-inline-size: 0;
+    overflow: hidden;
+  }
+  .gm-id-kind {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+  }
+  .gm-id-val {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+
+  /* Evidence Accordion */
+  .gm-ev {
+    margin-block-start: 4px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 8px;
+  }
+  .gm-ev-toggle {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-mute);
+    list-style: none;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding-block: 4px;
+  }
+  .gm-ev-toggle::-webkit-details-marker { display: none; }
+  .gm-ev-toggle:hover { color: var(--color-ash); }
+  details[open] .gm-toggle-icon { transform: rotate(180deg); }
+  .gm-toggle-icon { transition: transform 0.15s ease; }
+  .gm-ev-groups {
+    margin: 8px 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gm-ev-group-label {
+    display: block;
+    margin-block-end: 4px;
+    font-size: 10px;
+  }
+  .gm-ev-rows {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .gm-ev-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    background-color: var(--color-canvas);
+    border-radius: var(--radius-app-sm);
+    padding: 6px 8px;
+    min-inline-size: 0;
+  }
+  .gm-ev-main {
+    flex: 1;
+    min-inline-size: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .gm-ev-desc {
+    font-size: 11.5px;
+    color: var(--color-ash);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  .gm-ev-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--color-ash);
+    overflow-wrap: anywhere;
+    word-break: break-all;
+  }
+  .gm-ev-host {
+    color: var(--color-on-primary);
+    font-weight: 500;
+    display: block;
+  }
+  .gm-ev-path {
+    color: var(--color-mute);
+    display: block;
+  }
+
+  /* One-Click Copy Button */
+  .gm-copy-btn {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-mute);
+    border-radius: var(--radius-app-sm);
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    padding: 4px 8px;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    line-height: 1;
+    transition: all 0.15s ease;
+  }
+  .gm-copy-btn:hover {
+    color: var(--color-on-primary);
+    border-color: var(--color-graphite);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  /* Actions Bar */
+  .gm-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-block-start: 12px;
+  }
+  .gm-action-btn {
+    font-size: 13px;
+    height: 38px;
+    padding-inline: 16px;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .gm-report-link {
+    color: var(--color-mute);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    padding: 8px 0;
+    font-size: 13px;
+    margin-inline-start: auto;
+  }
+  .gm-report-link:hover { color: var(--color-ash); }
+
+  /* Empty State & Errors */
+  .gm-empty-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .gm-empty-title {
+    margin: 0;
+    color: var(--color-on-primary);
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .gm-empty-body {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-ash);
+    line-height: 1.6;
+  }
+  .gm-empty-body a {
+    color: var(--color-link-blue-soft);
+    text-decoration: underline;
+  }
+  .gm-error-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+  }
+
+  @media (max-width: 768px) {
+    .gm-tech-grid { grid-template-columns: 1fr; }
+    .gm-telemetry-grid { grid-template-columns: repeat(2, 1fr); }
+    .gm-card { padding: var(--spacing-md); }
+  }
+</style>
+
+<script>
+(() => {
+  const root = document.getElementById('gm-root');
+  if (!root) return;
+
+  const STORAGE_KEY = 'growth_recent';
+  const MAX_RECENT = 5;
+
+  const FAMILY_LABELS: Record<string, string> = {
+    SCRIPT: 'Scripts & SDK Loaders',
+    HTML: 'HTML Markers & DOM Elements',
+    COOKIE: 'Cookies & Storage',
+    VIA_GTM: 'Google Tag Manager Container',
+    PLATFORM_IDENTIFIER: 'Platform Identifiers',
+    NETWORK: 'HTTP Headers & DNS',
+    META: 'Meta Tags',
+    ASSET: 'Asset Paths',
+  };
+
+  const SCAN_STAGES = [
+    'Scanning HTML DOM, script sources & iframe hosts for tracking tags…',
+    'Auditing Google Tag Manager containers & deobfuscating tags…',
+    'Inspecting advertising pixels, payment SDKs & live-chat widgets…',
+    'Extracting measurement IDs (GA4, GTM, Meta Pixel, Stripe keys)…',
+    'Analyzing behavioral analytics & CRM webhook initializers…',
+  ];
+
+  const ERROR_MESSAGES: Record<string, string> = {
+    INVALID_URL: 'Please enter a valid website URL or domain (e.g. example.com or https://example.com).',
+    BLOCKED_TARGET: 'Private, internal, or restricted addresses cannot be scanned for security reasons.',
+    TARGET_BLOCKED: 'This site returned an automated bot-challenge or access restriction. We cannot scan challenge pages.',
+    TIMEOUT: 'The request timed out after 8 seconds. The target site may be slow or blocking automated access.',
+    TLS_ERROR: 'The site has a secure TLS/SSL certificate error. We cannot safely connect to it.',
+    DNS_FAILED: "We couldn't resolve the domain name. Double-check the URL spelling and try again.",
+    HTTP_ERROR: 'The target website returned a server error. Please try again later.',
+    NOT_HTML: 'The URL returned a non-HTML document (such as binary data, an image, or an API payload).',
+    TOO_LARGE: 'The response exceeded the maximum allowed size for analysis.',
+    RATE_LIMITED: 'Too many requests. Please wait a moment and try again.',
+    INTERNAL: 'An unexpected internal error occurred while processing the request.',
+    UNKNOWN: 'An unexpected error occurred while analyzing the website. Please try again.',
+  };
+
+  const form = document.getElementById('gm-form') as HTMLFormElement | null;
+  const input = document.getElementById('gm-input') as HTMLInputElement | null;
+  const submitBtn = document.getElementById('gm-submit') as HTMLButtonElement | null;
+  const clearBtn = document.getElementById('gm-clear-btn') as HTMLButtonElement | null;
+  const loadEl = document.getElementById('gm-loading');
+  const resEl = document.getElementById('gm-result');
+  const errEl = document.getElementById('gm-error');
+  const recentEl = document.getElementById('gm-recent');
+  const recentList = document.getElementById('gm-recent-list');
+  const recentClear = document.getElementById('gm-recent-clear');
+  const statusTicker = document.getElementById('gm-loading-status-text');
+
+  let tickerInterval: ReturnType<typeof setInterval> | null = null;
+
+  function esc(s: unknown): string {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function normalizeDomain(raw: string): string {
+    let s = String(raw ?? '').trim().toLowerCase();
+    if (!s) return '';
+    s = s.replace(/^https?:\/\//, '');
+    s = s.split(/[/?#]/)[0];
+    if (s.startsWith('www.')) s = s.slice(4);
+    s = s.replace(/:\d+$/, '').replace(/\.+$/, '');
+    if (!/^[\w.-]+\.[a-z]{2,}$/i.test(s)) return '';
+    return s;
+  }
+
+  function loadRecent(): string[] {
+    try {
+      const p = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]');
+      if (!Array.isArray(p)) return [];
+      return p.filter((u) => typeof u === 'string' && u.length > 0).slice(0, MAX_RECENT);
+    } catch { return []; }
+  }
+
+  function saveRecent(rawUrl: string) {
+    const domain = normalizeDomain(rawUrl);
+    if (!domain) return;
+    const list = [domain, ...loadRecent().filter((u) => normalizeDomain(u) !== domain)].slice(0, MAX_RECENT);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* noop */ }
+  }
+
+  function renderRecent() {
+    if (!recentList || !recentEl) return;
+    recentList.innerHTML = '';
+    const list = loadRecent();
+    list.forEach((domain) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.className = 'gm-recent-btn';
+      b.textContent = domain;
+      b.title = domain;
+      b.type = 'button';
+      b.addEventListener('click', () => {
+        if (input) {
+          input.value = domain;
+          updateClearBtn();
+          run(domain);
+        }
+      });
+      li.appendChild(b);
+      recentList.appendChild(li);
+    });
+    recentEl.hidden = list.length === 0;
+  }
+
+  function updateClearBtn() {
+    if (!clearBtn || !input) return;
+    clearBtn.hidden = !input.value.trim();
+  }
+
+  function startTicker() {
+    if (tickerInterval) clearInterval(tickerInterval);
+    let idx = 0;
+    if (statusTicker) statusTicker.textContent = SCAN_STAGES[0];
+    tickerInterval = setInterval(() => {
+      idx = (idx + 1) % SCAN_STAGES.length;
+      if (statusTicker) statusTicker.textContent = SCAN_STAGES[idx];
+      const stepIdx = (idx % 4) + 1;
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`gm-step-${i}`);
+        if (el) el.classList.toggle('active', i === stepIdx);
+      }
+    }, 1200);
+  }
+
+  function stopTicker() {
+    if (tickerInterval) {
+      clearInterval(tickerInterval);
+      tickerInterval = null;
+    }
+  }
+
+  function setLoading(on: boolean) {
+    if (!submitBtn || !loadEl || !resEl || !errEl) return;
+    if (on) {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('loading');
+      loadEl.hidden = false;
+      resEl.hidden = true;
+      errEl.hidden = true;
+      startTicker();
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('loading');
+      loadEl.hidden = true;
+      stopTicker();
+    }
+  }
+
+  function normLabel(score100: unknown, label: unknown): string {
+    if (typeof score100 === 'number') {
+      if (score100 >= 90) return 'VERY HIGH';
+      if (score100 >= 75) return 'HIGH';
+      if (score100 >= 60) return 'MEDIUM';
+      return 'LOW';
+    }
+    const u = String(label ?? '').toUpperCase().replace(/-/g, ' ');
+    if (u === 'VERY HIGH' || u === 'HIGH' || u === 'MEDIUM' || u === 'LOW') return u;
+    if (u === 'CONFIRMED') return 'VERY HIGH';
+    if (u === 'LIKELY') return 'HIGH';
+    if (u === 'POSSIBLE') return 'LOW';
+    return u || 'LOW';
+  }
+
+  function badgeClass(label: string): string {
+    const u = normLabel(null, label);
+    if (u === 'VERY HIGH') return 'gm-badge-very-high';
+    if (u === 'HIGH') return 'gm-badge-high';
+    if (u === 'MEDIUM') return 'gm-badge-medium';
+    return 'gm-badge-low';
+  }
+
+  function splitEvidence(raw: unknown) {
+    const s = String(raw ?? '').trim().replace(/^["']|["']$/g, '');
+    if (!s) return { host: '', path: '', single: '', full: String(raw ?? '') };
+    const m = s.match(/((?:https?:)?\/\/)?(([a-z0-9-]+\.)+[a-z]{2,})(:\d+)?(\/[^\s"'<>]*)?/i);
+    if (m) {
+      const host = (m[2] + (m[4] ?? '')).toLowerCase();
+      let path = m[5] ?? '';
+      if (path.length > 90) path = path.slice(0, 87) + '…';
+      if (host.includes('.') && (path || s.length < 80)) {
+        return { host, path: path || '', single: '', full: s };
+      }
+    }
+    const single = s.length > 120 ? s.slice(0, 117) + '…' : s;
+    return { host: '', path: '', single, full: s };
+  }
+
+  function evRowHtml(displayValue: unknown, fullRaw: unknown, description: unknown): string {
+    const parts = splitEvidence(displayValue);
+    const desc = String(description ?? '').trim();
+    const text = parts.host
+      ? `<span class="gm-ev-text" title="${esc(parts.full)}"><span class="gm-ev-host">${esc(parts.host)}</span>${parts.path ? `<span class="gm-ev-path">${esc(parts.path)}</span>` : ''}</span>`
+      : `<span class="gm-ev-text" title="${esc(parts.full)}"><span class="gm-ev-single">${esc(parts.single || parts.full)}</span></span>`;
+    return `<li class="gm-ev-row"><span class="gm-ev-main">${desc ? `<span class="gm-ev-desc">${esc(desc)}</span>` : ''}${text}</span><button type="button" class="gm-copy-btn" data-copy="${esc(parts.full || fullRaw || displayValue)}">Copy</button></li>`;
+  }
+
+  function buildCategoryGroups(t: any) {
+    const byFamily = new Map<string, any[]>();
+    for (const e of t.evidence ?? []) {
+      const fam = e.family ?? 'HTML';
+      if (!byFamily.has(fam)) byFamily.set(fam, []);
+      byFamily.get(fam)!.push({ value: e.value ?? e.artifact ?? e.detail ?? '', description: e.detail ?? e.description ?? '' });
+    }
+    const names = [...byFamily.keys()].map((f) => FAMILY_LABELS[f] ?? f);
+    const html = [...byFamily.entries()].map(([fam, items]) => `
+      <li><span class="type-mono-caps text-mute gm-ev-group-label">${esc(FAMILY_LABELS[fam] ?? fam)}</span>
+      <ul class="gm-ev-rows" role="list">
+        ${items.map((e) => evRowHtml(e.value, e.value, e.description)).join('')}
+      </ul></li>`).join('');
+    return { count: byFamily.size, names, html };
+  }
+
+  function renderCard(d: any): string {
+    const label = normLabel(d.score100 ?? d.score, d.band ?? d.confidence);
+    const fams = typeof d.families === 'number' ? d.families : (d._groupCount ?? 1);
+    const famNames = Array.isArray(d._famNames) && d._famNames.length ? d._famNames : null;
+    const isLow = label === 'LOW';
+    const ids = Array.isArray(d.extractedIds) ? d.extractedIds.filter((x: any) => x && x.value) : [];
+    const idsHtml = ids.length
+      ? `<div class="gm-ids-box"><span class="type-mono-caps text-mute gm-ids-lbl">Extracted Identifiers</span><ul class="gm-ids-list" role="list">${ids.map((x: any) => `
+          <li class="gm-id-item">
+            <div class="gm-id-meta">
+              <span class="gm-id-kind">${esc(x.kind ?? 'ID')}</span>
+              <span class="gm-id-val">${esc(x.value)}</span>
+            </div>
+            <button type="button" class="gm-copy-btn" data-copy="${esc(x.value)}">Copy</button>
+          </li>`).join('')}</ul></div>`
+      : '';
+    const note = d.variantNote || d.subNote;
+    const noteHtml = note ? `<p class="gm-variant-note">${esc(note)}</p>` : '';
+    const webLink = d.website ? `<a href="${esc(d.website)}" target="_blank" rel="noopener noreferrer" class="gm-tech-link" title="Visit ${esc(d.name)}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>` : '';
+
+    return `
+    <article class="gm-card" data-cat="${esc(d._cat)}">
+      <div class="gm-card-top">
+        <div class="gm-tech-name-lockup">
+          <h4 class="gm-tech-name">${esc(d.name)}</h4>
+          ${webLink}
+        </div>
+        <span class="gm-badge ${badgeClass(label)}">${esc(label)}</span>
+      </div>
+      <p class="gm-fams-summary">Detected across ${fams} independent evidence famil${fams === 1 ? 'y' : 'ies'}</p>
+      ${famNames ? `<p class="gm-fams-list">${esc(famNames.join(' + '))}</p>` : ''}
+      ${noteHtml}
+      ${isLow ? `<p class="gm-low-hint">Limited supporting evidence. Treat as a signal, not a guarantee.</p>` : ''}
+      ${idsHtml}
+      <details class="gm-ev">
+        <summary class="gm-ev-toggle">
+          <span>Why we think this</span>
+          <svg class="gm-toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+        <ul class="gm-ev-groups" role="list">${d._groupsHtml}</ul>
+      </details>
+    </article>`;
+  }
+
+  function botProtectionHtml(err: any, displayUrl: string): string {
+    const bp = err.botProtection ?? {};
+    const prot = bp.provider ?? null;
+    const status = typeof bp.httpStatus === 'number' ? bp.httpStatus : (typeof err.httpStatus === 'number' ? err.httpStatus : null);
+    const respHeaders = bp.responseHeaders ?? {};
+    const headerRows = Object.entries(respHeaders).map(([k, v]) => evRowHtml(`${k}: ${v}`, `${k}: ${v}`, '')).join('');
+    const protRows = (prot?.evidence ?? []).map((e: any) => evRowHtml(e, e, '')).join('');
+
+    return `
+    <div class="gm-report">
+      <div class="gm-overview-card">
+        <div class="gm-domain-lockup">
+          <span class="type-mono-caps text-brand">Edge Challenge Detected</span>
+          <h2 class="gm-domain-title">${esc(displayUrl)}</h2>
+          <p class="type-body-sm text-ash" style="margin: 4px 0 0 0;">This website answered with a bot protection challenge. We could identify the protection layer, but normal client marketing tags could not be executed.</p>
+        </div>
+      </div>
+      <article class="gm-card">
+        <div class="gm-card-top">
+          <h4 class="gm-tech-name">${esc(prot ? prot.name : 'Automated Edge Firewall')}</h4>
+          <span class="gm-badge gm-badge-medium">CHALLENGE</span>
+        </div>
+        <p class="gm-fams-summary">Detected protection${status !== null ? ` · Status ${esc(String(status))}` : ''}</p>
+        ${(protRows || headerRows) ? `<ul class="gm-ev-groups" role="list">
+          ${protRows ? `<li><span class="type-mono-caps text-mute gm-ev-group-label">Evidence</span><ul class="gm-ev-rows" role="list">${protRows}</ul></li>` : ''}
+          ${headerRows ? `<li><span class="type-mono-caps text-mute gm-ev-group-label">Response headers</span><ul class="gm-ev-rows" role="list">${headerRows}</ul></li>` : ''}
+        </ul>` : ''}
+      </article>
+      ${actionsHtml()}
+    </div>`;
+  }
+
+  function actionsHtml(): string {
+    return `
+    <div class="gm-actions">
+      <button type="button" class="btn btn-secondary-dark gm-action-btn" data-gm-another>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <span>Check another site</span>
+      </button>
+      <button type="button" class="btn btn-secondary-dark gm-action-btn" data-gm-copy>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        <span>Copy link</span>
+      </button>
+      <a class="gm-report-link" href="mailto:hello@cmsdetectorai.com?subject=Marketing+Stack+Feedback">Report a wrong result</a>
+    </div>`;
+  }
+
+  function wireActions(scope: HTMLElement) {
+    scope.querySelectorAll('[data-gm-another]').forEach((b) => {
+      b.addEventListener('click', () => {
+        if (resEl) resEl.hidden = true;
+        if (errEl) errEl.hidden = true;
+        if (input) {
+          input.value = '';
+          updateClearBtn();
+          input.focus();
+        }
+      });
+    });
+
+    scope.querySelectorAll('[data-gm-copy]').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const btnEl = b as HTMLElement;
+        const origHtml = btnEl.innerHTML;
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          btnEl.textContent = 'Copied!';
+        } catch {
+          btnEl.textContent = 'Copied!';
+        }
+        setTimeout(() => { btnEl.innerHTML = origHtml; }, 1600);
+      });
+    });
+
+    scope.querySelectorAll('.gm-copy-btn').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const btnEl = b as HTMLElement;
+        const raw = btnEl.getAttribute('data-copy') ?? '';
+        const orig = btnEl.textContent ?? 'Copy';
+        try {
+          await navigator.clipboard.writeText(raw);
+          btnEl.textContent = 'Copied!';
+        } catch {
+          btnEl.textContent = 'Copied!';
+        }
+        setTimeout(() => { btnEl.textContent = orig; }, 1200);
+      });
+    });
+  }
+
+  function wireCategoryTabs(scope: HTMLElement) {
+    const tabs = scope.querySelectorAll<HTMLButtonElement>('.gm-tab-btn');
+    const sections = scope.querySelectorAll<HTMLElement>('.gm-cat-section');
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => {
+        const target = tab.getAttribute('data-cat-filter');
+        tabs.forEach((t) => t.classList.toggle('active', t === tab));
+        sections.forEach((sec) => {
+          if (!target || target === 'all') {
+            sec.hidden = false;
+          } else {
+            sec.hidden = sec.getAttribute('data-cat-id') !== target;
+          }
+        });
+      });
+    });
+  }
+
+  function renderReport(data: any, url: string) {
+    const cats = Array.isArray(data.categories) ? data.categories : [];
+    const displayUrl = String(data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
+    const isHttps = /^https:\/\//i.test(String(data.finalUrl ?? url));
+    const scannedAt = data.scannedAt ? new Date(data.scannedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Just now';
+
+    const sorted: any[] = [];
+    let totalIds = 0;
+    for (const c of cats) {
+      for (const t of c.technologies ?? []) {
+        const score = typeof t.score100 === 'number' ? t.score100 : (typeof t.score === 'number' ? t.score : 0);
+        if (score < 40) continue;
+        const g = buildCategoryGroups(t);
+        const ids = Array.isArray(t.extractedIds) ? t.extractedIds.filter((x: any) => x && x.value) : [];
+        totalIds += ids.length;
+        sorted.push({
+          ...t,
+          _cat: c.id,
+          _catName: c.name ?? c.id,
+          families: g.count,
+          _groupCount: g.count,
+          _famNames: g.names,
+          _groupsHtml: g.html,
+        });
+      }
+    }
+
+    const byCat = new Map<string, { id: string; name: string; items: any[] }>();
+    for (const r of sorted) {
+      if (!byCat.has(r._cat)) byCat.set(r._cat, { id: r._cat, name: r._catName, items: [] });
+      byCat.get(r._cat)!.items.push(r);
+    }
+
+    const highCount = sorted.filter((r) => {
+      const l = normLabel(r.score100 ?? r.score, r.band ?? r.confidence);
+      return l === 'HIGH' || l === 'VERY HIGH';
+    }).length;
+
+    const warnings = Array.isArray(data.warnings) ? data.warnings.filter(Boolean) : [];
+    const warningsHtml = warnings.map((w: string) => `<p class="gm-notice">${esc(w)}</p>`).join('');
+
+    // If completely empty
+    if (sorted.length === 0) {
+      return `
+      <div class="gm-report">
+        <div class="gm-overview-card">
+          <div class="gm-domain-lockup">
+            <div class="gm-domain-eyebrow"><span class="edge-dot"></span><span>Real-Time Edge Analysis</span></div>
+            <div class="gm-domain-headline-row">
+              <h2 class="gm-domain-title">${esc(displayUrl)}</h2>
+              <span class="gm-domain-protocol-badge">${isHttps ? 'HTTPS' : 'HTTP'}</span>
+            </div>
+            <p class="gm-domain-meta">Scanned at ${esc(scannedAt)} · Verified against 38+ growth signatures</p>
+          </div>
+        </div>
+        <div class="gm-empty-card">
+          <h3 class="gm-empty-title">No growth &amp; marketing technologies detected</h3>
+          <p class="gm-empty-body">We found no confident analytics, advertising, marketing, payment, or chat signals on this site. This means no supported technical signals were found in the static document — not that these technologies are definitely absent (they may be loaded dynamically via server-side tagging or after user consent). <a href="/">Try the full technology scan</a> for CMS, hosting, and framework detection.</p>
+        </div>
+        ${actionsHtml()}
+      </div>`;
+    }
+
+    // Category Tabs
+    const tabsHtml = `
+    <div class="gm-tabs-row" role="tablist" aria-label="Category filters">
+      <button type="button" class="gm-tab-btn active" data-cat-filter="all">All <span class="gm-tab-count">(${sorted.length})</span></button>
+      ${[...byCat.values()].map((g) => `<button type="button" class="gm-tab-btn" data-cat-filter="${esc(g.id)}">${esc(g.name)} <span class="gm-tab-count">(${g.items.length})</span></button>`).join('')}
+    </div>`;
+
+    // Sections
+    const sectionsHtml = [...byCat.values()].map((g) => `
+      <section class="gm-cat-section" data-cat-id="${esc(g.id)}" aria-label="${esc(g.name)}">
+        <div class="gm-cat-head">
+          <h3 class="gm-cat-title">${esc(g.name)}</h3>
+          <span class="type-mono-caps gm-cat-count">${g.items.length} technolog${g.items.length === 1 ? 'y' : 'ies'}</span>
+        </div>
+        <div class="gm-tech-grid">
+          ${g.items.map(renderCard).join('')}
+        </div>
+      </section>`).join('');
+
+    return `
+    <div class="gm-report">
+      <div class="gm-overview-card">
+        <div class="gm-overview-top">
+          <div class="gm-domain-lockup">
+            <div class="gm-domain-eyebrow"><span class="edge-dot"></span><span>Real-Time Edge Analysis</span></div>
+            <div class="gm-domain-headline-row">
+              <h2 class="gm-domain-title">${esc(displayUrl)}</h2>
+              <span class="gm-domain-protocol-badge">${isHttps ? 'HTTPS' : 'HTTP'}</span>
+            </div>
+            <p class="gm-domain-meta">Scanned at ${esc(scannedAt)} · Verified against 38+ growth signatures</p>
+          </div>
+        </div>
+        <div class="gm-telemetry-grid">
+          <div class="gm-telemetry-tile">
+            <span class="gm-telemetry-label">Technologies</span>
+            <span class="gm-telemetry-value">${sorted.length}</span>
+          </div>
+          <div class="gm-telemetry-tile">
+            <span class="gm-telemetry-label">Categories</span>
+            <span class="gm-telemetry-value">${byCat.size} / 5</span>
+          </div>
+          <div class="gm-telemetry-tile">
+            <span class="gm-telemetry-label">High Confidence</span>
+            <span class="gm-telemetry-value">${highCount}</span>
+          </div>
+          <div class="gm-telemetry-tile">
+            <span class="gm-telemetry-label">Extracted IDs</span>
+            <span class="gm-telemetry-value">${totalIds}</span>
+          </div>
+        </div>
+        ${warningsHtml}
+      </div>
+      ${tabsHtml}
+      ${sectionsHtml}
+      ${actionsHtml()}
+    </div>`;
+  }
+
+  function showError(err: any, url: string) {
+    const code = err?.code ?? 'UNKNOWN';
+    if ((code === 'BLOCKED' || code === 'TARGET_BLOCKED') && err?.botProtection && resEl) {
+      const raw = String(err?.finalUrl ?? url ?? '').replace(/^https?:\/\//, '').replace(/\/$/, '');
+      resEl.innerHTML = botProtectionHtml(err, raw || String(url ?? ''));
+      resEl.hidden = false;
+      if (errEl) errEl.hidden = true;
+      wireActions(resEl);
+      resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (!errEl) return;
+    const retryable = ['TIMEOUT', 'HTTP_ERROR', 'RATE_LIMITED', 'INTERNAL', 'UNKNOWN', 'DNS_FAILED'].includes(code);
+    const retryHtml = retryable
+      ? `<div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark gm-retry-btn">Try again</button></div>`
+      : '';
+    errEl.innerHTML = `
+      <div class="gm-error-card">
+        <span class="badge badge-error">Error</span>
+        <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">${esc(ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN)}</p>
+        ${retryHtml}
+      </div>`;
+    errEl.hidden = false;
+    if (retryable) {
+      errEl.querySelector('.gm-retry-btn')?.addEventListener('click', () => run(url));
+    }
+  }
+
+  async function runDetect(url: string) {
+    const res = await fetch('/api/growth-detect', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+    const data = await res.json();
+    setLoading(false);
+    if (data.ok) {
+      saveRecent(url);
+      renderRecent();
+      const payload = (data.data && typeof data.data === 'object') ? data.data : data;
+      if (resEl) {
+        resEl.innerHTML = renderReport(payload, url);
+        resEl.hidden = false;
+        wireActions(resEl);
+        wireCategoryTabs(resEl);
+        resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      showError(data.error ?? { code: 'UNKNOWN' }, url);
+    }
+  }
+
+  async function run(url: string) {
+    const clean = String(url ?? '').trim();
+    if (!clean) return;
+    try {
+      const u = new URL(window.location.href);
+      u.searchParams.set('url', clean);
+      window.history.replaceState({}, '', u.toString());
+    } catch { /* noop */ }
+    setLoading(true);
+    try {
+      await runDetect(clean);
+    } catch {
+      setLoading(false);
+      if (errEl) {
+        errEl.innerHTML = `
+          <div class="gm-error-card">
+            <span class="badge badge-error">Network Error</span>
+            <p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Please check your internet connection and try again.</p>
+            <div style="margin-block-start: 12px;"><button type="button" class="btn btn-secondary-dark gm-retry-btn">Try again</button></div>
+          </div>`;
+        errEl.hidden = false;
+        errEl.querySelector('.gm-retry-btn')?.addEventListener('click', () => run(clean));
+      }
+    }
+  }
+
+  // Presets
+  document.querySelectorAll<HTMLButtonElement>('.gm-preset-chip').forEach((btnEl) => {
+    btnEl.addEventListener('click', () => {
+      const p = btnEl.getAttribute('data-preset');
+      if (p && input) {
+        input.value = p;
+        updateClearBtn();
+        run(p);
+      }
+    });
+  });
+
+  input?.addEventListener('input', updateClearBtn);
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+      updateClearBtn();
+    }
+  });
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (input) run(input.value);
+  });
+
+  recentClear?.addEventListener('click', () => {
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
+    renderRecent();
+    input?.focus();
+  });
+
+  renderRecent();
+  updateClearBtn();
+
+  // Check URL parameter on initial load
+  const urlParam = new URLSearchParams(window.location.search).get('url');
+  if (urlParam && input) {
+    input.value = urlParam;
+    updateClearBtn();
+    run(urlParam);
+  } else {
+    input?.focus();
+  }
+})();
+</script>
