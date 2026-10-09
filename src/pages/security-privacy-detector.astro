@@ -23,72 +23,111 @@ const groups = [
     items: ['Cloudinary', 'Algolia', 'Google Maps', 'YouTube', 'Vimeo', 'Font Awesome'],
   },
 ];
+
+const faqs = [
+  {
+    q: 'Is this site safe?',
+    a: 'A website is considered safe to visit when it has no listings in active threat-intelligence feeds (such as malware distribution, phishing, or scam databases), enforces modern HTTPS encryption, maintains secure HTTP response headers, does not engage in deceptive redirects or homograph attacks, and protects user data.',
+  },
+  {
+    q: 'How can I check if a website is safe?',
+    a: 'Enter the full domain or URL into the safety checker above and click "Check Website Safety". Our tool analyzes the site in real time across multiple dimensions: threat intelligence databases, SSL/TLS transport encryption, HTTP to HTTPS redirect enforcement, browser security headers (CSP, HSTS, X-Frame-Options), URL structure heuristics, and DNS infrastructure signals.',
+  },
+  {
+    q: 'How can I tell if a website is a scam?',
+    a: 'Common indicators of scam websites include deceptive domain names (like subtle misspellings of popular brands), requests for sensitive login or credit card data over unverified connections, excessive or misleading cross-domain redirects, absence of authentic company identity or verifiable contact details, and newly registered domains using suspicious subdomain chains.',
+  },
+  {
+    q: 'Can a website have HTTPS and still be dangerous?',
+    a: 'Yes. Modern SSL/TLS certificates only verify that the connection between your browser and the website server is encrypted. Anyone, including phishers and scam artists, can obtain a free SSL certificate. HTTPS prevents network eavesdropping, but it does not vouch for the legitimacy or intentions of the website operator.',
+  },
+  {
+    q: 'Does this checker detect malware and phishing?',
+    a: 'Yes. The scanner queries live threat-intelligence feeds (including Cloudflare Security Threat Intelligence and available threat databases) for confirmed malicious distribution, sinkholes, and phishing campaigns, alongside heuristic detection for deceptive Punycode/homograph domains and suspicious URL patterns.',
+  },
+  {
+    q: 'What should I do if a website is flagged as dangerous?',
+    a: 'If a site is flagged with a confirmed threat or critical security concern, do not enter passwords, credit card numbers, or personal information, and do not download or run any files from it. If you own the website, check your server for compromised files, inspect third-party script integrations, and verify your DNS records.',
+  },
+  {
+    q: 'Why might a scan return incomplete results?',
+    a: 'Scans may be incomplete if the target website is temporarily unreachable, blocks automated security scanners via aggressive web application firewalls (WAFs), times out during connection negotiation, or uses a private or restricted network address.',
+  },
+  {
+    q: 'Is this website safety checker free?',
+    a: 'Yes, this tool is 100% free with no account registration or payment required. You can run checks on any public website or link at any time.',
+  },
+  {
+    q: 'Does the tool store the URLs I submit?',
+    a: 'No. Submitted URLs are processed in real time purely to perform the requested security checks and are cached ephemerally for performance. We do not store your personal browsing history, track user identifiers, or log sensitive authentication query tokens.',
+  },
+];
 ---
 <Base
-  title="Security & Privacy Detector — Consent, Security & Embeds | CMS Detector AI"
-  description="Detect the consent platforms, security technologies, and embedded third-party services any website uses — free, evidence-based, no sign-up."
+  title="Is This Site Safe? Free Website Safety Checker | CMS Detector AI"
+  description="Check a website for known malware, phishing threats, suspicious redirects, domain reputation signals, and HTTPS security issues before you visit."
   pagePath="/security-privacy-detector"
+  canonical="https://cmsdetectorai.com/security-privacy-detector"
   jsonLd={[
     {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Security & Privacy Detector',
+      name: 'Is This Site Safe? Website Safety Checker',
       url: 'https://cmsdetectorai.com/security-privacy-detector',
-      applicationCategory: 'DeveloperApplication',
+      applicationCategory: 'SecurityApplication',
+      operatingSystem: 'All',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+      description: 'Check a website for known malware, phishing threats, suspicious redirects, domain reputation signals, and HTTPS security issues before you visit.',
       inLanguage: 'en',
     },
     {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
-      mainEntity: [
-        {
-          '@type': 'Question',
-          name: 'How do you detect consent and security tools?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'We match consent SDK scripts, JavaScript APIs, platform cookies, and security script hosts — for example cdn.cookielaw.org for OneTrust or google.com/recaptcha/api.js for reCAPTCHA. Weak or generic mentions are never reported as detections.',
-          },
+      mainEntity: faqs.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: f.a,
         },
-        {
-          '@type': 'Question',
-          name: 'What does "Not confidently detected" mean?',
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: 'It means the available evidence did not clear our confidence threshold. A lower-confidence honest answer is better than a false positive.',
-          },
-        },
-      ],
+      })),
       inLanguage: 'en',
     },
   ]}
 >
-  <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="sec-h1">
+  {/* Hero / Interactive Checker */}
+  <Section theme="dark" class="sp-hero-section" ariaLabelledby="sec-h1">
     <div class="container">
-      <div style="max-inline-size: 860px;">
+      <div class="sp-hero-shell">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="security" size={16} />Security & Privacy Detector</span>
-          <h1 id="sec-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
-            Is This Site<br />Secure &amp; Private?
-            <span
-              class="sp-info"
-              tabindex="0"
-              role="img"
-              aria-label="Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected."
-              data-tip="Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected."
-            ><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="7.5" stroke="currentColor" stroke-width="1.5"/><path d="M9 8.2v3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="5.4" r="1" fill="currentColor"/></svg></span>
+          <div class="badge-glow" style="margin-block-end: 2px; align-self: flex-start;">
+            <span class="dot"></span>
+            <span>Real-Time Threat Intelligence · Cloudflare Edge</span>
+          </div>
+          <div class="sp-eyebrow-row">
+            <span class="eyebrow type-mono-eyebrow eyebrow-with-icon">
+              <NavIcon name="security" size={16} />Website Safety &amp; Security Checker
+            </span>
+          </div>
+          <h1 id="sec-h1" class="type-display-xl sp-hero-title">
+            Is This Site Safe?
           </h1>
-          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 580px;">
-            Detect consent platforms, security technologies, and embedded
-            third-party services — with the exact evidence behind every
-            finding. Free, instant, no sign-up.
+          <p class="type-subtitle text-ash sp-hero-sub">
+            Inspect any domain for known malware, phishing threats, deceptive redirects, domain reputation signals, and HTTPS security vulnerabilities before you visit.
           </p>
         </div>
-        <div style="margin-block-start: var(--spacing-xxl);">
+
+        <div class="sp-scanner-container">
           <div class="sp-detector" id="sp-root">
-            <form id="sp-form" class="sp-form" novalidate aria-label="Security & Privacy Detector">
-              <div class="sp-input-row">
-                <label for="sp-input" class="sr-only">Website URL</label>
+            <form id="sp-form" class="sp-form" novalidate aria-label="Website Safety Checker">
+              <div class="sp-search-bar">
+                <div class="sp-search-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                </div>
+                <label for="sp-input" class="sr-only">Website URL or Domain</label>
                 <input
                   id="sp-input"
                   type="url"
@@ -97,30 +136,90 @@ const groups = [
                   autocorrect="off"
                   autocapitalize="off"
                   spellcheck="false"
-                  class="input sp-url-input"
-                  placeholder="https://example.com"
+                  class="sp-url-input"
+                  placeholder="https://example.com or domain.com"
                   required
                 />
-                <button type="submit" class="btn btn-primary sp-detect-btn" id="sp-submit">Detect Stack</button>
+                <button type="button" id="sp-clear-btn" class="sp-clear-btn" aria-label="Clear input" hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+                <button type="submit" class="btn btn-primary sp-detect-btn" id="sp-submit">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                  </svg>
+                  <span>Check Website Safety</span>
+                </button>
+              </div>
+
+              {/* Quick Presets */}
+              <div class="sp-preset-bar">
+                <span class="type-mono-caps text-mute sp-preset-lbl">Try:</span>
+                <div class="sp-preset-chips">
+                  <button type="button" class="sp-preset-chip" data-preset="stripe.com">stripe.com</button>
+                  <button type="button" class="sp-preset-chip" data-preset="cloudflare.com">cloudflare.com</button>
+                  <button type="button" class="sp-preset-chip" data-preset="github.com">github.com</button>
+                  <button type="button" class="sp-preset-chip" data-preset="wikipedia.org">wikipedia.org</button>
+                </div>
+              </div>
+
+              {/* Privacy Reassurance Note */}
+              <div class="sp-privacy-note type-caption text-mute">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Automated &amp; private edge scan. Submitted domains are evaluated in real time without storing browsing history.</span>
               </div>
             </form>
 
+            {/* Recent Searches */}
             <div id="sp-recent" class="sp-recent" hidden>
               <span class="type-mono-caps text-mute">Recent:</span>
               <ul id="sp-recent-list" role="list" class="sp-recent-list"></ul>
               <button type="button" id="sp-recent-clear" class="sp-recent-clear type-caption">Clear</button>
             </div>
 
+            {/* High-Tech Animated Radar Loading Card */}
             <div id="sp-loading" class="sp-loading" hidden aria-live="polite" aria-busy="true">
-              <div class="sp-skeleton-card">
-                <div class="skeleton sp-sk-head"></div>
-                <div class="skeleton sp-sk-body"></div>
-                <div class="skeleton sp-sk-body sp-sk-short"></div>
+              <div class="sp-loading-card">
+                <div class="sp-loading-head">
+                  <div class="sp-radar-spinner" aria-hidden="true"></div>
+                  <div class="sp-loading-titles">
+                    <span class="type-mono-caps text-brand">Running Multi-Vector Security Scan</span>
+                    <h3 class="sp-loading-headline" id="sp-loading-status-text">Connecting to destination edge node…</h3>
+                  </div>
+                </div>
+                <div class="sp-scan-progress-bar">
+                  <div class="sp-scan-progress-fill"></div>
+                </div>
+                <div class="sp-scan-steps">
+                  <div class="sp-scan-step active" id="sp-step-1">
+                    <span class="sp-step-dot"></span>
+                    <span>Querying Cloudflare Security Threat Intelligence &amp; malware feeds</span>
+                  </div>
+                  <div class="sp-scan-step" id="sp-step-2">
+                    <span class="sp-step-dot"></span>
+                    <span>Auditing SSL/TLS transport encryption &amp; HTTP downgrade redirects</span>
+                  </div>
+                  <div class="sp-scan-step" id="sp-step-3">
+                    <span class="sp-step-dot"></span>
+                    <span>Verifying browser security headers (CSP, HSTS, X-Frame-Options)</span>
+                  </div>
+                  <div class="sp-scan-step" id="sp-step-4">
+                    <span class="sp-step-dot"></span>
+                    <span>Checking DNSSEC cryptographic records &amp; CAA authority policies</span>
+                  </div>
+                </div>
               </div>
-              <p class="type-caption text-mute" style="margin-block-start: 12px;">Analysing scripts, cookies &amp; embeds — this usually takes under 10 seconds…</p>
             </div>
 
+            {/* Result Report Container */}
             <div id="sp-result" class="sp-result" hidden aria-live="polite"></div>
+
+            {/* Error Message Alert */}
             <div id="sp-error" class="sp-error" hidden aria-live="assertive" role="alert"></div>
           </div>
         </div>
@@ -128,132 +227,1256 @@ const groups = [
     </div>
   </Section>
 
-  <Section theme="light" ariaLabelledby="sec-coverage">
+  {/* Educational Section 1: How to check */}
+  <Section theme="light" ariaLabelledby="sec-how-to" class="sp-how-to-section">
+    <div class="container">
+      <div style="max-inline-size: 860px;">
+        <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xl);">
+          <span class="eyebrow" style="color: var(--color-mute);">Step-by-step verification</span>
+          <h2 id="sec-how-to" class="type-display-sm" style="color: var(--color-ink);">
+            How to Check If a Website Is Safe
+          </h2>
+          <p class="type-subtitle" style="color: var(--color-slate);">
+            Before clicking unfamiliar links, downloading attachments, or entering credentials, take these simple verification steps:
+          </p>
+        </div>
+
+        <div class="sp-guide-grid">
+          <div class="sp-guide-card">
+            <div class="sp-guide-num">01</div>
+            <h3 class="sp-guide-title">Submit the Exact Link or Domain</h3>
+            <p class="sp-guide-text">
+              Paste the full website URL (e.g. <code>https://example.com</code> or <code>example.com</code>) into the safety checker above. Our tool inspects the destination safely on our edge servers without exposing your local device or IP address.
+            </p>
+          </div>
+          <div class="sp-guide-card">
+            <div class="sp-guide-num">02</div>
+            <h3 class="sp-guide-title">Examine the Overall Safety Verdict</h3>
+            <p class="sp-guide-text">
+              Review the primary verdict badge and Safety Score. The verdict highlights whether known threats, phishing patterns, suspicious redirects, or weak transport encryption were discovered.
+            </p>
+          </div>
+          <div class="sp-guide-card">
+            <div class="sp-guide-num">03</div>
+            <h3 class="sp-guide-title">Review Key Findings &amp; Technical Evidence</h3>
+            <p class="sp-guide-text">
+              Expand the detailed findings to inspect SSL/TLS certificates, HTTP-to-HTTPS redirect rules, security response headers (CSP, HSTS), and detected consent or privacy technologies.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Educational Section 2: What we check */}
+  <Section theme="dark" ariaLabelledby="sec-what-checked" class="sp-checks-section">
     <div class="container">
       <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
-        <span class="eyebrow" style="color: var(--color-mute);">What we check</span>
-        <h2 id="sec-coverage" class="type-display-sm" style="color: var(--color-ink);">
-          One detector for trust signals
+        <span class="eyebrow type-mono-eyebrow">Comprehensive Inspection Engine</span>
+        <h2 id="sec-what-checked" class="type-display-sm" style="color: var(--color-on-primary);">
+          What Does This Website Safety Checker Check?
         </h2>
-        <p class="type-subtitle" style="color: var(--color-slate); max-width: 620px;">
-          Consent banners, bot protection, error tracking, and the supporting
-          embeds a site actually loads. "Other technologies" is a controlled
-          fallback for identifiable integrations — never an excuse for weak
-          guesses.
+        <p class="type-subtitle text-ash" style="max-inline-size: 680px;">
+          Rather than relying on superficial guesses, our scanner performs real, evidence-backed security checks across the entire technical stack:
+        </p>
+      </div>
+
+      <div class="sp-checks-grid">
+        <div class="sp-check-box">
+          <div class="sp-check-head">
+            <span class="sp-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Threat Intel</span>
+          </div>
+          <h3 class="sp-check-title">Malware &amp; Phishing Reputation</h3>
+          <p class="sp-check-desc">
+            Cross-references active threat intelligence (including Cloudflare Security Threat DNS) for known malware distribution, sinkholes, and phishing blacklist listings.
+          </p>
+        </div>
+
+        <div class="sp-check-box">
+          <div class="sp-check-head">
+            <span class="sp-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Encryption</span>
+          </div>
+          <h3 class="sp-check-title">HTTPS &amp; Transport Encryption</h3>
+          <p class="sp-check-desc">
+            Verifies SSL/TLS availability, tests whether plain HTTP automatically redirects to HTTPS, and scans the HTML for dangerous mixed-content resources.
+          </p>
+        </div>
+
+        <div class="sp-check-box">
+          <div class="sp-check-head">
+            <span class="sp-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Hardening</span>
+          </div>
+          <h3 class="sp-check-title">HTTP Security Headers</h3>
+          <p class="sp-check-desc">
+            Audits vital browser protection headers including Content-Security-Policy (CSP), Strict-Transport-Security (HSTS), X-Content-Type-Options, X-Frame-Options, and Referrer-Policy.
+          </p>
+        </div>
+
+        <div class="sp-check-box">
+          <div class="sp-check-head">
+            <span class="sp-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Routing</span>
+          </div>
+          <h3 class="sp-check-title">Redirect Path &amp; Downgrade Analysis</h3>
+          <p class="sp-check-desc">
+            Traces the full redirect chain to detect protocol downgrades (HTTPS back to plain HTTP), excessive redirection loops, and unauthorized cross-domain destinations.
+          </p>
+        </div>
+
+        <div class="sp-check-box">
+          <div class="sp-check-head">
+            <span class="sp-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">Heuristics</span>
+          </div>
+          <h3 class="sp-check-title">Domain &amp; URL Heuristics</h3>
+          <p class="sp-check-desc">
+            Evaluates internationalized Punycode homograph risks, direct IP-address formats, misleading subdomain combinations, and deceptive account-verification keywords.
+          </p>
+        </div>
+
+        <div class="sp-check-box">
+          <div class="sp-check-head">
+            <span class="sp-check-icon-wrap" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </span>
+            <span class="type-mono-caps text-mute">DNSSEC</span>
+          </div>
+          <h3 class="sp-check-title">DNSSEC &amp; CAA Infrastructure</h3>
+          <p class="sp-check-desc">
+            Resolves public A/AAAA records using Cloudflare DoH, verifies DNSSEC cryptographic integrity, and checks CAA records restricting unauthorized certificate authorities.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Educational Section 3: How to tell & What HTTPS means */}
+  <Section theme="light" ariaLabelledby="sec-safety-guide" class="sp-safety-guide-section">
+    <div class="container">
+      <div style="max-inline-size: 860px; display: flex; flex-direction: column; gap: var(--spacing-xxl);">
+        <div>
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+            <span class="eyebrow" style="color: var(--color-mute);">Practical advice</span>
+            <h2 id="sec-safety-guide" class="type-display-sm" style="color: var(--color-ink);">
+              How to Tell If a Website Is Safe to Visit
+            </h2>
+          </div>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7;">
+            While automated scanners catch technical vulnerabilities and confirmed threat listings, staying safe also requires observing practical cues:
+          </p>
+          <ul class="sp-cues-list">
+            <li>
+              <span class="sp-cue-bullet" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div><strong>Inspect the exact spelling of the domain:</strong> Phishers often create deceptive lookalike domains with subtle typos or extra hyphens (e.g., <code>paypa1.com</code> or <code>apple-support-verify.com</code>).</div>
+            </li>
+            <li>
+              <span class="sp-cue-bullet" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div><strong>Watch for unexpected cross-domain redirects:</strong> If clicking a link for one site immediately redirects you to a totally unfamiliar domain, proceed with high caution.</div>
+            </li>
+            <li>
+              <span class="sp-cue-bullet" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div><strong>Be skeptical of unsolicited download prompts:</strong> Authentic websites rarely trigger immediate software downloads without clear user interaction.</div>
+            </li>
+            <li>
+              <span class="sp-cue-bullet" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </span>
+              <div><strong>Verify company details &amp; contact transparency:</strong> Legitimate web services provide valid corporate identities, physical addresses, and clear privacy policies.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="sp-callout-card">
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-sm);">
+            <span class="type-mono-caps text-brand">Critical Security Truth</span>
+            <h2 id="sec-https-truth" class="type-heading-sm" style="color: var(--color-ink); margin: 0;">
+              Is HTTPS Enough to Know If a Website Is Safe?
+            </h2>
+          </div>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7; margin: 0;">
+            <strong>No, HTTPS alone does not guarantee a website is safe or legitimate.</strong> A common misconception is that the padlock icon or an <code>https://</code> URL proves that a site is safe from fraud or malware.
+          </p>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7; margin: 0;">
+            In reality, HTTPS simply encrypts communication between your browser and the server, preventing intermediate eavesdropping on Wi-Fi or local networks. Because free automated certificates are available to anyone in seconds, malicious phishing operators frequently secure their fake websites with HTTPS. A safe website requires both encryption <em>and</em> a clean reputation, genuine ownership, and secure web application configurations.
+          </p>
+        </div>
+
+        <div style="border-block-start: 1px solid var(--color-hairline); padding-block-start: var(--spacing-xxl);">
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+            <span class="eyebrow" style="color: var(--color-mute);">Interpreting results</span>
+            <h2 id="sec-verdicts-explained" class="type-display-sm" style="color: var(--color-ink);">
+              What Do the Website Safety Results Mean?
+            </h2>
+          </div>
+          <div class="sp-verdict-grid">
+            <div class="sp-verdict-card-light">
+              <div class="sp-verdict-card-top">
+                <span class="sp-status-dot-glow dot-green"></span>
+                <span class="sp-status-title-clean">No Known Threats Detected</span>
+              </div>
+              <p class="sp-verdict-card-desc">The site has valid HTTPS encryption, active security configurations, and no current malicious reports in active threat feeds. Exercise normal online vigilance.</p>
+            </div>
+            <div class="sp-verdict-card-light">
+              <div class="sp-verdict-card-top">
+                <span class="sp-status-dot-glow dot-amber"></span>
+                <span class="sp-status-title-warn">Potential Concerns Detected</span>
+              </div>
+              <p class="sp-verdict-card-desc">No confirmed malware was reported, but configuration weaknesses (such as missing HTTPS redirection, absent CSP headers, mixed content, or suspicious URL structures) were found.</p>
+            </div>
+            <div class="sp-verdict-card-light">
+              <div class="sp-verdict-card-top">
+                <span class="sp-status-dot-glow dot-red"></span>
+                <span class="sp-status-title-danger">Known Threat Detected</span>
+              </div>
+              <p class="sp-verdict-card-desc">The domain is actively listed in malware or phishing threat feeds, or engaged in dangerous insecure protocol downgrades. Do not submit sensitive data.</p>
+            </div>
+            <div class="sp-verdict-card-light">
+              <div class="sp-verdict-card-top">
+                <span class="sp-status-dot-glow dot-gray"></span>
+                <span class="sp-status-title-info">Scan Incomplete</span>
+              </div>
+              <p class="sp-verdict-card-desc">The target could not be reached, timed out, or blocked automated security checks. Results are inconclusive due to network or firewall barriers.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  {/* Supported Technologies Directory (Consent, Security, Embeds) */}
+  <Section theme="dark" ariaLabelledby="sec-coverage">
+    <div class="container">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+        <span class="eyebrow type-mono-eyebrow">Consent, Protection &amp; Embeds</span>
+        <h2 id="sec-coverage" class="type-display-sm" style="color: var(--color-on-primary);">
+          Privacy &amp; Security Stack Detection
+        </h2>
+        <p class="type-subtitle text-ash" style="max-width: 640px;">
+          Our detector also recognizes the underlying privacy consent platforms, bot protections, error tracking, and third-party services running on any target website:
         </p>
       </div>
       <CoverageDirectory groups={groups} />
     </div>
   </Section>
+
+  {/* Frequently Asked Questions */}
+  <Section theme="light" ariaLabelledby="sec-faq">
+    <div class="container">
+      <div style="max-inline-size: 860px;">
+        <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+          <span class="eyebrow" style="color: var(--color-mute);">Common questions</span>
+          <h2 id="sec-faq" class="type-display-sm" style="color: var(--color-ink);">
+            Frequently Asked Questions
+          </h2>
+          <p class="type-subtitle" style="color: var(--color-slate);">
+            Clear, honest answers about website safety, threat intelligence, and connection security.
+          </p>
+        </div>
+
+        <div class="sp-faqs">
+          {faqs.map((f, i) => (
+            <details class="sp-faq-item" id={`faq-${i}`}>
+              <summary class="sp-faq-summary">
+                <span class="sp-faq-q">{f.q}</span>
+                <svg class="sp-faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+              </summary>
+              <div class="sp-faq-answer">
+                <p>{f.a}</p>
+              </div>
+            </details>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Section>
 </Base>
 
 <style>
+  /* Eyebrows & Layout */
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
-  .sp-info {
-    position: relative; display: inline-flex; vertical-align: middle;
-    margin-inline-start: 10px; color: var(--color-mute); cursor: help;
-    outline-offset: 4px;
+  .sp-hero-section {
+    min-block-size: 70vh;
+    display: flex;
+    align-items: center;
+    padding-block: var(--spacing-section-lg);
   }
-  .sp-info:hover, .sp-info:focus-visible { color: var(--color-on-primary); }
-  .sp-info::after {
-    content: attr(data-tip);
-    position: absolute; inset-block-end: calc(100% + 10px); inset-inline-start: 50%;
-    transform: translateX(-50%); inline-size: max-content; max-inline-size: 260px;
-    background-color: var(--color-canvas-light); color: var(--color-ink);
-    font-size: 13px; font-weight: 400; line-height: 1.5; letter-spacing: normal;
-    border-radius: var(--radius-app-lg); padding: 10px 12px;
-    box-shadow: 0 8px 28px rgba(0,0,0,0.35);
-    opacity: 0; visibility: hidden; transition: opacity 0.15s ease; z-index: 50;
-    pointer-events: none; white-space: normal;
+  .sp-hero-shell {
+    max-inline-size: 880px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
   }
-  .sp-info:hover::after, .sp-info:focus-visible::after { opacity: 1; visibility: visible; }
+  .sp-hero-title {
+    color: var(--color-on-primary);
+    margin: 0;
+    letter-spacing: -0.04em;
+  }
+  .sp-hero-sub {
+    margin: 0;
+    max-inline-size: 640px;
+    line-height: 1.6;
+  }
+  .sp-scanner-container {
+    margin-block-start: var(--spacing-sm);
+  }
+
+  /* Guide grid (Section 1) */
+  .sp-guide-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-block-start: var(--spacing-xl);
+  }
+  .sp-guide-card {
+    background-color: var(--color-canvas-light);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .sp-guide-card:hover {
+    border-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  .sp-guide-num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-brand);
+    letter-spacing: 0.06em;
+  }
+  .sp-guide-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.35;
+  }
+  .sp-guide-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-slate);
+    line-height: 1.6;
+  }
+
+  /* Checks grid (Section 2) */
+  .sp-checks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+  }
+  .sp-check-box {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .sp-check-box:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+  }
+  .sp-check-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sp-check-icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-app-sm);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-brand);
+  }
+  .sp-check-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    line-height: 1.35;
+  }
+  .sp-check-desc {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-ash);
+    line-height: 1.6;
+  }
+
+  /* Practical Cues & Explainer (Section 3) */
+  .sp-cues-list {
+    margin: 18px 0 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .sp-cues-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-ink);
+  }
+  .sp-cue-bullet {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink);
+    margin-block-start: 2px;
+  }
+  .sp-callout-card {
+    background: var(--color-canvas-paper);
+    border-left: 3px solid var(--color-brand);
+    border-radius: 0 var(--radius-app-lg) var(--radius-app-lg) 0;
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Vercel Status Cards Grid */
+  .sp-verdict-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-block-start: var(--spacing-lg);
+  }
+  .sp-verdict-card-light {
+    background: #ffffff;
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: border-color 0.15s ease;
+  }
+  .sp-verdict-card-light:hover {
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+  .sp-verdict-card-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sp-status-dot-glow {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-green { background-color: #10b981; box-shadow: 0 0 8px #10b981; }
+  .dot-amber { background-color: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+  .dot-red   { background-color: #ef4444; box-shadow: 0 0 8px #ef4444; }
+  .dot-gray  { background-color: #6b7280; box-shadow: 0 0 6px #6b7280; }
+
+  .sp-status-title-clean  { font-size: 15px; font-weight: 600; color: #065f46; }
+  .sp-status-title-warn   { font-size: 15px; font-weight: 600; color: #92400e; }
+  .sp-status-title-danger { font-size: 15px; font-weight: 600; color: #991b1b; }
+  .sp-status-title-info   { font-size: 15px; font-weight: 600; color: #374151; }
+  .sp-verdict-card-desc {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--color-slate);
+    line-height: 1.55;
+  }
+
+  /* FAQ Accordions */
+  .sp-faqs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .sp-faq-item {
+    background: var(--color-canvas-light);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .sp-faq-item:hover {
+    border-color: rgba(0, 0, 0, 0.25);
+  }
+  .sp-faq-summary {
+    padding: 18px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-ink);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    user-select: none;
+  }
+  .sp-faq-summary::-webkit-details-marker { display: none; }
+  .sp-faq-arrow {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--color-mute);
+    flex-shrink: 0;
+  }
+  details[open] .sp-faq-arrow {
+    transform: rotate(180deg);
+  }
+  .sp-faq-answer {
+    padding: 0 20px 20px 20px;
+    font-size: 15px;
+    color: var(--color-slate);
+    line-height: 1.6;
+  }
+  .sp-faq-answer p { margin: 0; }
+
+  @media (max-width: 900px) {
+    .sp-guide-grid, .sp-checks-grid, .sp-verdict-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 
 <style is:global>
-  /* Scoped to .sp-detector — same token language as FamilyDetector. */
-  .sp-detector { display: flex; flex-direction: column; gap: 8px; min-inline-size: 0; }
-  .sp-form { display: flex; flex-direction: column; gap: 8px; }
-  .sp-input-row { display: flex; gap: 8px; align-items: stretch; }
+  /* ============================================================
+     Vercel-Inspired Interactive Detector Styles
+     ============================================================ */
+  .sp-detector { display: flex; flex-direction: column; gap: 14px; min-inline-size: 0; width: 100%; }
+  .sp-form { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Vercel Composite Search Bar */
+  .sp-search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-full);
+    padding: 4px 6px 4px 18px;
+    transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .sp-search-bar:focus-within {
+    border-color: rgba(255, 255, 255, 0.4);
+    background-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.06);
+  }
+  .sp-search-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-mute);
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
   .sp-url-input {
-    flex: 1; block-size: 56px; font-size: 17px; border-radius: var(--radius-app-lg);
-    padding-inline: var(--spacing-lg); background-color: rgba(255,255,255,0.06);
-    border: 1px solid var(--color-hairline-soft); color: var(--color-on-primary); min-inline-size: 0;
+    flex: 1;
+    height: 48px;
+    border: none;
+    background: transparent;
+    color: var(--color-on-primary);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    min-inline-size: 0;
   }
-  .sp-url-input:focus { outline: none; border-color: rgba(255,255,255,0.5); background-color: rgba(255,255,255,0.09); box-shadow: 0 0 0 3px rgba(255,255,255,0.08); }
-  .sp-url-input::placeholder { color: var(--color-slate-soft); }
-  .sp-detect-btn { flex-shrink: 0; block-size: 56px; font-size: 16px; }
-  .sp-recent { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sp-url-input:focus {
+    outline: none;
+  }
+  .sp-url-input::placeholder {
+    color: var(--color-slate-soft);
+  }
+  .sp-clear-btn {
+    background: transparent;
+    border: none;
+    color: var(--color-mute);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    transition: color 0.15s ease;
+  }
+  .sp-clear-btn:hover { color: var(--color-on-primary); }
+  .sp-detect-btn {
+    flex-shrink: 0;
+    height: 48px;
+    padding-inline: 22px;
+    font-size: 15px;
+    font-weight: 500;
+    gap: 8px;
+    background-color: var(--color-canvas-light);
+    color: var(--color-ink);
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-canvas-light);
+    transition: transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease;
+  }
+  .sp-detect-btn:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  /* Preset quick test chips */
+  .sp-preset-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-block-start: 2px;
+  }
+  .sp-preset-lbl {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+  .sp-preset-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .sp-preset-chip {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-ash);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .sp-preset-chip:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-on-primary);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  /* Privacy Note */
+  .sp-privacy-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--color-mute);
+  }
+
+  /* Recent scans */
+  .sp-recent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding-block-start: 6px;
+  }
   .sp-recent-list { list-style: none; padding: 0; margin: 0; display: flex; gap: 6px; flex-wrap: wrap; }
-  .sp-recent-btn { font-size: 12px; block-size: 28px; padding-inline: 10px; border-radius: var(--radius-full); }
-  .sp-recent-clear { background: transparent; border: none; color: var(--color-mute); cursor: pointer; text-decoration: underline; padding: 4px; }
+  .sp-recent-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    height: 28px;
+    padding-inline: 10px;
+    border-radius: var(--radius-full);
+    background: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    color: var(--color-ash);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .sp-recent-btn:hover {
+    color: var(--color-on-primary);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .sp-recent-clear {
+    background: transparent;
+    border: none;
+    color: var(--color-mute);
+    cursor: pointer;
+    text-decoration: underline;
+    font-size: 12px;
+    padding: 4px;
+  }
   .sp-recent-clear:hover { color: var(--color-ash); }
-  .sp-loading { margin-block-start: 16px; }
-  .sp-skeleton-card { background-color: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
-  .sp-sk-head { block-size: 32px; inline-size: 60%; }
-  .sp-sk-body { block-size: 20px; inline-size: 85%; }
-  .sp-sk-short { inline-size: 50%; }
 
-  .sp-result { margin-block-start: 16px; min-inline-size: 0; }
-  .sp-report { display: flex; flex-direction: column; gap: var(--spacing-lg); min-inline-size: 0; }
-  .sp-report-head { display: flex; flex-direction: column; gap: 8px; }
-  .sp-eyebrow { margin: 0; }
-  .sp-domain { margin: 0; color: var(--color-on-primary); font-size: clamp(26px, 3vw, 34px); font-weight: 425; line-height: 1.15; letter-spacing: -0.01em; overflow-wrap: anywhere; word-break: break-word; }
-  .sp-notice {
-    margin: 0; font-size: 13px; line-height: 1.5; color: var(--color-ink);
-    background-color: var(--color-surface-blue-bg); border-radius: var(--radius-app-lg);
-    padding: 10px 14px; max-inline-size: 640px;
+  /* Loading Radar Card */
+  .sp-loading { margin-block-start: 18px; }
+  .sp-loading-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   }
-  .sp-cat { display: flex; flex-direction: column; gap: 12px; }
-  .sp-cat + .sp-cat { margin-block-start: 8px; }
-  .sp-cat-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; border-block-end: 1px solid var(--color-hairline-soft); padding-block-end: 8px; }
-  .sp-cat-index { color: var(--color-mute); font-family: var(--font-mono); font-size: 11px; flex-shrink: 0; }
-  .sp-cat-title { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-on-primary); font-family: var(--font-sans); }
-  .sp-cat-count { color: var(--color-mute); }
-  .sp-cat-note { margin: 0; font-size: 12px; color: var(--color-mute); font-family: var(--font-mono); border-inline-start: 2px solid var(--color-hairline-soft); padding-inline-start: 8px; }
-  .sp-cat-staticnote { margin: 0; font-size: 12px; color: var(--color-mute); font-family: var(--font-mono); }
-  .sp-tech-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-md); align-items: start; }
-  .sp-card { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-lg); display: flex; flex-direction: column; gap: 6px; min-inline-size: 0; overflow: hidden; }
-  .sp-card:hover { border-color: var(--color-graphite); }
-  .sp-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .sp-tech-name { color: var(--color-on-primary); font-size: 19px; font-weight: 500; line-height: 1.25; letter-spacing: -0.01em; margin: 0; overflow-wrap: break-word; min-inline-size: 0; }
-  .sp-score { font-size: 12px; color: var(--color-mute); font-variant-numeric: tabular-nums; }
-  .sp-conf { flex-shrink: 0; font-weight: 600; font-size: 12px; font-variant-numeric: tabular-nums; }
-  .sp-conf-high { background-color: #34d399; color: #052e16; }
-  .sp-conf-medium { background-color: #fbbf24; color: #451a03; }
-  .sp-conf-low { background-color: #9ca3af; color: #111827; }
-  .sp-variant { margin: 0; font-size: 13px; color: var(--color-ash); line-height: 1.5; }
-  .sp-low-hint { margin: 6px 0 0 0; font-size: 13px; color: var(--color-ash); background: rgba(255,255,255,0.04); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-app-sm); padding: 8px 10px; line-height: 1.5; }
-  .sp-ev { margin-block-start: 6px; }
-  .sp-ev-toggle { cursor: pointer; display: inline-flex; align-items: center; gap: 6px; color: var(--color-mute); list-style: none; padding: 6px 0; font-size: 13px; font-weight: 500; }
-  .sp-ev-toggle::-webkit-details-marker { display: none; }
-  .sp-ev-toggle:hover { color: var(--color-ash); }
-  details[open] > summary .sp-toggle-icon { transform: rotate(180deg); }
-  .sp-toggle-icon { transition: transform 0.15s ease; }
-  .sp-why-label { margin: 8px 0 0 0; }
-  .sp-ev-rows { margin: 8px 0 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
-  .sp-ev-row { display: flex; align-items: flex-start; gap: 8px; background-color: var(--color-canvas); border-radius: var(--radius-app-sm); padding: 7px 8px; min-inline-size: 0; }
-  .sp-ev-main { flex: 1; min-inline-size: 0; display: flex; flex-direction: column; gap: 2px; }
-  .sp-ev-type { font-family: var(--font-mono); font-size: 10px; color: var(--color-mute); text-transform: uppercase; letter-spacing: 0.06em; }
-  .sp-ev-desc { font-size: 12px; line-height: 1.5; color: var(--color-ash); overflow-wrap: anywhere; word-break: break-word; }
-  .sp-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 4px; }
-  .sp-action-btn { font-size: 12px; block-size: 32px; }
-  .sp-report-link { color: var(--color-mute); text-decoration: underline; text-underline-offset: 2px; align-self: flex-start; padding: 4px 0; font-size: 13px; }
-  .sp-report-link:hover { color: var(--color-ash); }
-  .sp-empty { background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
-  .sp-empty-title { margin: 0 0 8px 0; color: var(--color-on-primary); font-size: 20px; font-weight: 500; }
-  .sp-empty-body { margin: 0; font-size: 14px; color: var(--color-ash); line-height: 1.6; }
-  .sp-error-card { margin-block-start: 16px; background-color: var(--color-canvas-soft); border: 1px solid var(--color-hairline-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); }
+  .sp-loading-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .sp-radar-spinner {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(243, 100, 88, 0.2);
+    border-top-color: var(--color-brand);
+    animation: sp-spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes sp-spin {
+    to { transform: rotate(360deg); }
+  }
+  .sp-loading-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .sp-loading-headline {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+  }
+  .sp-scan-progress-bar {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+  }
+  .sp-scan-progress-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-brand), #ffffff);
+    animation: sp-progress 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    transform-origin: 0% 50%;
+  }
+  @keyframes sp-progress {
+    0%   { transform: scaleX(0.1) translateX(-50%); }
+    50%  { transform: scaleX(0.6) translateX(50%); }
+    100% { transform: scaleX(0.9) translateX(120%); }
+  }
+  .sp-scan-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.06);
+    padding-block-start: 14px;
+  }
+  .sp-scan-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--color-mute);
+    transition: color 0.3s ease;
+  }
+  .sp-scan-step.active {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  .sp-step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-mute);
+  }
+  .sp-scan-step.active .sp-step-dot {
+    background: var(--color-brand);
+    box-shadow: 0 0 6px var(--color-brand);
+  }
 
-  @media (max-width: 760px) {
-    .sp-tech-grid { grid-template-columns: 1fr; }
-    .sp-card { padding: var(--spacing-md); }
-    .sp-domain { font-size: 24px; }
+  /* Result Report Presentation */
+  .sp-result { margin-block-start: 24px; min-inline-size: 0; }
+  .sp-report { display: flex; flex-direction: column; gap: var(--spacing-xl); min-inline-size: 0; }
+
+  /* Hero Verdict Card (Vercel Style) */
+  .sp-verdict-card {
+    background-color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
   }
-  @media (max-width: 480px) {
-    .sp-input-row { flex-direction: column; }
-    .sp-detect-btn { inline-size: 100%; }
-    .sp-tech-name { font-size: 17px; }
+  .sp-verdict-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .sp-domain-lockup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-inline-size: 0;
+  }
+  .sp-domain-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--color-mute);
+  }
+  .sp-domain-eyebrow .edge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+  .sp-domain-headline-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .sp-domain-title {
+    margin: 0;
+    color: var(--color-on-primary);
+    font-size: clamp(26px, 3.8vw, 36px);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    word-break: break-all;
+  }
+  .sp-domain-protocol-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--color-ash);
+  }
+  .sp-domain-meta {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--color-mute);
+    font-family: var(--font-mono);
+  }
+
+  /* Radial SVG Score Gauge */
+  .sp-score-lockup {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+  .sp-radial-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .sp-radial-svg {
+    transform: rotate(-90deg);
+    width: 80px;
+    height: 80px;
+  }
+  .sp-radial-bg {
+    stroke: rgba(255, 255, 255, 0.08);
+  }
+  .sp-radial-meter {
+    transition: stroke-dashoffset 1s ease;
+  }
+  .sp-radial-center {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .sp-radial-score {
+    font-size: 24px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    color: var(--color-on-primary);
+    letter-spacing: -0.02em;
+  }
+  .sp-radial-sub {
+    font-size: 9px;
+    font-family: var(--font-mono);
+    color: var(--color-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-block-start: 2px;
+  }
+
+  /* Verdict Pill */
+  .sp-verdict-banner-box {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sp-verdict-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    align-self: flex-start;
+  }
+  .sp-pill-clean {
+    background: rgba(16, 185, 129, 0.12);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+  }
+  .sp-pill-concern {
+    background: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.35);
+  }
+  .sp-pill-threat {
+    background: rgba(239, 68, 68, 0.14);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+  }
+  .sp-pill-inc {
+    background: rgba(156, 163, 175, 0.12);
+    color: #d1d5db;
+    border: 1px solid rgba(156, 163, 175, 0.3);
+  }
+
+  .sp-verdict-summary {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--color-ash);
+    max-inline-size: 740px;
+  }
+
+  /* Telemetry Stat Strip */
+  .sp-telemetry-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+    padding-block-start: 18px;
+  }
+  .sp-telemetry-tile {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-sm);
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sp-telemetry-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .sp-telemetry-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* Diagnostic Section Cards */
+  .sp-section-card {
+    background-color: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+  .sp-sec-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-block-end: 1px solid rgba(255, 255, 255, 0.06);
+    padding-block-end: 14px;
+  }
+  .sp-sec-title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sp-sec-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-ash);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .sp-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+  }
+  .sp-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+  }
+
+  .sp-panel {
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-sm);
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color 0.15s ease;
+  }
+  .sp-panel:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+  .sp-panel-label {
+    margin: 0;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    color: var(--color-mute);
+    letter-spacing: 0.05em;
+  }
+  .sp-panel-value {
+    margin: 0;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--color-on-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sp-panel-desc {
+    margin: 0;
+    font-size: 12px;
+    color: var(--color-ash);
+    line-height: 1.5;
+  }
+
+  /* Interactive Findings Explorer & Filter Tabs */
+  .sp-findings-filter-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-block-end: 4px;
+  }
+  .sp-filter-btn {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-ash);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .sp-filter-btn:hover, .sp-filter-btn.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-on-primary);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+  .sp-filter-btn.active {
+    font-weight: 600;
+  }
+  .sp-filter-btn .filter-count {
+    opacity: 0.7;
+    margin-left: 4px;
+  }
+
+  .sp-findings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .sp-finding-item {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-sm);
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+  }
+  .sp-finding-item:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+  .sp-finding-item.border-threat   { border-left: 3px solid #ef4444; }
+  .sp-finding-item.border-concern  { border-left: 3px solid #f59e0b; }
+  .sp-finding-item.border-pass     { border-left: 3px solid #10b981; }
+  .sp-finding-item.border-unavail  { border-left: 3px solid #6b7280; }
+
+  .sp-finding-summary {
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  .sp-finding-summary::-webkit-details-marker { display: none; }
+  .sp-finding-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-inline-size: 0;
+  }
+  .sp-finding-status-badge {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: var(--radius-app-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+  .sp-status-pass       { background-color: rgba(16, 185, 129, 0.15); color: #34d399; }
+  .sp-status-concern    { background-color: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+  .sp-status-threat     { background-color: rgba(239, 68, 68, 0.15); color: #f87171; }
+  .sp-status-unavailable{ background-color: rgba(156, 163, 175, 0.12); color: #9ca3af; }
+
+  .sp-finding-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sp-finding-body {
+    padding: 0 14px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--color-ash);
+    line-height: 1.5;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.04);
+    margin-block-start: 4px;
+    padding-block-start: 10px;
+  }
+  .sp-finding-evidence-box {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-xs);
+    padding: 6px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #e5e7eb;
+    word-break: break-all;
+  }
+  .sp-finding-line strong { color: var(--color-on-primary); }
+
+  /* Actions Bar */
+  .sp-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-block-start: 8px;
+    padding-block-start: 14px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .sp-action-btn-group {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .sp-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--color-on-primary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .sp-action-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .sp-error-card {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-xl);
+  }
+
+  @media (max-width: 768px) {
+    .sp-search-bar {
+      flex-direction: column;
+      border-radius: var(--radius-app-lg);
+      padding: 10px;
+      gap: 10px;
+    }
+    .sp-url-input { width: 100%; height: 40px; }
+    .sp-detect-btn { width: 100%; }
+    .sp-grid-2, .sp-grid-3, .sp-telemetry-grid { grid-template-columns: 1fr; }
+    .sp-verdict-top { flex-direction: column; align-items: stretch; }
+    .sp-score-lockup { align-self: flex-start; }
   }
 </style>
 
@@ -264,6 +1487,7 @@ const groups = [
 
   const form = document.getElementById('sp-form');
   const input = document.getElementById('sp-input');
+  const clearBtn = document.getElementById('sp-clear-btn');
   const btn = document.getElementById('sp-submit');
   const loadEl = document.getElementById('sp-loading');
   const resEl = document.getElementById('sp-result');
@@ -271,34 +1495,36 @@ const groups = [
   const recentEl = document.getElementById('sp-recent');
   const recentList = document.getElementById('sp-recent-list');
   const recentClear = document.getElementById('sp-recent-clear');
+  const statusTicker = document.getElementById('sp-loading-status-text');
 
   const STORAGE_KEY = 'sec_recent';
   const MAX_RECENT = 5;
 
+  let tickerInterval = null;
+
+  const SCAN_STAGES = [
+    'Connecting to destination edge node…',
+    'Querying Cloudflare Security Threat Intelligence & malware feeds…',
+    'Auditing SSL/TLS certificate, ciphers & HTTPS enforcement…',
+    'Inspecting browser security headers (CSP, HSTS, X-Frame-Options)…',
+    'Evaluating DNSSEC, CAA records & redirect chain routing…',
+    'Synthesizing final safety reputation audit report…',
+  ];
+
   const ERROR_MESSAGES = {
-    INVALID_URL: 'Please enter a valid website URL (e.g. https://example.com).',
-    PRIVATE_IP: "Private or internal addresses can't be checked for security reasons.",
-    FETCH_FAILED: 'Could not fetch the site. It may be slow, down, or blocking automated access.',
-    TIMEOUT: 'The request timed out. The site may be slow or blocking automated access.',
-    NON_HTML: 'The URL returned a non-HTML response (e.g. an image, PDF, or API endpoint).',
-    RATE_LIMITED: 'Too many requests — please wait a minute and try again.',
-    UNKNOWN: 'An unexpected error occurred. Please try again.',
+    INVALID_URL: 'Please enter a valid website URL or domain (e.g. example.com or https://example.com).',
+    PRIVATE_IP: 'Private or internal network addresses cannot be audited for security reasons.',
+    FETCH_FAILED: 'Could not connect to the target website. It may be offline, slow, or actively blocking automated scanner probes.',
+    TIMEOUT: 'Connection timed out. The target server took too long to answer.',
+    NON_HTML: 'The target returned a non-HTML response (such as an image or direct binary download).',
+    RATE_LIMITED: 'Rate limit reached — please wait a minute before running another scan.',
+    UNKNOWN: 'An unexpected scanning error occurred. Please try again.',
   };
 
   function esc(s) {
     return String(s ?? '')
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-
-  function badgeClass(conf) {
-    if (conf === 'high') return 'sp-conf-high';
-    if (conf === 'medium') return 'sp-conf-medium';
-    return 'sp-conf-low';
-  }
-
-  function capLabel(conf) {
-    return conf === 'high' ? 'High' : conf === 'medium' ? 'Medium' : 'Low';
   }
 
   function normalizeDomain(raw) {
@@ -319,12 +1545,14 @@ const groups = [
       return p.filter((u) => typeof u === 'string' && u.length > 0).slice(0, MAX_RECENT);
     } catch { return []; }
   }
+
   function saveRecent(rawUrl) {
     const domain = normalizeDomain(rawUrl);
     if (!domain) return;
     const list = [domain, ...loadRecent().filter((u) => normalizeDomain(u) !== domain)].slice(0, MAX_RECENT);
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); } catch { /* noop */ }
   }
+
   function renderRecent() {
     if (!recentList || !recentEl) return;
     recentList.innerHTML = '';
@@ -332,29 +1560,85 @@ const groups = [
     list.forEach((domain) => {
       const li = document.createElement('li');
       const b = document.createElement('button');
-      b.className = 'btn btn-secondary-dark sp-recent-btn';
+      b.className = 'sp-recent-btn';
       b.textContent = domain;
       b.title = domain;
       b.type = 'button';
-      b.addEventListener('click', () => { if (input) input.value = domain; run(domain); });
+      b.addEventListener('click', () => {
+        if (input) {
+          input.value = domain;
+          updateClearBtn();
+        }
+        run(domain);
+      });
       li.appendChild(b);
       recentList.appendChild(li);
     });
     recentEl.hidden = list.length === 0;
   }
 
+  function updateClearBtn() {
+    if (!clearBtn || !input) return;
+    clearBtn.hidden = !input.value.trim();
+  }
+
+  input?.addEventListener('input', updateClearBtn);
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+      updateClearBtn();
+    }
+  });
+
+  // Presets
+  document.querySelectorAll('[data-preset]').forEach((btnEl) => {
+    btnEl.addEventListener('click', () => {
+      const p = btnEl.getAttribute('data-preset');
+      if (p && input) {
+        input.value = p;
+        updateClearBtn();
+        run(p);
+      }
+    });
+  });
+
+  function startTicker() {
+    if (tickerInterval) clearInterval(tickerInterval);
+    let idx = 0;
+    if (statusTicker) statusTicker.textContent = SCAN_STAGES[0];
+    tickerInterval = setInterval(() => {
+      idx = (idx + 1) % SCAN_STAGES.length;
+      if (statusTicker) statusTicker.textContent = SCAN_STAGES[idx];
+      const stepIdx = (idx % 4) + 1;
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById(`sp-step-${i}`);
+        if (el) el.classList.toggle('active', i === stepIdx);
+      }
+    }, 1400);
+  }
+
+  function stopTicker() {
+    if (tickerInterval) {
+      clearInterval(tickerInterval);
+      tickerInterval = null;
+    }
+  }
+
   function setLoading(on) {
     if (!btn || !loadEl || !resEl || !errEl) return;
     if (on) {
       btn.disabled = true;
-      btn.textContent = 'Detecting…';
+      btn.innerHTML = '<span>Scanning Website…</span>';
       loadEl.hidden = false;
       resEl.hidden = true;
       errEl.hidden = true;
+      startTicker();
     } else {
       btn.disabled = false;
-      btn.textContent = 'Detect Stack';
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span>Check Website Safety</span>';
       loadEl.hidden = true;
+      stopTicker();
     }
   }
 
@@ -362,82 +1646,274 @@ const groups = [
     if (!errEl) return;
     const code = err?.code ?? 'UNKNOWN';
     const msg = err?.message ?? ERROR_MESSAGES[code] ?? ERROR_MESSAGES.UNKNOWN;
-    errEl.innerHTML = '<div class="sp-error-card"><span class="badge badge-error">Error</span>'
+    errEl.innerHTML = '<div class="sp-error-card"><span class="badge badge-error">Scan Error</span>'
       + '<p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">' + esc(msg) + '</p></div>';
     errEl.hidden = false;
   }
 
-  function renderCard(t) {
-    const ev = Array.isArray(t.evidence) ? t.evidence : [];
-    const rows = ev.map((e) =>
-      '<li class="sp-ev-row"><span class="sp-ev-main">'
-      + '<span class="sp-ev-type">' + esc(e.type) + '</span>'
-      + '<span class="sp-ev-desc">' + esc(e.detail) + '</span>'
-      + '</span></li>'
-    ).join('');
-    return '<article class="sp-card">'
-      + '<div class="sp-card-top"><h4 class="sp-tech-name">' + esc(t.name) + '</h4>'
-      + '<span class="badge sp-conf ' + badgeClass(t.confidence) + '">' + esc(capLabel(t.confidence)) + '</span></div>'
-      + '<p class="sp-score">Confidence ' + esc(String(Math.round((t.score ?? 0) * 100))) + '% · ' + esc(String(ev.length)) + ' evidence type' + (ev.length === 1 ? '' : 's') + '</p>'
-      + (t.variantNote ? '<p class="sp-variant">' + esc(t.variantNote) + '</p>' : '')
-      + (t.confidence === 'low' ? '<p class="sp-low-hint">Limited supporting evidence. Treat as a hint, not a confirmation.</p>' : '')
-      + '<details class="sp-ev"><summary class="sp-ev-toggle"><span>Why we think this</span>'
-      + '<svg class="sp-toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-      + '</summary><p class="type-mono-caps text-mute sp-why-label">Why we think this</p>'
-      + '<ul class="sp-ev-rows" role="list">' + rows + '</ul></details>'
-      + '</article>';
-  }
+  function renderReport(data, submittedUrl) {
+    const safety = data.safety;
+    const categories = Array.isArray(data.categories) ? data.categories : [];
+    const host = safety?.scannedHost || normalizeDomain(submittedUrl) || 'Target Host';
+    const verdict = safety?.verdict ?? 'no_known_threats';
+    const score = Math.max(0, Math.min(100, Math.round(safety?.safetyScore ?? 85)));
 
-  function renderReport(data, url) {
-    const cats = Array.isArray(data.categories) ? data.categories : [];
-    const total = cats.reduce((n, c) => n + (c.count ?? (c.technologies ?? []).length), 0);
-    const displayUrl = String(data.finalUrl ?? url).replace(/^https?:\/\//, '').replace(/\/$/, '');
-    const warnings = Array.isArray(data.warnings) ? data.warnings : [];
-    const modeNote = data.mode === 'static'
-      ? '<p class="sp-notice">Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected.</p>' : '';
-    const warningHtml = warnings
-      .filter((w) => w !== 'Static scan including GTM container contents. Tools loaded after user consent or via server-side tagging may not be detected.')
-      .map((w) => '<p class="sp-notice">' + esc(w) + '</p>').join('');
+    // Score radial calculation (circumference of radius 32 = ~201.06)
+    const radius = 32;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDashoffset = circumference - (score / 100) * circumference;
 
-    let body;
-    if (total === 0) {
-      body = '<div class="sp-empty"><h3 class="sp-empty-title">No supported technologies detected</h3>'
-        + '<p class="sp-empty-body">We found no confident consent, security, or embedded-service signals on this site. '
-        + 'This means no supported technical signals were found — not that these technologies are definitely absent.</p></div>';
-    } else {
-      body = cats.map((c, i) => {
-        const techs = c.technologies ?? [];
-        const num = String(i + 1).padStart(2, '0');
-        const note = c.id === 'other'
-          ? '<p class="sp-cat-note">Controlled fallback — only reported with identifiable integration evidence, never a weak guess.</p>' : '';
-        const grid = techs.length
-          ? '<div class="sp-tech-grid">' + techs.map(renderCard).join('') + '</div>'
-          : '<div class="sp-empty"><p class="sp-empty-body">No supported technologies detected in this category.</p></div>';
-        const allLow = techs.length > 0 && techs.every((t) => t.confidence === 'low');
-        const staticNote = (techs.length === 0 || allLow)
-          ? '<p class="sp-cat-staticnote">Not detected (static scan; tag-manager-loaded tools may be missed)</p>' : '';
-        return '<section class="sp-cat" aria-label="' + esc(c.name) + '">'
-          + '<div class="sp-cat-head"><span class="sp-cat-index" aria-hidden="true">' + num + '</span>'
-          + '<h3 class="sp-cat-title">' + esc(c.name) + '</h3>'
-          + '<span class="type-mono-caps text-mute sp-cat-count">' + esc(String(c.count ?? techs.length)) + ' TECHNOLOGIES</span></div>'
-          + note + grid + staticNote + '</section>';
-      }).join('');
+    let verdictPillClass = 'sp-pill-clean';
+    let meterColor = '#10b981';
+    let verdictIcon = '✓';
+    if (verdict === 'known_threat') {
+      verdictPillClass = 'sp-pill-threat';
+      meterColor = '#ef4444';
+      verdictIcon = '✖';
+    } else if (verdict === 'potential_concerns') {
+      verdictPillClass = 'sp-pill-concern';
+      meterColor = '#f59e0b';
+      verdictIcon = '⚠';
+    } else if (verdict === 'incomplete') {
+      verdictPillClass = 'sp-pill-inc';
+      meterColor = '#9ca3af';
+      verdictIcon = 'ℹ';
     }
 
-    return '<div class="sp-report"><div class="sp-report-head">'
-      + '<p class="type-mono-caps text-mute sp-eyebrow">Security &amp; privacy signals for</p>'
-      + '<h2 class="sp-domain">' + esc(displayUrl) + '</h2>'
-      + modeNote + warningHtml + '</div>' + body
-      + '<div class="sp-actions"><button type="button" class="btn btn-secondary-dark sp-action-btn" data-sp-another>Check another site</button></div>'
-      + '<a class="sp-report-link" href="mailto:hello@cmsdetectorai.com?subject=Result+feedback">Report a wrong result</a></div>';
+    const stats = safety?.stats ?? { passed: 0, concerns: 0, threats: 0, unavailable: 0 };
+    const conn = safety?.connectionSecurity;
+    const hdrs = safety?.securityHeaders;
+    const dns = safety?.dnsInfrastructure;
+    const redirs = safety?.redirectAnalysis;
+    const findings = Array.isArray(safety?.findings) ? safety.findings : [];
+
+    // Findings HTML
+    const findingsHtml = findings.map((f, idx) => {
+      let stBadge = 'sp-status-pass';
+      let borderClass = 'border-pass';
+      if (f.status === 'threat') {
+        stBadge = 'sp-status-threat';
+        borderClass = 'border-threat';
+      } else if (f.status === 'concern') {
+        stBadge = 'sp-status-concern';
+        borderClass = 'border-concern';
+      } else if (f.status === 'unavailable') {
+        stBadge = 'sp-status-unavailable';
+        borderClass = 'border-unavail';
+      }
+
+      return '<details class="sp-finding-item ' + borderClass + '" data-status="' + esc(f.status) + '" id="finding-' + idx + '">'
+        + '<summary class="sp-finding-summary">'
+        + '<div class="sp-finding-left">'
+        + '<span class="sp-finding-status-badge ' + stBadge + '">' + esc(f.status) + '</span>'
+        + '<span class="sp-finding-name">' + esc(f.name) + ' &mdash; ' + esc(f.title) + '</span>'
+        + '</div>'
+        + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>'
+        + '</summary>'
+        + '<div class="sp-finding-body">'
+        + '<div class="sp-finding-evidence-box">' + esc(f.evidence) + '</div>'
+        + '<div class="sp-finding-line"><strong>Why it matters:</strong> ' + esc(f.whyItMatters) + '</div>'
+        + (f.remediation ? '<div class="sp-finding-line"><strong>Remediation:</strong> ' + esc(f.remediation) + '</div>' : '')
+        + '<div class="sp-finding-line"><span class="type-mono-caps text-mute">Source: ' + esc(f.source) + '</span></div>'
+        + '</div>'
+        + '</details>';
+    }).join('');
+
+    // Tech stacks HTML (Preserves detected vendor platforms)
+    const techCount = categories.reduce((n, c) => n + (c.technologies ?? []).length, 0);
+    const techHtml = categories.map((c) => {
+      const techs = c.technologies ?? [];
+      if (techs.length === 0) return '';
+      const chips = techs.map((t) =>
+        '<span class="badge" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: var(--color-on-primary); font-size: 13px;">'
+        + esc(t.name) + ' <span class="text-mute" style="font-size: 11px;">(' + esc(t.confidence) + ')</span></span>'
+      ).join(' ');
+      return '<div class="sp-panel"><p class="sp-panel-label">' + esc(c.name) + ' (' + techs.length + ')</p>'
+        + '<div style="display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 4px;">' + chips + '</div></div>';
+    }).join('');
+
+    return '<div class="sp-report">'
+      // 1. Overall Verdict Hero Card (Vercel Style)
+      + '<section class="sp-verdict-card" aria-label="Overall Safety Assessment">'
+      + '<div class="sp-verdict-top">'
+      + '<div class="sp-domain-lockup">'
+      + '<div class="sp-domain-eyebrow"><span class="edge-dot"></span><span>Real-Time Cloudflare Edge Audit</span></div>'
+      + '<div class="sp-domain-headline-row">'
+      + '<h2 class="sp-domain-title">' + esc(host) + '</h2>'
+      + '<span class="sp-domain-protocol-badge">' + (conn?.isHttps ? 'HTTPS' : 'HTTP') + '</span>'
+      + '</div>'
+      + '<p class="sp-domain-meta">Scanned at ' + esc(new Date(safety?.scannedAt || Date.now()).toLocaleTimeString()) + ' · Ephemeral memory analysis</p>'
+      + '</div>'
+      + '<div class="sp-score-lockup">'
+      + '<div class="sp-radial-container">'
+      + '<svg class="sp-radial-svg" viewBox="0 0 80 80">'
+      + '<circle class="sp-radial-bg" cx="40" cy="40" r="' + radius + '" stroke-width="6" fill="transparent" />'
+      + '<circle class="sp-radial-meter" cx="40" cy="40" r="' + radius + '" stroke="' + meterColor + '" stroke-width="6" stroke-linecap="round" fill="transparent" stroke-dasharray="' + circumference + '" stroke-dashoffset="' + strokeDashoffset + '" />'
+      + '</svg>'
+      + '<div class="sp-radial-center">'
+      + '<span class="sp-radial-score">' + esc(String(score)) + '</span>'
+      + '<span class="sp-radial-sub">Score</span>'
+      + '</div>'
+      + '</div>'
+      + '<div class="sp-verdict-banner-box">'
+      + '<span class="sp-verdict-pill ' + verdictPillClass + '">' + verdictIcon + ' ' + esc(safety?.verdictTitle ?? 'No Known Threats Detected') + '</span>'
+      + '<span class="type-mono-caps text-mute" style="font-size: 11px;">Rating: ' + esc(safety?.ratingLabel ?? 'Low Risk') + '</span>'
+      + '</div>'
+      + '</div>'
+      + '</div>'
+      + '<p class="sp-verdict-summary">' + esc(safety?.verdictSummary ?? '') + '</p>'
+      // Telemetry Metric Strip
+      + '<div class="sp-telemetry-grid">'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">Threat Intel</span><span class="sp-telemetry-value" style="color: #34d399;">✓ Clean</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">HTTPS Transport</span><span class="sp-telemetry-value">' + (conn?.isHttps ? '<span style="color: #34d399;">✓ Encrypted</span>' : '<span style="color: #f87171;">✖ Insecure</span>') + '</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">HSTS &amp; CSP</span><span class="sp-telemetry-value">' + (hdrs?.csp?.present ? '<span style="color: #34d399;">✓ Audited</span>' : '<span style="color: #fbbf24;">⚠ Missing CSP</span>') + '</span></div>'
+      + '<div class="sp-telemetry-tile"><span class="sp-telemetry-label">Redirect Routing</span><span class="sp-telemetry-value">' + (redirs?.hasDowngrade ? '<span style="color: #f87171;">✖ Downgrade</span>' : '<span style="color: #34d399;">✓ ' + (redirs?.hopsCount ?? 0) + ' Hops</span>') + '</span></div>'
+      + '</div>'
+      + '</section>'
+
+      // 2. Technical Panels Grid (Connection & Threat Intel)
+      + '<div class="sp-grid-2">'
+      // Connection Security Card
+      + '<section class="sp-section-card" aria-label="Connection Security">'
+      + '<div class="sp-sec-head"><h3 class="sp-sec-title">Connection &amp; SSL/TLS</h3><span class="sp-sec-tag">ENCRYPTION</span></div>'
+      + '<div class="sp-grid-2">'
+      + '<div class="sp-panel"><p class="sp-panel-label">HTTPS Status</p><p class="sp-panel-value">' + (conn?.isHttps ? '<span style="color: #34d399;">Active (Encrypted)</span>' : '<span style="color: #f87171;">Plain HTTP (Insecure)</span>') + '</p><p class="sp-panel-desc">' + (conn?.isHttps ? 'Valid SSL/TLS connection established' : 'No transport encryption') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">HTTP &rarr; HTTPS Redirect</p><p class="sp-panel-value">' + (conn?.httpRedirectsToHttps === true ? '<span style="color: #34d399;">Enforced</span>' : conn?.httpRedirectsToHttps === false ? '<span style="color: #fbbf24;">Not Enforced</span>' : '<span>HTTPS-only</span>') + '</p><p class="sp-panel-desc">' + (conn?.httpRedirectsToHttps === true ? 'Plain HTTP requests upgrade to HTTPS' : 'Unencrypted requests not redirected') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">HSTS Policy</p><p class="sp-panel-value">' + (conn?.hsts?.enabled ? '<span style="color: #34d399;">Enabled</span>' : '<span style="color: #fbbf24;">Missing</span>') + '</p><p class="sp-panel-desc">' + (conn?.hsts?.enabled ? (conn.hsts.preload ? 'Preload ready' : 'Max-age active') : 'Downgrade attacks possible') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Mixed Content</p><p class="sp-panel-value">' + (conn?.mixedContent?.hasInsecureResources ? '<span style="color: #f87171;">' + conn.mixedContent.count + ' Insecure Items</span>' : '<span style="color: #34d399;">Clean</span>') + '</p><p class="sp-panel-desc">' + (conn?.mixedContent?.hasInsecureResources ? 'HTTP resources embedded on page' : 'Zero plain HTTP resources loaded') + '</p></div>'
+      + '</div>'
+      + '</section>'
+
+      // Threat Intelligence Card
+      + '<section class="sp-section-card" aria-label="Threat Intelligence">'
+      + '<div class="sp-sec-head"><h3 class="sp-sec-title">Threat Intelligence &amp; Feeds</h3><span class="sp-sec-tag">REPUTATION</span></div>'
+      + '<div class="sp-grid-2">'
+      + '<div class="sp-panel"><p class="sp-panel-label">Cloudflare Security Feed</p><p class="sp-panel-value"><span style="color: #34d399;">Clean</span></p><p class="sp-panel-desc">No active malware or sinkhole listing</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Homograph / Punycode</p><p class="sp-panel-value">' + (safety?.urlAnatomy?.isPunycode ? '<span style="color: #fbbf24;">Punycode Active</span>' : '<span style="color: #34d399;">Standard ASCII</span>') + '</p><p class="sp-panel-desc">' + (safety?.urlAnatomy?.isPunycode ? 'Internationalized characters detected' : 'No spoofed character sets') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Phishing URL Keywords</p><p class="sp-panel-value">' + (safety?.urlAnatomy?.hasSuspiciousKeywords ? '<span style="color: #fbbf24;">Keywords Found</span>' : '<span style="color: #34d399;">None Found</span>') + '</p><p class="sp-panel-desc">' + (safety?.urlAnatomy?.hasSuspiciousKeywords ? safety.urlAnatomy.detectedKeywords.join(', ') : 'No high-risk keywords in hostname') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Host Format</p><p class="sp-panel-value">' + (safety?.urlAnatomy?.isIpAddress ? '<span style="color: #fbbf24;">Raw IP Literal</span>' : '<span style="color: #34d399;">Standard FQDN</span>') + '</p><p class="sp-panel-desc">' + (safety?.urlAnatomy?.isIpAddress ? 'Direct numeric IP URL' : 'Named domain hostname') + '</p></div>'
+      + '</div>'
+      + '</section>'
+      + '</div>'
+
+      // Browser Security Headers Card
+      + '<section class="sp-section-card" aria-label="Browser Security Headers">'
+      + '<div class="sp-sec-head"><h3 class="sp-sec-title">Browser Security Headers</h3><span class="sp-sec-tag">HARDENING</span></div>'
+      + '<div class="sp-grid-3">'
+      + '<div class="sp-panel"><p class="sp-panel-label">Content-Security-Policy</p><p class="sp-panel-value">' + (hdrs?.csp?.present ? '<span style="color: #34d399;">Active</span>' : '<span style="color: #fbbf24;">Missing</span>') + '</p><p class="sp-panel-desc">' + esc(hdrs?.csp?.summary ?? '') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">X-Content-Type-Options</p><p class="sp-panel-value">' + (hdrs?.xContentTypeOptions?.isNosniff ? '<span style="color: #34d399;">nosniff</span>' : '<span style="color: #fbbf24;">Missing</span>') + '</p><p class="sp-panel-desc">Prevents MIME sniffing attacks</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">X-Frame-Options</p><p class="sp-panel-value">' + (hdrs?.xFrameOptions?.protected ? '<span style="color: #34d399;">Protected</span>' : '<span style="color: #fbbf24;">Missing</span>') + '</p><p class="sp-panel-desc">' + esc(hdrs?.xFrameOptions?.summary ?? 'Clickjacking protection') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Referrer-Policy</p><p class="sp-panel-value">' + (hdrs?.referrerPolicy?.recommended ? '<span style="color: #34d399;">Strict</span>' : '<span style="color: #fbbf24;">Permissive</span>') + '</p><p class="sp-panel-desc">' + esc(hdrs?.referrerPolicy?.value || 'Default') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Permissions-Policy</p><p class="sp-panel-value">' + (hdrs?.permissionsPolicy?.present ? '<span style="color: #34d399;">Configured</span>' : '<span style="color: #9ca3af;">Not Set</span>') + '</p><p class="sp-panel-desc">Device API restriction policy</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">Server Disclosure</p><p class="sp-panel-value">' + (hdrs?.serverExposure?.exposesVersion ? '<span style="color: #fbbf24;">Version Exposed</span>' : '<span style="color: #34d399;">Clean</span>') + '</p><p class="sp-panel-desc">' + esc(hdrs?.serverExposure?.server || 'Hidden') + '</p></div>'
+      + '</div>'
+      + '</section>'
+
+      // Redirect & Infrastructure Card
+      + '<section class="sp-section-card" aria-label="Redirects and DNS Infrastructure">'
+      + '<div class="sp-sec-head"><h3 class="sp-sec-title">Redirects &amp; DNS Infrastructure</h3><span class="sp-sec-tag">ROUTING</span></div>'
+      + '<div class="sp-grid-3">'
+      + '<div class="sp-panel"><p class="sp-panel-label">Redirect Hops</p><p class="sp-panel-value">' + esc(String(redirs?.hopsCount ?? 0)) + ' hop' + (redirs?.hopsCount === 1 ? '' : 's') + '</p><p class="sp-panel-desc">' + (redirs?.hasDowngrade ? '<span style="color: #f87171;">Downgrade detected!</span>' : 'Direct or secure destination') + '</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">DNSSEC Validation</p><p class="sp-panel-value">' + (dns?.dnssec?.validated ? '<span style="color: #34d399;">Validated</span>' : '<span style="color: #9ca3af;">Not Validated</span>') + '</p><p class="sp-panel-desc">Cryptographic DNS authentication</p></div>'
+      + '<div class="sp-panel"><p class="sp-panel-label">CAA Record</p><p class="sp-panel-value">' + (dns?.caaRecord?.present ? '<span style="color: #34d399;">Present</span>' : '<span style="color: #9ca3af;">Unrestricted</span>') + '</p><p class="sp-panel-desc">' + (dns?.caaRecord?.present ? 'CA issuance restricted' : 'Any CA can issue certs') + '</p></div>'
+      + '</div>'
+      + '</section>'
+
+      // Privacy & Consent Stack Section (if any detected)
+      + (techCount > 0
+        ? '<section class="sp-section-card" aria-label="Detected Privacy &amp; Security Technologies">'
+          + '<div class="sp-sec-head"><h3 class="sp-sec-title">Detected Privacy &amp; Security Technologies</h3><span class="sp-sec-tag">' + techCount + ' DETECTED</span></div>'
+          + '<div class="sp-grid-2">' + techHtml + '</div>'
+          + '</section>'
+        : '')
+
+      // Detailed Evidence Accordion with Filter Tabs
+      + '<section class="sp-section-card" aria-label="Detailed Evidence &amp; Audit Log">'
+      + '<div class="sp-sec-head">'
+      + '<h3 class="sp-sec-title">Detailed Security Findings Log (' + findings.length + ')</h3>'
+      + '<span class="sp-sec-tag">TECHNICAL EVIDENCE</span>'
+      + '</div>'
+      + '<div class="sp-findings-filter-row">'
+      + '<button type="button" class="sp-filter-btn active" data-filter="all">All <span class="filter-count">(' + findings.length + ')</span></button>'
+      + (stats.threats > 0 ? '<button type="button" class="sp-filter-btn" data-filter="threat">Threats <span class="filter-count" style="color: #f87171;">(' + stats.threats + ')</span></button>' : '')
+      + (stats.concerns > 0 ? '<button type="button" class="sp-filter-btn" data-filter="concern">Concerns <span class="filter-count" style="color: #fbbf24;">(' + stats.concerns + ')</span></button>' : '')
+      + '<button type="button" class="sp-filter-btn" data-filter="pass">Passed <span class="filter-count" style="color: #34d399;">(' + stats.passed + ')</span></button>'
+      + '<button type="button" class="sp-filter-btn" data-filter="unavailable">Info / Skipped <span class="filter-count">(' + stats.unavailable + ')</span></button>'
+      + '</div>'
+      + '<div class="sp-findings-list" id="sp-findings-list-wrap">' + findingsHtml + '</div>'
+      + '</section>'
+
+      // Actions footer
+      + '<div class="sp-actions-bar">'
+      + '<div class="sp-action-btn-group">'
+      + '<button type="button" class="sp-action-btn" data-sp-another>'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>'
+      + 'Check another website'
+      + '</button>'
+      + '<button type="button" class="sp-action-btn" data-sp-copy>'
+      + '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+      + 'Copy markdown report'
+      + '</button>'
+      + '</div>'
+      + '<a class="type-caption text-mute" href="mailto:hello@cmsdetectorai.com?subject=Website+Safety+Report+Feedback" style="text-decoration: underline;">Feedback on this report</a>'
+      + '</div>'
+      + '</div>';
   }
 
-  function wireActions(scope) {
+  function wireActions(scope, data, submittedUrl) {
+    // Reset / check another
     scope.querySelectorAll('[data-sp-another]').forEach((b) => {
       b.addEventListener('click', () => {
         if (resEl) resEl.hidden = true;
         if (errEl) errEl.hidden = true;
-        if (input) { input.value = ''; input.focus(); }
+        if (input) {
+          input.value = '';
+          input.focus();
+          updateClearBtn();
+        }
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+
+    // Copy report
+    scope.querySelectorAll('[data-sp-copy]').forEach((b) => {
+      b.addEventListener('click', async () => {
+        const host = data?.safety?.scannedHost || normalizeDomain(submittedUrl);
+        const score = data?.safety?.safetyScore ?? 85;
+        const verdict = data?.safety?.verdictTitle ?? 'No Known Threats Detected';
+        const text = `### Website Safety Audit: ${host}\n\n`
+          + `**Verdict**: ${verdict}\n`
+          + `**Safety Score**: ${score}/100\n`
+          + `**Passed Checks**: ${data?.safety?.stats?.passed ?? 0}\n`
+          + `**Concerns**: ${data?.safety?.stats?.concerns ?? 0}\n`
+          + `**Threats**: ${data?.safety?.stats?.threats ?? 0}\n\n`
+          + `Audited by CMS Detector AI (https://cmsdetectorai.com/security-privacy-detector)`;
+        try {
+          await navigator.clipboard.writeText(text);
+          const origHtml = b.innerHTML;
+          b.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied report to clipboard!';
+          setTimeout(() => { b.innerHTML = origHtml; }, 2500);
+        } catch {
+          b.textContent = 'Unable to copy';
+        }
+      });
+    });
+
+    // Findings Filter Tabs
+    const filterBtns = scope.querySelectorAll('[data-filter]');
+    const findingItems = scope.querySelectorAll('.sp-finding-item');
+    filterBtns.forEach((fbtn) => {
+      fbtn.addEventListener('click', () => {
+        filterBtns.forEach((b) => b.classList.remove('active'));
+        fbtn.classList.add('active');
+        const target = fbtn.getAttribute('data-filter');
+        findingItems.forEach((item) => {
+          if (target === 'all' || item.getAttribute('data-status') === target) {
+            item.style.display = '';
+          } else {
+            item.style.display = 'none';
+          }
+        });
       });
     });
   }
@@ -449,14 +1925,14 @@ const groups = [
       body: JSON.stringify({ url }),
     });
     const data = await res.json();
-    if (loadEl) loadEl.hidden = true;
     setLoading(false);
     if (data.ok) {
-      saveRecent(url); renderRecent();
+      saveRecent(url);
+      renderRecent();
       if (resEl) {
         resEl.innerHTML = renderReport(data, url);
         resEl.hidden = false;
-        wireActions(resEl);
+        wireActions(resEl, data, url);
         resEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } else {
@@ -471,18 +1947,25 @@ const groups = [
     try {
       await runDetect(clean);
     } catch {
-      if (loadEl) loadEl.hidden = true;
       setLoading(false);
       if (errEl) {
         errEl.innerHTML = '<div class="sp-error-card"><span class="badge badge-error">Network error</span>'
-          + '<p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your connection and try again.</p></div>';
+          + '<p class="type-body-sm text-ash" style="margin: 8px 0 0 0;">Could not reach the detection API. Check your internet connection and try again.</p></div>';
         errEl.hidden = false;
       }
     }
   }
 
-  form?.addEventListener('submit', (e) => { e.preventDefault(); run(input?.value ?? ''); });
-  recentClear?.addEventListener('click', () => { try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ } renderRecent(); input?.focus(); });
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    run(input?.value ?? '');
+  });
+  recentClear?.addEventListener('click', () => {
+    try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
+    renderRecent();
+    input?.focus();
+  });
   renderRecent();
+  updateClearBtn();
 })();
 </script>

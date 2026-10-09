@@ -9,6 +9,7 @@ import {
   detectSecurityPrivacy,
   groupByCategory,
 } from '../../lib/detect/security-privacy.ts';
+import { analyzeWebsiteSafety } from '../../lib/detect/website-safety.ts';
 import {
   collectEvidence,
   rateLimited,
@@ -21,7 +22,7 @@ import { ERROR_HTTP_STATUS } from '../../lib/detect/types.ts';
 export const prerender = false;
 
 const CACHE_TTL_SECONDS = 600;
-const DETECTOR_REVISION = 3;
+const DETECTOR_REVISION = 4;
 
 const memoryCache = new Map<string, { body: string; expires: number }>();
 
@@ -183,11 +184,20 @@ export const POST: APIRoute = async ({ request }) => {
   });
   const categories = groupByCategory(technologies);
 
+  const safety = await analyzeWebsiteSafety({
+    rawUrl,
+    finalUrl: collected.finalUrl,
+    redirectChain: collected.redirectChain,
+    headers: collected.headers,
+    html: collected.html,
+  });
+
   const payloadData = {
     url: rawUrl,
     finalUrl: collected.finalUrl,
     scannedAt: new Date().toISOString(),
     mode: 'static' as const,
+    safety,
     categories,
     warnings: collected.warnings,
   };
@@ -196,6 +206,8 @@ export const POST: APIRoute = async ({ request }) => {
     ok: true,
     status: collected.status,
     coverage: collected.coverage,
+    safety,
+    categories,
     data: payloadData,
     // Preserve top-level fields for backwards compatibility with UI
     ...payloadData,
