@@ -1689,6 +1689,40 @@ function wireScanActions(scope: ParentNode): void {
     });
   });
 
+  // Export all scanned URLs to clipboard
+  scope.querySelectorAll('#export-scanned-copy').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      const b = btn as HTMLButtonElement;
+      const urls = b.dataset.urls ?? '';
+      const ok = await copyText(urls);
+      const span = b.querySelector('span');
+      if (span) {
+        const orig = span.textContent;
+        span.textContent = ok ? 'Copied URLs!' : 'Failed to Copy';
+        setTimeout(() => { span.textContent = orig; }, 1800);
+      }
+    });
+  });
+
+  // Download scanned URLs with technology findings as a text file
+  scope.querySelectorAll('#export-scanned-download').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const b = btn as HTMLButtonElement;
+      const host = b.dataset.host || 'website';
+      const urls = b.dataset.urls ?? '';
+      const header = "URL\tCMS / Framework\tHosting Provider\tConfidence\n";
+      const blob = new Blob([header + urls], { type: 'text/plain;charset=utf-8' });
+      const dlUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = dlUrl;
+      a.download = `scanned-pages-${host}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(dlUrl);
+    });
+  });
+
   // Copy single unscanned URL
   scope.querySelectorAll('[data-single-url]').forEach((btn) => {
     btn.addEventListener('click', async () => {
@@ -1993,16 +2027,29 @@ function renderScanSummary(data: {
     return fill(t.differsLabel, { what: parts.join(' + ') });
   };
   const showConfCol = uniformConf === null;
-  const rows = ordered.map((p) => {
+  const scannedItems = ordered.map((p, i) => {
     const shortUrl = p.url.replace(/^https?:\/\//, '');
     const diffNote = p.isOddOneOut ? differsWhat(p) : '';
     return `
-    <tr class="${p.isOddOneOut ? 'scan-odd' : ''}">
-      <td><span class="scan-url" title="${esc(p.url)}">${esc(shortUrl)}</span>${p.crossDomainRedirect ? ` <span class="type-caption text-mute">${esc(t.crossDomain)}</span>` : ''}${diffNote ? `<span class="scan-diff-note">${esc(diffNote)}</span>` : ''}</td>
-      <td>${esc(p.framework)}</td>
-      <td>${esc(p.provider)}</td>
-      ${showConfCol ? `<td>${esc(p.error ? '—' : p.confidence)}</td>` : ''}
-    </tr>`;
+    <li class="unscanned-url-item scanned-url-item ${p.isOddOneOut ? 'scan-odd' : ''}">
+      <span class="unscanned-idx type-mono">${i + 1}</span>
+      <div class="scanned-main">
+        <span class="scanned-url type-mono" title="${esc(p.url)}">${esc(shortUrl)}</span>
+        ${p.crossDomainRedirect ? `<span class="scanned-redirect-tag type-caption text-mute">${esc(t.crossDomain)}</span>` : ''}
+        ${diffNote ? `<span class="scan-diff-note">${esc(diffNote)}</span>` : ''}
+      </div>
+      <div class="scanned-meta">
+        <span class="scanned-tag scanned-tag-fw"><span class="scanned-tag-dim">CMS:</span> <strong>${esc(p.framework)}</strong></span>
+        <span class="scanned-tag scanned-tag-pv"><span class="scanned-tag-dim">Host:</span> <strong>${esc(p.provider)}</strong></span>
+        ${showConfCol ? `<span class="badge conf-badge ${confClass(p.confidence)}">${esc(p.error ? '—' : p.confidence)}</span>` : ''}
+      </div>
+      <button type="button" class="unscanned-item-copy-btn" title="Copy URL" data-single-url="${esc(p.url)}" aria-label="Copy ${esc(p.url)}">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+          <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+        </svg>
+      </button>
+    </li>`;
   }).join('');
   const viewLabel = fill(t.viewUrls, { count: String(total) });
   const shareUrl = `/result/${encodeURIComponent(data.rootHost)}`;
@@ -2077,13 +2124,43 @@ function renderScanSummary(data: {
         ${pvTech ? techStackCard('hosting', pvTech) : stackCard('hosting', data.baselineProvider, collectEvidence((p) => !p.error && p.provider === data.baselineProvider))}
         ${fwTech ? techStackCard('framework', fwTech) : stackCard('framework', data.baselineFramework, collectEvidence((p) => !p.error && p.framework === data.baselineFramework))}
       </div>
-      <details class="scan-urls"${isMixed ? ' open' : ''}>
-        <summary class="scan-urls-toggle type-caption-tight">${esc(viewLabel)}</summary>
-        <div class="scan-table-wrap" role="region" aria-label="${esc(viewLabel)}" tabindex="0">
-          <table class="scan-table">
-            <thead><tr><th>URL</th><th>Framework</th><th>Provider</th>${showConfCol ? '<th>Conf.</th>' : ''}</tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
+      <details class="unscanned-dropdown scanned-dropdown"${isMixed ? ' open' : ''}>
+        <summary class="unscanned-summary type-caption-tight">
+          <div class="unscanned-summary-left">
+            <svg class="toggle-icon" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="unscanned-title">${esc(viewLabel)}</span>
+            <span class="unscanned-count-badge ${isMixed ? 'badge-mixed' : 'badge-ok'}">${total} Scanned</span>
+          </div>
+          <span class="type-caption text-mute unscanned-note">${isMixed ? `${oddCount} variant${oddCount > 1 ? 's' : ''} detected` : 'All paths consistent'}</span>
+        </summary>
+        <div class="unscanned-panel">
+          <div class="unscanned-panel-bar">
+            <p class="type-caption text-ash unscanned-desc">
+              Detailed platform and hosting breakdown across all <code>${total}</code> sampled URLs on <code>${esc(data.rootHost)}</code>.
+            </p>
+            <div class="unscanned-actions">
+              <button type="button" class="btn btn-secondary-dark unscanned-export-btn" id="export-scanned-copy" data-urls="${esc(ordered.map((p) => p.url).join('\n'))}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                </svg>
+                <span>Copy ${total} URLs</span>
+              </button>
+              <button type="button" class="btn btn-secondary-dark unscanned-export-btn" id="export-scanned-download" data-host="${esc(data.rootHost)}" data-urls="${esc(ordered.map((p) => `${p.url}\t${p.framework}\t${p.provider}\t${p.confidence}`).join('\n'))}">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                <span>Export .txt</span>
+              </button>
+            </div>
+          </div>
+          <ul class="unscanned-url-list" role="list">
+            ${scannedItems}
+          </ul>
         </div>
       </details>
       ${unscannedDropdownHtml}
@@ -2726,38 +2803,105 @@ init();
   @media (max-width: 640px) {
     .stack-summary { grid-template-columns: 1fr; }
   }
-  .scan-urls {
-    margin-block-start: var(--spacing-xs);
+  .scanned-dropdown {
+    margin-block-start: var(--spacing-sm);
   }
-  .scan-urls-toggle {
-    cursor: pointer;
-    display: inline-block;
-    color: var(--color-mute);
-    padding: 8px 4px;
+  .scanned-url-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: var(--radius-app-sm);
+    font-size: 13px;
+    transition: background 0.15s ease, border-color 0.15s ease;
   }
-  .scan-urls-toggle:hover { color: var(--color-ash); }
-  .scan-table-wrap {
-    overflow-x: auto;
-    margin-block-start: 8px;
-    max-inline-size: 100%;
+  .scanned-url-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
   }
-  .scan-table { border-collapse: collapse; inline-size: 100%; min-inline-size: 520px; max-inline-size: 100%; font-size: 13px; background-color: var(--color-canvas-soft); }
-  .scan-table th, .scan-table td { text-align: start; padding: 8px 10px; border-block-end: 1px solid var(--color-hairline-soft); color: var(--color-ash); vertical-align: top; }
-  .scan-table thead th { color: var(--color-mute); font-size: 11px; text-transform: uppercase; }
-  .scan-odd td { background: rgba(243, 100, 88, 0.12); }
-  .scan-url {
-    display: block;
-    max-inline-size: 280px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .scanned-url-item.scan-odd {
+    background: rgba(243, 100, 88, 0.08);
+    border-color: rgba(243, 100, 88, 0.22);
+  }
+  .scanned-url-item.scan-odd:hover {
+    background: rgba(243, 100, 88, 0.12);
+    border-color: rgba(243, 100, 88, 0.3);
+  }
+  .scanned-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-inline-size: 0;
+  }
+  .scanned-url {
+    color: var(--color-on-primary);
+    word-break: break-all;
+    font-size: 13px;
+  }
+  .scanned-redirect-tag {
+    font-size: 11px;
+    color: var(--color-mute);
   }
   .scan-diff-note {
-    display: block;
-    margin-block-start: 4px;
-    font-size: 12px;
+    font-size: 11px;
     color: var(--color-brand);
+    font-weight: 500;
+  }
+  .scanned-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+  .scanned-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: var(--radius-app-sm);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 12px;
+    color: var(--color-ash);
+  }
+  .scanned-tag strong {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  .scanned-tag-dim {
+    color: var(--color-mute);
+    font-size: 11px;
+    font-family: var(--font-mono, monospace);
+  }
+  .badge-ok {
+    background: rgba(55, 205, 132, 0.12) !important;
+    color: var(--color-success) !important;
+    border: 1px solid rgba(55, 205, 132, 0.25) !important;
+  }
+  .badge-mixed {
+    background: rgba(243, 100, 88, 0.12) !important;
+    color: var(--color-brand) !important;
+    border: 1px solid rgba(243, 100, 88, 0.25) !important;
+  }
+  @media (max-width: 680px) {
+    .scanned-url-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .scanned-meta {
+      width: 100%;
+      justify-content: flex-start;
+    }
+    .scanned-url-item .unscanned-item-copy-btn {
+      align-self: flex-end;
+      margin-top: -28px;
+    }
   }
 
   /* Page-limit info popover (shared by scanner block + coverage line) */
