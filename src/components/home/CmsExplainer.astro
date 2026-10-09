@@ -1,8 +1,8 @@
 ---
 /**
- * CmsExplainer.astro — Comprehensive plain-English explainer on CMS detection,
+ * CmsExplainer.astro — Streamlined, high-readability explainer on CMS detection,
  * digital footprints, architecture variations, and non-invasive public inspection.
- * Clean, high-readability presentation with high contrast and balanced typography.
+ * Compact bento layout with high contrast, crisp typography, and balanced proportions.
  */
 ---
 
@@ -10,7 +10,7 @@
   <div class="container">
     <div class="section-header">
       <div class="eyebrow-lockup">
-        <h2 id="explainer-h2" class="type-display-sm section-title">
+        <h2 id="explainer-h2" class="section-title">
           What Is a CMS Detector?
         </h2>
         <p class="section-subtitle">
@@ -24,7 +24,7 @@
       <article class="explainer-card">
         <div class="card-head">
           <div class="icon-wrap icon-wrap--blue" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
               <line x1="8" y1="21" x2="16" y2="21"></line>
               <line x1="12" y1="17" x2="12" y2="21"></line>
@@ -38,18 +38,16 @@
         </h3>
 
         <p class="explainer-lead">
-          A <strong>Content Management System (CMS)</strong> is software that allows teams to create, edit, organize, and publish website content through an intuitive user interface—without writing raw HTML, CSS, or backend code for every update.
+          A <strong>Content Management System (CMS)</strong> is software that allows teams to create, edit, organize, and publish web content via visual interfaces—without coding HTML or backend scripts for every update.
         </p>
 
         <div class="architecture-split">
           <div class="arch-block">
             <div class="arch-block-head">
-              <span class="arch-title text-white">Open-Source Platforms</span>
+              <span class="arch-title text-white">Open-Source</span>
               <span class="arch-badge">Self-Hosted</span>
             </div>
-            <p class="arch-desc">
-              Complete source code access, database autonomy, and custom hosting environments.
-            </p>
+            <p class="arch-desc">Custom hosting, database autonomy & code access.</p>
             <div class="arch-tags">
               <span class="tech-pill">WordPress</span>
               <span class="tech-pill">Drupal</span>
@@ -59,59 +57,14 @@
 
           <div class="arch-block">
             <div class="arch-block-head">
-              <span class="arch-title text-white">Hosted Cloud Builders</span>
-              <span class="arch-badge">SaaS</span>
+              <span class="arch-title text-white">Hosted Builders</span>
+              <span class="arch-badge">SaaS Cloud</span>
             </div>
-            <p class="arch-desc">
-              Integrated hosting, visual drag-and-drop design editors, and managed edge CDNs.
-            </p>
+            <p class="arch-desc">Managed edge CDN, drag-and-drop & zero setup.</p>
             <div class="arch-tags">
               <span class="tech-pill">Shopify</span>
               <span class="tech-pill">Webflow</span>
               <span class="tech-pill">Squarespace</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="cms-workflow">
-          <div class="workflow-header">
-            <span class="workflow-eyebrow">How a CMS Powers Modern Websites</span>
-          </div>
-          <div class="workflow-list">
-            <div class="workflow-item">
-              <div class="workflow-bullet" aria-hidden="true">
-                <span class="workflow-dot"></span>
-              </div>
-              <div class="workflow-content">
-                <span class="workflow-name text-white">Visual Authoring & Editorial Workflow</span>
-                <p class="workflow-desc">
-                  WYSIWYG dashboards, block builders, revisions, and role permissions allow non-technical teams to publish without coding.
-                </p>
-              </div>
-            </div>
-
-            <div class="workflow-item">
-              <div class="workflow-bullet" aria-hidden="true">
-                <span class="workflow-dot"></span>
-              </div>
-              <div class="workflow-content">
-                <span class="workflow-name text-white">Structured Data & Asset Management</span>
-                <p class="workflow-desc">
-                  Databases organize posts, taxonomy tags, custom fields, and media assets into structured, queryable schemas.
-                </p>
-              </div>
-            </div>
-
-            <div class="workflow-item">
-              <div class="workflow-bullet" aria-hidden="true">
-                <span class="workflow-dot"></span>
-              </div>
-              <div class="workflow-content">
-                <span class="workflow-name text-white">Dynamic Template Rendering</span>
-                <p class="workflow-desc">
-                  Server engines transform database records into cacheable, accessible HTML markup delivered directly to visitors.
-                </p>
-              </div>
             </div>
           </div>
         </div>
@@ -128,7 +81,7 @@
       <article class="explainer-card">
         <div class="card-head">
           <div class="icon-wrap icon-wrap--brand" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="11" cy="11" r="8"></circle>
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               <path d="M11 8v6"></path>
@@ -143,7 +96,7 @@
         </h3>
 
         <p class="explainer-lead">
-          When a web server delivers a page, it intentionally transmits observable technical signals. An automated <strong>CMS detector</strong> parses these deterministic footprints:
+          When delivering pages, web servers transmit observable footprints. An automated CMS detector parses these deterministic technical signals:
         </p>
 
         <div class="signal-inspector">
@@ -153,10 +106,10 @@
               <span class="signal-title text-white">HTML Meta Generator</span>
             </div>
             <div class="code-pill">
-              <code>&lt;meta name="generator" content="WordPress 6.7"&gt;</code>
+              <code>&lt;meta name="generator" content="WordPress"&gt;</code>
             </div>
             <p class="signal-note">
-              Self-declared platform metadata embedded in the document <code>&lt;head&gt;</code> by platforms like WordPress and Webflow.
+              Self-declared platform metadata embedded in the document <code>&lt;head&gt;</code>.
             </p>
           </div>
 
@@ -169,7 +122,7 @@
               <code>/wp-content/themes/</code> <span class="code-divider">·</span> <code>/sites/default/files/</code>
             </div>
             <p class="signal-note">
-              Predictable folder hierarchies for stylesheets, themes, plugins, and uploaded media.
+              Predictable folder hierarchies for stylesheets, themes, and plugins.
             </p>
           </div>
 
@@ -182,7 +135,7 @@
               <code>cdn.shopify.com</code> <span class="code-divider">·</span> <code>static.parastorage.com</code>
             </div>
             <p class="signal-note">
-              Dedicated cloud delivery endpoints tied directly to managed platforms like Shopify and Wix.
+              Dedicated cloud endpoints tied directly to managed platforms like Shopify and Wix.
             </p>
           </div>
 
@@ -192,10 +145,10 @@
               <span class="signal-title text-white">HTTP Response Headers</span>
             </div>
             <div class="code-pill">
-              <code>x-generator: Drupal</code> <span class="code-divider">·</span> <code>x-powered-by: Craft CMS</code>
+              <code>x-generator: Drupal</code> <span class="code-divider">·</span> <code>x-powered-by</code>
             </div>
             <p class="signal-note">
-              Server-level response headers as cataloged on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" target="_blank" rel="noopener noreferrer" class="text-link-soft">MDN Web Docs</a>.
+              Server-level response headers cataloged on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" target="_blank" rel="noopener noreferrer" class="text-link-soft">MDN Web Docs</a>.
             </p>
           </div>
         </div>
@@ -205,7 +158,7 @@
       <article class="explainer-card">
         <div class="card-head">
           <div class="icon-wrap icon-wrap--purple" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
               <polyline points="2 17 12 22 22 17"></polyline>
               <polyline points="2 12 12 17 22 12"></polyline>
@@ -219,43 +172,37 @@
         </h3>
 
         <p class="explainer-lead">
-          No detector can identify 100% of websites. A result of <em>"No known platform detected"</em> or <em>"Custom CMS"</em> usually stems from intentional engineering architectures:
+          No detector can identify 100% of websites. A result of <em>"No known platform detected"</em> usually stems from modern architecture:
         </p>
 
         <div class="limit-items">
           <div class="limit-item">
             <div class="limit-item-header">
-              <div class="limit-badge-box">
-                <span class="limit-tag">Decoupled</span>
-              </div>
+              <span class="limit-tag">Decoupled</span>
               <h4 class="limit-heading text-white">Headless & Jamstack Architectures</h4>
             </div>
             <p class="limit-text">
-              A headless CMS (Sanity, Strapi, Contentful) manages data behind a private GraphQL or REST API, while a separate framework (Astro, Next.js, Nuxt) renders the HTML. The public DOM reflects only frontend code, keeping the CMS invisible.
+              A headless CMS (Sanity, Strapi, Contentful) manages data behind private APIs, while an SSG/SSR framework renders HTML, keeping the CMS invisible.
             </p>
           </div>
 
           <div class="limit-item">
             <div class="limit-item-header">
-              <div class="limit-badge-box">
-                <span class="limit-tag">Proprietary</span>
-              </div>
+              <span class="limit-tag">Proprietary</span>
               <h4 class="limit-heading text-white">Custom-Built Enterprise Backends</h4>
             </div>
             <p class="limit-text">
-              Many corporate websites run on bespoke internal engines written in Python (Django), Ruby on Rails, Go, or Java that share no common commercial signatures or asset conventions.
+              Bespoke internal engines written in Python (Django), Ruby on Rails, Go, or Java that share no common commercial signatures or asset conventions.
             </p>
           </div>
 
           <div class="limit-item">
             <div class="limit-item-header">
-              <div class="limit-badge-box">
-                <span class="limit-tag">Hardened</span>
-              </div>
+              <span class="limit-tag">Hardened</span>
               <h4 class="limit-heading text-white">Active Security Hardening</h4>
             </div>
             <p class="limit-text">
-              Site administrators often install security plugins or reverse proxy rules that strip <code>&lt;meta name="generator"&gt;</code> tags, obfuscate asset folder paths, and purge revealing headers to thwart automated scanning bots.
+              Site administrators often install security modules or proxies that strip <code>&lt;meta name="generator"&gt;</code> tags and obfuscate asset paths.
             </p>
           </div>
         </div>
@@ -265,7 +212,7 @@
       <article class="explainer-card">
         <div class="card-head">
           <div class="icon-wrap icon-wrap--green" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
               <polyline points="9 12 11 14 15 10"></polyline>
             </svg>
@@ -278,48 +225,48 @@
         </h3>
 
         <p class="explainer-lead">
-          Using our CMS detector is completely safe, legal, and non-invasive. The engine operates strictly identically to an everyday web browser loading a public URL:
+          Using our CMS detector is completely safe, legal, and non-invasive. The engine operates strictly identically to an everyday web browser:
         </p>
 
         <div class="safety-pillars">
           <div class="safety-pillar">
             <div class="safety-check" aria-hidden="true">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <div class="safety-content">
               <h4 class="safety-title text-white">100% Passive Read-Only Request</h4>
               <p class="safety-desc">
-                It only inspects public HTTP responses and HTML markup deliberately broadcast to every regular visitor.
+                Only inspects public HTTP responses and HTML markup deliberately broadcast to every regular visitor.
               </p>
             </div>
           </div>
 
           <div class="safety-pillar">
             <div class="safety-check" aria-hidden="true">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <div class="safety-content">
               <h4 class="safety-title text-white">Zero Exploitation or Penetration</h4>
               <p class="safety-desc">
-                It never bypasses authentication walls, probes private admin endpoints, touches databases, or exploits software vulnerabilities.
+                Never bypasses authentication walls, probes private admin endpoints, or exploits vulnerabilities.
               </p>
             </div>
           </div>
 
           <div class="safety-pillar">
             <div class="safety-check" aria-hidden="true">
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
-                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
             <div class="safety-content">
               <h4 class="safety-title text-white">Ethical Developer Utility</h4>
               <p class="safety-desc">
-                Designed exclusively for developers, designers, and site owners to audit tech stacks, analyze competitor foundations, and research web trends.
+                Built for developers, designers, and site owners to audit tech stacks and research web trends.
               </p>
             </div>
           </div>
@@ -336,43 +283,43 @@
 
 <style>
   .cms-explainer-section {
-    padding-block: clamp(48px, 6vw, 80px);
+    padding-block: clamp(36px, 4vw, 54px);
     border-block-start: 1px solid var(--color-hairline-soft);
     position: relative;
   }
 
   .section-header {
-    margin-block-end: var(--spacing-xl);
+    margin-block-end: clamp(18px, 2.5vw, 24px);
   }
 
   .section-title {
     color: var(--color-on-primary);
-    margin-block: 0 var(--spacing-xs);
-    font-size: clamp(30px, 4vw, 42px);
-    font-weight: 500;
-    line-height: 1.15;
-    letter-spacing: -0.025em;
+    margin-block: 0 6px;
+    font-size: clamp(24px, 3.2vw, 32px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
 
   .section-subtitle {
     margin: 0;
-    max-inline-size: 780px;
-    font-size: clamp(17px, 2vw, 19px);
-    line-height: 1.6;
+    max-inline-size: 720px;
+    font-size: clamp(14px, 1.6vw, 15.5px);
+    line-height: 1.5;
     color: #cbd5e1;
   }
 
-  /* 2x2 Bento Grid */
+  /* Compact 2x2 Bento Grid */
   .explainer-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--spacing-lg);
+    gap: 16px;
   }
 
   @media (min-width: 900px) {
     .explainer-grid {
       grid-template-columns: repeat(2, 1fr);
-      gap: var(--spacing-xl);
+      gap: 18px;
     }
   }
 
@@ -380,7 +327,7 @@
   .explainer-card {
     display: flex;
     flex-direction: column;
-    padding: clamp(24px, 3.5vw, 36px);
+    padding: clamp(16px, 2vw, 22px);
     background: linear-gradient(180deg, rgba(32, 32, 32, 0.75) 0%, rgba(20, 20, 20, 0.9) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-marketing);
@@ -391,20 +338,20 @@
   .explainer-card:hover {
     border-color: rgba(255, 255, 255, 0.22);
     transform: translateY(-2px);
-    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.45);
   }
 
   .card-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-block-end: var(--spacing-md);
+    margin-block-end: 10px;
   }
 
   .icon-wrap {
-    width: 40px;
-    height: 40px;
-    border-radius: var(--radius-app-md);
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-app-sm);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -436,31 +383,31 @@
 
   .card-tag {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: #cbd5e1;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     background-color: rgba(255, 255, 255, 0.06);
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: var(--radius-app-xs);
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .explainer-heading {
     color: #ffffff;
-    margin: 0 0 10px 0;
-    font-size: 22px;
+    margin: 0 0 6px 0;
+    font-size: 17px;
     line-height: 1.3;
     font-weight: 600;
-    letter-spacing: -0.015em;
+    letter-spacing: -0.01em;
   }
 
   .explainer-lead {
-    margin: 0 0 var(--spacing-md) 0;
-    font-size: 15.5px;
-    line-height: 1.65;
-    color: #e2e8f0;
+    margin: 0 0 12px 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #cbd5e1;
   }
 
   .explainer-lead strong {
@@ -472,8 +419,8 @@
   .architecture-split {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
-    margin-block-end: var(--spacing-md);
+    gap: 8px;
+    margin-block-end: 12px;
   }
 
   @media (min-width: 520px) {
@@ -483,13 +430,13 @@
   }
 
   .arch-block {
-    padding: 14px;
+    padding: 10px 12px;
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-app-md);
+    border-radius: var(--radius-app-sm);
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px;
   }
 
   .arch-block-head {
@@ -500,132 +447,60 @@
   }
 
   .arch-title {
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 600;
     color: #ffffff;
   }
 
   .arch-badge {
     font-family: var(--font-mono);
-    font-size: 11px;
-    color: #cbd5e1;
-    background-color: rgba(255, 255, 255, 0.08);
-    padding: 2px 7px;
+    font-size: 10.5px;
+    color: #94a3b8;
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 1px 6px;
     border-radius: var(--radius-app-xs);
     border: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .arch-desc {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.55;
-    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #94a3b8;
   }
 
   .arch-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 5px;
     margin-block-start: 2px;
   }
 
   .tech-pill {
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     color: #f8fafc;
     background-color: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 2px 8px;
+    padding: 1px 6px;
     border-radius: var(--radius-app-xs);
-  }
-
-  /* Card 1: Workflow / How it powers websites */
-  .cms-workflow {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 14px 16px;
-    background-color: rgba(255, 255, 255, 0.025);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-app-md);
-    margin-block-end: 12px;
-  }
-
-  .workflow-header {
-    display: flex;
-    align-items: center;
-  }
-
-  .workflow-eyebrow {
-    font-family: var(--font-mono);
-    font-size: 11.5px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #94a3b8;
-  }
-
-  .workflow-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .workflow-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .workflow-bullet {
-    padding-top: 6px;
-    flex-shrink: 0;
-  }
-
-  .workflow-dot {
-    display: block;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background-color: var(--color-link-blue-soft);
-    box-shadow: 0 0 6px rgba(85, 190, 255, 0.4);
-  }
-
-  .workflow-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .workflow-name {
-    font-size: 14.5px;
-    font-weight: 600;
-    color: #ffffff;
-    line-height: 1.3;
-  }
-
-  .workflow-desc {
-    margin: 0;
-    font-size: 13.5px;
-    line-height: 1.55;
-    color: #cbd5e1;
   }
 
   .stat-callout {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    padding: 12px 16px;
+    gap: 12px;
+    padding: 8px 12px;
     background-color: rgba(243, 100, 88, 0.07);
-    border: 1px solid rgba(243, 100, 88, 0.22);
-    border-radius: var(--radius-app-md);
+    border: 1px solid rgba(243, 100, 88, 0.2);
+    border-radius: var(--radius-app-sm);
     margin-block-start: auto;
   }
 
   .stat-number {
     font-family: var(--font-mono);
-    font-size: 26px;
+    font-size: 20px;
     font-weight: 700;
     line-height: 1;
     color: #f87171;
@@ -634,8 +509,8 @@
 
   .stat-text {
     margin: 0;
-    font-size: 14.5px;
-    line-height: 1.55;
+    font-size: 12.5px;
+    line-height: 1.45;
     color: #e2e8f0;
   }
 
@@ -643,24 +518,24 @@
   .signal-inspector {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     margin-block-start: auto;
   }
 
   .signal-row {
-    padding: 12px 14px;
+    padding: 8px 10px;
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-app-md);
+    border-radius: var(--radius-app-sm);
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 4px;
   }
 
   .signal-meta {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
   }
 
   .signal-badge {
@@ -668,27 +543,27 @@
     color: #fca5a5;
     background-color: rgba(243, 100, 88, 0.14);
     border: 1px solid rgba(243, 100, 88, 0.25);
-    padding: 2px 7px;
+    padding: 1px 6px;
     border-radius: var(--radius-app-xs);
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 500;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.02em;
   }
 
   .signal-title {
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 600;
     color: #ffffff;
   }
 
   .code-pill {
     font-family: var(--font-mono);
-    font-size: 13.5px;
+    font-size: 11.5px;
     color: #f8fafc;
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 6px 10px;
+    background-color: rgba(0, 0, 0, 0.45);
+    padding: 3px 8px;
     border-radius: var(--radius-app-xs);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     overflow-x: auto;
     white-space: nowrap;
   }
@@ -700,17 +575,17 @@
 
   .signal-note {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.55;
-    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #94a3b8;
   }
 
   .signal-note code {
     font-family: var(--font-mono);
-    font-size: 12.5px;
+    font-size: 11px;
     background-color: rgba(255, 255, 255, 0.08);
     color: #f1f5f9;
-    padding: 1px 5px;
+    padding: 1px 4px;
     border-radius: 3px;
   }
 
@@ -718,24 +593,24 @@
   .limit-items {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     margin-block-start: auto;
   }
 
   .limit-item {
-    padding: 14px;
+    padding: 9px 11px;
     background-color: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-app-md);
+    border-radius: var(--radius-app-sm);
     display: flex;
     flex-direction: column;
-    gap: 7px;
+    gap: 4px;
   }
 
   .limit-item-header {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 7px;
   }
 
   .limit-tag {
@@ -743,33 +618,32 @@
     color: #d8b4fe;
     background-color: rgba(168, 85, 247, 0.14);
     border: 1px solid rgba(168, 85, 247, 0.28);
-    padding: 2px 7px;
+    padding: 1px 6px;
     border-radius: var(--radius-app-xs);
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 500;
-    letter-spacing: 0.03em;
   }
 
   .limit-heading {
     margin: 0;
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 600;
     color: #ffffff;
   }
 
   .limit-text {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 12.5px;
+    line-height: 1.45;
     color: #cbd5e1;
   }
 
   .limit-text code {
     font-family: var(--font-mono);
-    font-size: 12.5px;
+    font-size: 11px;
     background-color: rgba(255, 255, 255, 0.08);
     color: #f1f5f9;
-    padding: 1px 5px;
+    padding: 1px 4px;
     border-radius: 3px;
   }
 
@@ -777,19 +651,19 @@
   .safety-pillars {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    margin-block-end: var(--spacing-md);
+    gap: 10px;
+    margin-block-end: 12px;
   }
 
   .safety-pillar {
     display: flex;
-    gap: 12px;
+    gap: 9px;
     align-items: flex-start;
   }
 
   .safety-check {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background-color: rgba(55, 205, 132, 0.14);
     border: 1px solid rgba(55, 205, 132, 0.35);
@@ -803,46 +677,46 @@
   .safety-content {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
   }
 
   .safety-title {
     margin: 0;
-    font-size: 15px;
+    font-size: 13.5px;
     font-weight: 600;
     color: #ffffff;
   }
 
   .safety-desc {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 12.5px;
+    line-height: 1.45;
     color: #cbd5e1;
   }
 
   .trust-ribbon {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
+    gap: 8px;
+    padding: 8px 12px;
     background-color: rgba(55, 205, 132, 0.06);
     border: 1px solid rgba(55, 205, 132, 0.22);
-    border-radius: var(--radius-app-md);
+    border-radius: var(--radius-app-sm);
     margin-block-start: auto;
   }
 
   .trust-dot {
-    width: 7px;
-    height: 7px;
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
     background-color: var(--color-success);
-    box-shadow: 0 0 8px var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
     flex-shrink: 0;
   }
 
   .trust-text {
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 11.5px;
     color: #e2e8f0;
     line-height: 1.4;
   }
