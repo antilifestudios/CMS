@@ -73,6 +73,49 @@
           </div>
         </div>
 
+        <div class="cms-workflow">
+          <div class="workflow-header">
+            <span class="workflow-eyebrow">How a CMS Powers Modern Websites</span>
+          </div>
+          <div class="workflow-list">
+            <div class="workflow-item">
+              <div class="workflow-bullet" aria-hidden="true">
+                <span class="workflow-dot"></span>
+              </div>
+              <div class="workflow-content">
+                <span class="workflow-name text-white">Visual Authoring & Editorial Workflow</span>
+                <p class="workflow-desc">
+                  WYSIWYG dashboards, block builders, revisions, and role permissions allow non-technical teams to publish without coding.
+                </p>
+              </div>
+            </div>
+
+            <div class="workflow-item">
+              <div class="workflow-bullet" aria-hidden="true">
+                <span class="workflow-dot"></span>
+              </div>
+              <div class="workflow-content">
+                <span class="workflow-name text-white">Structured Data & Asset Management</span>
+                <p class="workflow-desc">
+                  Databases organize posts, taxonomy tags, custom fields, and media assets into structured, queryable schemas.
+                </p>
+              </div>
+            </div>
+
+            <div class="workflow-item">
+              <div class="workflow-bullet" aria-hidden="true">
+                <span class="workflow-dot"></span>
+              </div>
+              <div class="workflow-content">
+                <span class="workflow-name text-white">Dynamic Template Rendering</span>
+                <p class="workflow-desc">
+                  Server engines transform database records into cacheable, accessible HTML markup delivered directly to visitors.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="stat-callout">
           <div class="stat-number">>68%</div>
           <p class="stat-text">
@@ -495,6 +538,78 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2px 8px;
     border-radius: var(--radius-app-xs);
+  }
+
+  /* Card 1: Workflow / How it powers websites */
+  .cms-workflow {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 16px;
+    background-color: rgba(255, 255, 255, 0.025);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-app-md);
+    margin-block-end: 12px;
+  }
+
+  .workflow-header {
+    display: flex;
+    align-items: center;
+  }
+
+  .workflow-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+  }
+
+  .workflow-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .workflow-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .workflow-bullet {
+    padding-top: 6px;
+    flex-shrink: 0;
+  }
+
+  .workflow-dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--color-link-blue-soft);
+    box-shadow: 0 0 6px rgba(85, 190, 255, 0.4);
+  }
+
+  .workflow-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .workflow-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+
+  .workflow-desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #cbd5e1;
   }
 
   .stat-callout {
