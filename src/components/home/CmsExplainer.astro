@@ -2,6 +2,7 @@
 /**
  * CmsExplainer.astro — Comprehensive plain-English explainer on CMS detection,
  * digital footprints, architecture variations, and non-invasive public inspection.
+ * Clean, high-readability presentation with high contrast and balanced typography.
  */
 ---
 
@@ -9,86 +10,282 @@
   <div class="container">
     <div class="section-header">
       <div class="eyebrow-lockup">
-        <span class="eyebrow type-mono-eyebrow text-brand">Educational Overview</span>
         <h2 id="explainer-h2" class="type-display-sm section-title">
           What Is a CMS Detector?
         </h2>
-        <p class="type-subtitle text-ash section-subtitle">
+        <p class="section-subtitle">
           A plain-English guide to content management systems, digital footprints, and how automated tools identify website platforms.
         </p>
       </div>
     </div>
 
     <div class="explainer-grid">
-      <!-- Article block 1 -->
-      <article class="explainer-card card-dark">
-        <h3 class="type-heading-sm explainer-heading">
+      <!-- Card 1: What is a CMS -->
+      <article class="explainer-card">
+        <div class="card-head">
+          <div class="icon-wrap icon-wrap--blue" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </div>
+          <span class="card-tag">Architecture & Adoption</span>
+        </div>
+
+        <h3 class="explainer-heading">
           What Is a Content Management System (CMS)?
         </h3>
-        <p class="type-body-sm text-ash">
-          A <strong>Content Management System (CMS)</strong> is software that allows people to create, edit, organize, and publish website content through a user-friendly interface—without having to write raw HTML, CSS, or backend code for every update.
+
+        <p class="explainer-lead">
+          A <strong>Content Management System (CMS)</strong> is software that allows teams to create, edit, organize, and publish website content through an intuitive user interface—without writing raw HTML, CSS, or backend code for every update.
         </p>
-        <p class="type-body-sm text-ash">
-          Today, according to independent market surveys by <a href="https://w3techs.com/technologies/overview/content_management" target="_blank" rel="noopener noreferrer" class="text-link-soft">W3Techs CMS usage statistics</a>, over 68% of all websites use an identifiable content management system. Leading open-source platforms like <a href="https://wordpress.org/documentation/" target="_blank" rel="noopener noreferrer" class="text-link-soft">WordPress</a> and <a href="https://www.drupal.org/docs" target="_blank" rel="noopener noreferrer" class="text-link-soft">Drupal</a> power blogs, news portals, and enterprise sites, while hosted platforms like <a href="https://shopify.dev/docs" target="_blank" rel="noopener noreferrer" class="text-link-soft">Shopify</a> and <a href="https://university.webflow.com/" target="_blank" rel="noopener noreferrer" class="text-link-soft">Webflow</a> provide integrated hosting and visual editors.
-        </p>
+
+        <div class="architecture-split">
+          <div class="arch-block">
+            <div class="arch-block-head">
+              <span class="arch-title text-white">Open-Source Platforms</span>
+              <span class="arch-badge">Self-Hosted</span>
+            </div>
+            <p class="arch-desc">
+              Complete source code access, database autonomy, and custom hosting environments.
+            </p>
+            <div class="arch-tags">
+              <span class="tech-pill">WordPress</span>
+              <span class="tech-pill">Drupal</span>
+              <span class="tech-pill">Joomla</span>
+            </div>
+          </div>
+
+          <div class="arch-block">
+            <div class="arch-block-head">
+              <span class="arch-title text-white">Hosted Cloud Builders</span>
+              <span class="arch-badge">SaaS</span>
+            </div>
+            <p class="arch-desc">
+              Integrated hosting, visual drag-and-drop design editors, and managed edge CDNs.
+            </p>
+            <div class="arch-tags">
+              <span class="tech-pill">Shopify</span>
+              <span class="tech-pill">Webflow</span>
+              <span class="tech-pill">Squarespace</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="stat-callout">
+          <div class="stat-number">>68%</div>
+          <p class="stat-text">
+            of all websites run on an identifiable CMS platform according to independent data from <a href="https://w3techs.com/technologies/overview/content_management" target="_blank" rel="noopener noreferrer" class="text-link-soft">W3Techs CMS usage statistics</a>.
+          </p>
+        </div>
       </article>
 
-      <!-- Article block 2 -->
-      <article class="explainer-card card-dark">
-        <h3 class="type-heading-sm explainer-heading">
+      <!-- Card 2: How detection works -->
+      <article class="explainer-card">
+        <div class="card-head">
+          <div class="icon-wrap icon-wrap--brand" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <path d="M11 8v6"></path>
+              <path d="M8 11h6"></path>
+            </svg>
+          </div>
+          <span class="card-tag">Signal Harvesting</span>
+        </div>
+
+        <h3 class="explainer-heading">
           How a CMS Detector Finds Platform Clues
         </h3>
-        <p class="type-body-sm text-ash">
-          When a web server delivers a page to your browser, it includes dozens of observable technical signals that reveal the software stack powering the page. A <strong>CMS detector</strong> automates the process of reading these clues:
+
+        <p class="explainer-lead">
+          When a web server delivers a page, it intentionally transmits observable technical signals. An automated <strong>CMS detector</strong> parses these deterministic footprints:
         </p>
-        <ul class="explainer-list type-body-sm text-ash">
-          <li>
-            <strong>HTML Meta Generator Tags:</strong> Many CMS platforms declare themselves in the document <code>&lt;head&gt;</code>, such as <code>&lt;meta name="generator" content="WordPress 6.7"&gt;</code> or <code>&lt;meta name="generator" content="Webflow"&gt;</code>.
-          </li>
-          <li>
-            <strong>Asset Directory Patterns:</strong> Platforms store theme stylesheets and scripts in standardized directories, such as <code>/wp-content/themes/</code> (WordPress) or <code>/sites/default/files/</code> (Drupal).
-          </li>
-          <li>
-            <strong>Hosted Script Hostnames:</strong> Platforms like Shopify and Wix load storefront libraries from specific CDN domains, such as <code>cdn.shopify.com</code> or <code>static.parastorage.com</code>.
-          </li>
-          <li>
-            <strong>HTTP Response Headers:</strong> Web servers append revealing header fields to HTTP responses, such as <code>x-generator: Drupal</code>, <code>x-powered-by: Craft CMS</code>, or <code>x-shopify-stage</code>, as documented on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" target="_blank" rel="noopener noreferrer" class="text-link-soft">MDN Web Docs</a>.
-          </li>
-        </ul>
+
+        <div class="signal-inspector">
+          <div class="signal-row">
+            <div class="signal-meta">
+              <span class="signal-badge">Head Tag</span>
+              <span class="signal-title text-white">HTML Meta Generator</span>
+            </div>
+            <div class="code-pill">
+              <code>&lt;meta name="generator" content="WordPress 6.7"&gt;</code>
+            </div>
+            <p class="signal-note">
+              Self-declared platform metadata embedded in the document <code>&lt;head&gt;</code> by platforms like WordPress and Webflow.
+            </p>
+          </div>
+
+          <div class="signal-row">
+            <div class="signal-meta">
+              <span class="signal-badge">File Path</span>
+              <span class="signal-title text-white">Asset Directory Structures</span>
+            </div>
+            <div class="code-pill">
+              <code>/wp-content/themes/</code> <span class="code-divider">·</span> <code>/sites/default/files/</code>
+            </div>
+            <p class="signal-note">
+              Predictable folder hierarchies for stylesheets, themes, plugins, and uploaded media.
+            </p>
+          </div>
+
+          <div class="signal-row">
+            <div class="signal-meta">
+              <span class="signal-badge">CDN Host</span>
+              <span class="signal-title text-white">Hosted Script Hostnames</span>
+            </div>
+            <div class="code-pill">
+              <code>cdn.shopify.com</code> <span class="code-divider">·</span> <code>static.parastorage.com</code>
+            </div>
+            <p class="signal-note">
+              Dedicated cloud delivery endpoints tied directly to managed platforms like Shopify and Wix.
+            </p>
+          </div>
+
+          <div class="signal-row">
+            <div class="signal-meta">
+              <span class="signal-badge">Header</span>
+              <span class="signal-title text-white">HTTP Response Headers</span>
+            </div>
+            <div class="code-pill">
+              <code>x-generator: Drupal</code> <span class="code-divider">·</span> <code>x-powered-by: Craft CMS</code>
+            </div>
+            <p class="signal-note">
+              Server-level response headers as cataloged on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" target="_blank" rel="noopener noreferrer" class="text-link-soft">MDN Web Docs</a>.
+            </p>
+          </div>
+        </div>
       </article>
 
-      <!-- Article block 3 -->
-      <article class="explainer-card card-dark">
-        <h3 class="type-heading-sm explainer-heading">
+      <!-- Card 3: Why some sites cannot be identified -->
+      <article class="explainer-card">
+        <div class="card-head">
+          <div class="icon-wrap icon-wrap--purple" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+          <span class="card-tag">Detection Limits</span>
+        </div>
+
+        <h3 class="explainer-heading">
           Why Some Websites Cannot Be Identified
         </h3>
-        <p class="type-body-sm text-ash">
-          No detector can identify 100% of websites. A result of "No known platform detected" or "Custom CMS" happens for several legitimate technical reasons:
+
+        <p class="explainer-lead">
+          No detector can identify 100% of websites. A result of <em>"No known platform detected"</em> or <em>"Custom CMS"</em> usually stems from intentional engineering architectures:
         </p>
-        <ul class="explainer-list type-body-sm text-ash">
-          <li>
-            <strong>Custom-Built Backends:</strong> Many corporate and enterprise websites use proprietary internal platforms written in Python (Django), Ruby on Rails, or Java that share no common commercial signatures.
-          </li>
-          <li>
-            <strong>Headless & Decoupled Stacks:</strong> In headless architectures, a CMS (like Sanity, Strapi, or Contentful) manages content behind an API, while a separate frontend framework (like Astro, Next.js, or Nuxt) renders the HTML. The public HTML exposes only the frontend framework, completely hiding the CMS.
-          </li>
-          <li>
-            <strong>Security Hardening:</strong> Site administrators often install security plugins or web server rules that strip <code>generator</code> meta tags, rename asset directories, and scrub identifying HTTP headers to reduce targeted automated bot probing.
-          </li>
-        </ul>
+
+        <div class="limit-items">
+          <div class="limit-item">
+            <div class="limit-item-header">
+              <div class="limit-badge-box">
+                <span class="limit-tag">Decoupled</span>
+              </div>
+              <h4 class="limit-heading text-white">Headless & Jamstack Architectures</h4>
+            </div>
+            <p class="limit-text">
+              A headless CMS (Sanity, Strapi, Contentful) manages data behind a private GraphQL or REST API, while a separate framework (Astro, Next.js, Nuxt) renders the HTML. The public DOM reflects only frontend code, keeping the CMS invisible.
+            </p>
+          </div>
+
+          <div class="limit-item">
+            <div class="limit-item-header">
+              <div class="limit-badge-box">
+                <span class="limit-tag">Proprietary</span>
+              </div>
+              <h4 class="limit-heading text-white">Custom-Built Enterprise Backends</h4>
+            </div>
+            <p class="limit-text">
+              Many corporate websites run on bespoke internal engines written in Python (Django), Ruby on Rails, Go, or Java that share no common commercial signatures or asset conventions.
+            </p>
+          </div>
+
+          <div class="limit-item">
+            <div class="limit-item-header">
+              <div class="limit-badge-box">
+                <span class="limit-tag">Hardened</span>
+              </div>
+              <h4 class="limit-heading text-white">Active Security Hardening</h4>
+            </div>
+            <p class="limit-text">
+              Site administrators often install security plugins or reverse proxy rules that strip <code>&lt;meta name="generator"&gt;</code> tags, obfuscate asset folder paths, and purge revealing headers to thwart automated scanning bots.
+            </p>
+          </div>
+        </div>
       </article>
 
-      <!-- Article block 4 -->
-      <article class="explainer-card card-dark">
-        <h3 class="type-heading-sm explainer-heading">
+      <!-- Card 4: Safe, Public, Non-Invasive -->
+      <article class="explainer-card">
+        <div class="card-head">
+          <div class="icon-wrap icon-wrap--green" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+          </div>
+          <span class="card-tag">Ethics & Compliance</span>
+        </div>
+
+        <h3 class="explainer-heading">
           Safe, Public, Non-Invasive Inspection
         </h3>
-        <p class="type-body-sm text-ash">
-          Using a CMS detector is completely safe, legal, and non-invasive. The detector works exactly like a regular web browser (such as Google Chrome or Mozilla Firefox) requesting a public webpage:
+
+        <p class="explainer-lead">
+          Using our CMS detector is completely safe, legal, and non-invasive. The engine operates strictly identically to an everyday web browser loading a public URL:
         </p>
-        <p class="type-body-sm text-ash">
-          It only inspects the public HTTP responses and HTML markup that the website intentionally sends to every visitor. It never attempts to bypass login walls, access private databases, penetrate internal servers, or exploit vulnerabilities. It is purely an analytical utility for developers, designers, and site owners to inspect public web technologies.
-        </p>
+
+        <div class="safety-pillars">
+          <div class="safety-pillar">
+            <div class="safety-check" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="safety-content">
+              <h4 class="safety-title text-white">100% Passive Read-Only Request</h4>
+              <p class="safety-desc">
+                It only inspects public HTTP responses and HTML markup deliberately broadcast to every regular visitor.
+              </p>
+            </div>
+          </div>
+
+          <div class="safety-pillar">
+            <div class="safety-check" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="safety-content">
+              <h4 class="safety-title text-white">Zero Exploitation or Penetration</h4>
+              <p class="safety-desc">
+                It never bypasses authentication walls, probes private admin endpoints, touches databases, or exploits software vulnerabilities.
+              </p>
+            </div>
+          </div>
+
+          <div class="safety-pillar">
+            <div class="safety-check" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+                <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="safety-content">
+              <h4 class="safety-title text-white">Ethical Developer Utility</h4>
+              <p class="safety-desc">
+                Designed exclusively for developers, designers, and site owners to audit tech stacks, analyze competitor foundations, and research web trends.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="trust-ribbon">
+          <span class="trust-dot"></span>
+          <span class="trust-text">Standard HTTP/2 GET Request · No Credentials Required · Strictly Read-Only</span>
+        </div>
       </article>
     </div>
   </div>
@@ -96,8 +293,9 @@
 
 <style>
   .cms-explainer-section {
-    padding-block: var(--spacing-section-lg);
+    padding-block: clamp(48px, 6vw, 80px);
     border-block-start: 1px solid var(--color-hairline-soft);
+    position: relative;
   }
 
   .section-header {
@@ -106,68 +304,432 @@
 
   .section-title {
     color: var(--color-on-primary);
-    margin-block: var(--spacing-xs) var(--spacing-xs);
+    margin-block: 0 var(--spacing-xs);
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
   }
 
   .section-subtitle {
     margin: 0;
-    max-inline-size: 680px;
+    max-inline-size: 780px;
+    font-size: clamp(17px, 2vw, 19px);
+    line-height: 1.6;
+    color: #cbd5e1;
   }
 
+  /* 2x2 Bento Grid */
   .explainer-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);
   }
 
-  @media (min-width: 860px) {
+  @media (min-width: 900px) {
     .explainer-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: var(--spacing-xl);
     }
   }
 
+  /* Card Styling */
   .explainer-card {
     display: flex;
     flex-direction: column;
-    padding: var(--spacing-xl);
-    background-color: var(--color-canvas-soft);
-    border: 1px solid var(--color-hairline-soft);
+    padding: clamp(24px, 3.5vw, 36px);
+    background: linear-gradient(180deg, rgba(32, 32, 32, 0.75) 0%, rgba(20, 20, 20, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-marketing);
-    gap: var(--spacing-sm);
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+    position: relative;
+  }
+
+  .explainer-card:hover {
+    border-color: rgba(255, 255, 255, 0.22);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--spacing-md);
+  }
+
+  .icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-app-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-wrap--blue {
+    background-color: rgba(85, 190, 255, 0.14);
+    color: #7dd3fc;
+    border: 1px solid rgba(85, 190, 255, 0.3);
+  }
+
+  .icon-wrap--brand {
+    background-color: rgba(243, 100, 88, 0.14);
+    color: #fca5a5;
+    border: 1px solid rgba(243, 100, 88, 0.3);
+  }
+
+  .icon-wrap--purple {
+    background-color: rgba(168, 85, 247, 0.14);
+    color: #d8b4fe;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+  }
+
+  .icon-wrap--green {
+    background-color: rgba(55, 205, 132, 0.14);
+    color: #4ade80;
+    border: 1px solid rgba(55, 205, 132, 0.3);
+  }
+
+  .card-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: #cbd5e1;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 3px 10px;
+    border-radius: var(--radius-app-xs);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .explainer-heading {
-    color: var(--color-on-primary);
-    margin: 0 0 var(--spacing-xs) 0;
-    font-size: 20px;
+    color: #ffffff;
+    margin: 0 0 10px 0;
+    font-size: 22px;
     line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: -0.015em;
   }
 
-  .explainer-card p {
-    margin: 0;
-    line-height: 1.6;
+  .explainer-lead {
+    margin: 0 0 var(--spacing-md) 0;
+    font-size: 15.5px;
+    line-height: 1.65;
+    color: #e2e8f0;
   }
 
-  .explainer-list {
-    margin: var(--spacing-xs) 0 0 0;
-    padding-inline-start: 20px;
+  .explainer-lead strong {
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  /* Card 1: Architecture Split */
+  .architecture-split {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-block-end: var(--spacing-md);
+  }
+
+  @media (min-width: 520px) {
+    .architecture-split {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .arch-block {
+    padding: 14px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-app-md);
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: 8px;
   }
 
-  .explainer-list li {
+  .arch-block-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+
+  .arch-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .arch-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #cbd5e1;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 2px 7px;
+    border-radius: var(--radius-app-xs);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .arch-desc {
+    margin: 0;
+    font-size: 14px;
     line-height: 1.55;
+    color: #cbd5e1;
   }
 
-  .explainer-list code {
+  .arch-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-block-start: 2px;
+  }
+
+  .tech-pill {
     font-family: var(--font-mono);
     font-size: 12px;
-    background-color: rgba(255, 255, 255, 0.06);
-    color: var(--color-on-primary);
-    padding: 1px 4px;
+    font-weight: 500;
+    color: #f8fafc;
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
     border-radius: var(--radius-app-xs);
+  }
+
+  .stat-callout {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: 12px 16px;
+    background-color: rgba(243, 100, 88, 0.07);
+    border: 1px solid rgba(243, 100, 88, 0.22);
+    border-radius: var(--radius-app-md);
+    margin-block-start: auto;
+  }
+
+  .stat-number {
+    font-family: var(--font-mono);
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: #f87171;
+    flex-shrink: 0;
+  }
+
+  .stat-text {
+    margin: 0;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: #e2e8f0;
+  }
+
+  /* Card 2: Signal Inspector */
+  .signal-inspector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-block-start: auto;
+  }
+
+  .signal-row {
+    padding: 12px 14px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-app-md);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .signal-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .signal-badge {
+    font-family: var(--font-mono);
+    color: #fca5a5;
+    background-color: rgba(243, 100, 88, 0.14);
+    border: 1px solid rgba(243, 100, 88, 0.25);
+    padding: 2px 7px;
+    border-radius: var(--radius-app-xs);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .signal-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .code-pill {
+    font-family: var(--font-mono);
+    font-size: 13.5px;
+    color: #f8fafc;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 6px 10px;
+    border-radius: var(--radius-app-xs);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .code-divider {
+    color: #94a3b8;
+    padding-inline: 4px;
+  }
+
+  .signal-note {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+
+  .signal-note code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* Card 3: Limits */
+  .limit-items {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-block-start: auto;
+  }
+
+  .limit-item {
+    padding: 14px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-app-md);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .limit-item-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .limit-tag {
+    font-family: var(--font-mono);
+    color: #d8b4fe;
+    background-color: rgba(168, 85, 247, 0.14);
+    border: 1px solid rgba(168, 85, 247, 0.28);
+    padding: 2px 7px;
+    border-radius: var(--radius-app-xs);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+  }
+
+  .limit-heading {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .limit-text {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .limit-text code {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #f1f5f9;
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* Card 4: Safety Pillars */
+  .safety-pillars {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-block-end: var(--spacing-md);
+  }
+
+  .safety-pillar {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .safety-check {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: rgba(55, 205, 132, 0.14);
+    border: 1px solid rgba(55, 205, 132, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .safety-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .safety-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .safety-desc {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #cbd5e1;
+  }
+
+  .trust-ribbon {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: rgba(55, 205, 132, 0.06);
+    border: 1px solid rgba(55, 205, 132, 0.22);
+    border-radius: var(--radius-app-md);
+    margin-block-start: auto;
+  }
+
+  .trust-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    box-shadow: 0 0 8px var(--color-success);
+    flex-shrink: 0;
+  }
+
+  .trust-text {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: #e2e8f0;
+    line-height: 1.4;
   }
 
   .text-link-soft {
@@ -178,6 +740,6 @@
   }
 
   .text-link-soft:hover {
-    color: var(--color-on-primary);
+    color: #ffffff;
   }
 </style>
