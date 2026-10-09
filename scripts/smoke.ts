@@ -35,9 +35,12 @@ async function main() {
       }
 
       console.log(`  Status: ${res.status}, Coverage duration: ${res.coverage.durationMs}ms`);
+      const sortedResults = [...res.data.results].sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
       const detectedMap = new Map<string, string>();
-      for (const r of res.data.results) {
-        detectedMap.set(r.category, r.name);
+      for (const r of sortedResults) {
+        if (!detectedMap.has(r.category)) {
+          detectedMap.set(r.category, r.name);
+        }
       }
 
       let itemPassed = true;
