@@ -7,6 +7,7 @@
   },
   "nav": {
     "home": "CMS Detector",
+    "tools": "Tools",
     "technology": "Technology",
     "technologyDetector": "Technology Detector",
     "technologyDesc": "CMS, framework, hosting & CDN in one scan",

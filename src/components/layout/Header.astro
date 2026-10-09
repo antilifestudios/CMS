@@ -3,7 +3,7 @@
  * Header — sticky nav bar with modern Vercel & Sanity UI aesthetics.
  * Features glassmorphic backdrop-blur, refined 1px micro-borders, glowing brand mark,
  * structured dropdown menus, accessible keyboard & touch interactions,
- * search button, theme toggle, and responsive mobile drawer.
+ * and responsive mobile drawer.
  */
 import NavIcon from './NavIcon.astro';
 import en from '../../i18n/en.json';
@@ -31,17 +31,35 @@ interface DropGroup {
   links: DropLink[];
 }
 
-const technologyGroup: DropGroup = {
-  id: 'technology',
-  label: t('technology', 'Technology'),
+const toolsGroup: DropGroup = {
+  id: 'tools',
+  label: t('tools', 'Tools'),
   links: [
     {
       href: '/',
       label: t('technologyDetector', 'Technology Detector'),
       desc: t('technologyDesc', 'CMS, framework, hosting & CDN in one scan'),
-      badge: 'Popular',
       icon: 'technology',
     },
+    {
+      href: '/growth-marketing-detector',
+      label: t('growthDetector', 'Growth & Marketing Detector'),
+      desc: t('growthDesc', 'Analytics, advertising, marketing, payments & support'),
+      icon: 'growth',
+    },
+    {
+      href: '/security-privacy-detector',
+      label: t('securityDetector', 'Security & Privacy Detector'),
+      desc: t('securityDesc', 'Security technologies, privacy & consent'),
+      icon: 'security',
+    },
+  ],
+};
+
+const themesGroup: DropGroup = {
+  id: 'themes',
+  label: t('themes', 'Themes'),
+  links: [
     {
       href: '/wordpress-theme-detector',
       label: t('wpDetector', 'WordPress Theme Detector'),
@@ -53,18 +71,6 @@ const technologyGroup: DropGroup = {
       label: t('shopifyDetector', 'Shopify Theme Detector'),
       desc: t('shopifyDesc', 'Theme name & ID from storefront data'),
       icon: 'shopify',
-    },
-    {
-      href: '/growth-marketing-detector',
-      label: t('growth', 'Growth & Marketing'),
-      desc: t('growthDesc', 'Analytics, advertising, marketing, payments & support'),
-      icon: 'growth',
-    },
-    {
-      href: '/security-privacy-detector',
-      label: t('security', 'Security & Privacy'),
-      desc: t('securityDesc', 'Security technologies, privacy & consent'),
-      icon: 'security',
     },
   ],
 };
@@ -114,32 +120,31 @@ const isGroupActive = (g: DropGroup): boolean =>
 <header class="nav-bar" role="banner">
   <div class="container">
     <nav class="nav-inner" aria-label="Main navigation">
-      <!-- Wordmark with Brand Glow & Tag -->
+      <!-- Wordmark with Brand Glow -->
       <a href="/" class="wordmark" aria-label="CMS Detector AI home">
         <span class="brand-dot-glow" aria-hidden="true"></span>
         <span class="wordmark-text">CMS Detector AI</span>
-        <span class="wordmark-tag">AI · EDGE</span>
       </a>
 
-      <!-- Desktop nav links + dropdowns -->
+      <!-- Desktop nav links + dropdowns (aligned next to logo) -->
       <ul class="nav-links" role="list" id="nav-links">
-        <!-- 1. Technology Dropdown -->
-        <li class="nav-item" data-group="technology">
+        <!-- 1. Tools Dropdown -->
+        <li class="nav-item" data-group="tools">
           <button
             type="button"
-            class={`nav-link nav-drop-btn${isGroupActive(technologyGroup) ? ' nav-link--active' : ''}`}
+            class={`nav-link nav-drop-btn${isGroupActive(toolsGroup) ? ' nav-link--active' : ''}`}
             aria-expanded="false"
             aria-haspopup="true"
-            aria-controls="nav-panel-technology"
+            aria-controls="nav-panel-tools"
           >
-            <span>{technologyGroup.label}</span>
+            <span>{toolsGroup.label}</span>
             <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
               <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
-          <div class="nav-panel" id="nav-panel-technology" hidden>
+          <div class="nav-panel" id="nav-panel-tools" hidden>
             <ul role="list" class="nav-panel-list">
-              {technologyGroup.links.map((l) => (
+              {toolsGroup.links.map((l) => (
                 <li>
                   <a
                     href={l.href}
@@ -162,7 +167,46 @@ const isGroupActive = (g: DropGroup): boolean =>
           </div>
         </li>
 
-        <!-- 2. Blog Link (Single link, NO dropdown) -->
+        <!-- 2. Themes Dropdown -->
+        <li class="nav-item" data-group="themes">
+          <button
+            type="button"
+            class={`nav-link nav-drop-btn${isGroupActive(themesGroup) ? ' nav-link--active' : ''}`}
+            aria-expanded="false"
+            aria-haspopup="true"
+            aria-controls="nav-panel-themes"
+          >
+            <span>{themesGroup.label}</span>
+            <svg class="chevron" width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 4.5 6 8l3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="nav-panel" id="nav-panel-themes" hidden>
+            <ul role="list" class="nav-panel-list">
+              {themesGroup.links.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    class={`nav-panel-link${currentPath === l.href ? ' nav-panel-link--active' : ''}`}
+                  >
+                    <span class="nav-panel-icon-box">
+                      {l.icon && <NavIcon name={l.icon} size={16} />}
+                    </span>
+                    <span class="nav-panel-text">
+                      <span class="nav-panel-title-row">
+                        <span class="nav-panel-title">{l.label}</span>
+                        {l.badge && <span class="nav-panel-badge">{l.badge}</span>}
+                      </span>
+                      <span class="nav-panel-desc">{l.desc}</span>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </li>
+
+        <!-- 3. Blog Link (Single link, NO dropdown) -->
         <li class="nav-item">
           <a
             href="/blog"
@@ -173,7 +217,7 @@ const isGroupActive = (g: DropGroup): boolean =>
           </a>
         </li>
 
-        <!-- 3. More Dropdown -->
+        <!-- 4. More Dropdown -->
         <li class="nav-item" data-group="more">
           <button
             type="button"
@@ -212,74 +256,16 @@ const isGroupActive = (g: DropGroup): boolean =>
           </div>
         </li>
 
-        <!-- Mobile-only quick actions in drawer -->
+        <!-- Mobile-only CTA in drawer -->
         <li class="nav-item mobile-actions-item">
-          <div class="mobile-actions-row">
-            <button
-              type="button"
-              class="mobile-action-btn search-trigger"
-              aria-label="Scan or search website"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
-              </svg>
-              <span>Search</span>
-            </button>
-            <button
-              type="button"
-              class="mobile-action-btn mobile-theme-btn"
-              aria-label="Toggle dark/light theme"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="4"/>
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-              </svg>
-              <span>Theme</span>
-            </button>
-          </div>
           <a href="/#detector-root" class="btn btn-primary mobile-scan-btn">
             Scan Website
           </a>
         </li>
       </ul>
 
-      <!-- Right cluster: Search icon, Theme toggle, and Scan Website button -->
+      <!-- Right cluster: Scan Website CTA button -->
       <div class="nav-actions">
-        <!-- Search trigger button -->
-        <button
-          type="button"
-          class="nav-icon-btn search-trigger"
-          id="header-search-btn"
-          aria-label="Scan or search website"
-          title="Scan or search website"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="11" cy="11" r="8"/>
-            <path d="m21 21-4.35-4.35"/>
-          </svg>
-        </button>
-
-        <!-- Theme toggle button -->
-        <button
-          type="button"
-          class="nav-icon-btn theme-toggle-btn"
-          id="header-theme-toggle"
-          aria-label="Toggle dark/light theme"
-          title="Toggle dark/light theme"
-        >
-          <!-- Moon icon (shows in light mode) -->
-          <svg class="theme-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
-          </svg>
-          <!-- Sun icon (shows in dark mode) -->
-          <svg class="theme-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4"/>
-            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
-          </svg>
-        </button>
-
-        <!-- Scan Website CTA button -->
         <a href="/#detector-root" class="btn btn-primary nav-scan-btn" id="nav-cta">
           <span>Scan Website</span>
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
@@ -316,18 +302,12 @@ const isGroupActive = (g: DropGroup): boolean =>
     border-block-end: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-  }
-
-  :global(html[data-theme="light"]) .nav-bar {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-block-end: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .nav-inner {
     display: flex;
     align-items: center;
-    gap: 24px;
+    gap: 28px;
     width: 100%;
   }
 
@@ -346,22 +326,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     letter-spacing: -0.02em;
   }
 
-  .wordmark-tag {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 0.06em;
-    padding: 2px 6px;
-    border-radius: var(--radius-app-xs);
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    color: var(--color-mute);
-  }
-
-  :global(html[data-theme="light"]) .wordmark-tag {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.1);
-  }
-
   .nav-links {
     display: flex;
     align-items: center;
@@ -369,7 +333,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     list-style: none;
     margin: 0;
     padding: 0;
-    margin-inline-start: auto;
   }
 
   .nav-item {
@@ -398,12 +361,6 @@ const isGroupActive = (g: DropGroup): boolean =>
   .nav-link--active {
     color: var(--color-on-primary);
     background-color: rgba(255, 255, 255, 0.08);
-  }
-
-  :global(html[data-theme="light"]) .nav-link:hover,
-  :global(html[data-theme="light"]) .nav-link--active {
-    background-color: rgba(0, 0, 0, 0.06);
-    color: var(--color-ink);
   }
 
   .chevron {
@@ -435,13 +392,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     z-index: 200;
   }
 
-  :global(html[data-theme="light"]) .nav-panel {
-    background-color: rgba(255, 255, 255, 0.98);
-    border-color: rgba(0, 0, 0, 0.12);
-    box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
-  }
-
-  .nav-item:last-child .nav-panel,
   .nav-item[data-group="more"] .nav-panel {
     inset-inline-start: auto;
     inset-inline-end: 0;
@@ -482,21 +432,10 @@ const isGroupActive = (g: DropGroup): boolean =>
     transition: border-color 0.15s ease, color 0.15s ease, background-color 0.15s ease;
   }
 
-  :global(html[data-theme="light"]) .nav-panel-icon-box {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: rgba(0, 0, 0, 0.08);
-  }
-
   .nav-panel-link:hover,
   .nav-panel-link--active {
     background-color: rgba(255, 255, 255, 0.06);
     color: var(--color-on-primary);
-  }
-
-  :global(html[data-theme="light"]) .nav-panel-link:hover,
-  :global(html[data-theme="light"]) .nav-panel-link--active {
-    background-color: rgba(0, 0, 0, 0.04);
-    color: var(--color-ink);
   }
 
   .nav-panel-link:hover .nav-panel-icon-box,
@@ -504,13 +443,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     background-color: rgba(255, 255, 255, 0.1);
     border-color: rgba(255, 255, 255, 0.2);
     color: var(--color-on-primary);
-  }
-
-  :global(html[data-theme="light"]) .nav-panel-link:hover .nav-panel-icon-box,
-  :global(html[data-theme="light"]) .nav-panel-link--active .nav-panel-icon-box {
-    background-color: rgba(0, 0, 0, 0.08);
-    border-color: rgba(0, 0, 0, 0.16);
-    color: var(--color-ink);
   }
 
   .nav-panel-text {
@@ -530,10 +462,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     font-size: 13.5px;
     font-weight: 500;
     color: var(--color-on-primary);
-  }
-
-  :global(html[data-theme="light"]) .nav-panel-title {
-    color: var(--color-ink);
   }
 
   .nav-panel-badge {
@@ -564,52 +492,7 @@ const isGroupActive = (g: DropGroup): boolean =>
     align-items: center;
     gap: 8px;
     flex-shrink: 0;
-    margin-inline-start: 12px;
-  }
-
-  .nav-icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: var(--radius-full);
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    color: var(--color-ash);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  :global(html[data-theme="light"]) .nav-icon-btn {
-    border-color: rgba(0, 0, 0, 0.1);
-    color: var(--color-ink);
-  }
-
-  .nav-icon-btn:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.2);
-    color: var(--color-on-primary);
-  }
-
-  :global(html[data-theme="light"]) .nav-icon-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
-    border-color: rgba(0, 0, 0, 0.2);
-  }
-
-  /* Theme toggle icon state */
-  .theme-icon-moon {
-    display: none;
-  }
-  .theme-icon-sun {
-    display: block;
-  }
-
-  :global(html[data-theme="light"]) .theme-icon-moon {
-    display: block;
-  }
-  :global(html[data-theme="light"]) .theme-icon-sun {
-    display: none;
+    margin-inline-start: auto;
   }
 
   .nav-scan-btn {
@@ -637,10 +520,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     background-color: var(--color-on-primary);
     border-radius: 2px;
     transition: transform 0.2s ease, opacity 0.2s ease;
-  }
-
-  :global(html[data-theme="light"]) .hamburger-bar {
-    background-color: var(--color-ink);
   }
 
   .hamburger[aria-expanded="true"] .hamburger-bar:nth-child(1) {
@@ -686,11 +565,6 @@ const isGroupActive = (g: DropGroup): boolean =>
       overflow-y: auto;
     }
 
-    :global(html[data-theme="light"]) .nav-links {
-      background-color: rgba(255, 255, 255, 0.98);
-      border-block-start-color: rgba(0, 0, 0, 0.08);
-    }
-
     .nav-links.is-open {
       display: flex;
     }
@@ -698,10 +572,6 @@ const isGroupActive = (g: DropGroup): boolean =>
     .nav-item {
       inline-size: 100%;
       border-block-end: 1px solid rgba(255, 255, 255, 0.06);
-    }
-
-    :global(html[data-theme="light"]) .nav-item {
-      border-block-end-color: rgba(0, 0, 0, 0.06);
     }
 
     .nav-drop-btn {
@@ -740,33 +610,6 @@ const isGroupActive = (g: DropGroup): boolean =>
       gap: 16px;
       padding-block: 24px 12px;
       border-block-end: none;
-    }
-
-    .mobile-actions-row {
-      display: flex;
-      gap: 12px;
-    }
-
-    .mobile-action-btn {
-      flex: 1;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 12px;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--color-on-primary);
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius-app-md);
-      cursor: pointer;
-    }
-
-    :global(html[data-theme="light"]) .mobile-action-btn {
-      color: var(--color-ink);
-      background: rgba(0, 0, 0, 0.04);
-      border-color: rgba(0, 0, 0, 0.1);
     }
 
     .mobile-scan-btn {
@@ -902,37 +745,4 @@ const isGroupActive = (g: DropGroup): boolean =>
       }
     }
   });
-
-  // Search trigger buttons
-  const searchTriggers = document.querySelectorAll('.search-trigger');
-  searchTriggers.forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      setMobileMenu(false);
-      if (window.location.pathname === '/') {
-        const input = document.getElementById('url-input') as HTMLInputElement | null;
-        input?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        input?.focus();
-      } else {
-        window.location.href = '/?focus=1';
-      }
-    });
-  });
-
-  // Theme toggle buttons (desktop + mobile)
-  function toggleTheme(): void {
-    const current = document.documentElement.getAttribute('data-theme') || 'dark';
-    const next = current === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    try {
-      localStorage.setItem('theme', next);
-    } catch {
-      // ignore
-    }
-  }
-
-  const themeToggle = document.getElementById('header-theme-toggle');
-  themeToggle?.addEventListener('click', toggleTheme);
-
-  const mobileThemeBtn = document.querySelector('.mobile-theme-btn');
-  mobileThemeBtn?.addEventListener('click', toggleTheme);
 </script>
