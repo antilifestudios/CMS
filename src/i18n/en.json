@@ -1,8 +1,8 @@
 {
   "site": {
     "name": "CMS Detector AI",
-    "tagline": "What CMS Is This Website Using?",
-    "description": "Instantly detect what CMS, framework, or platform any website uses — free, no sign-up, evidence-based results in under 3 seconds.",
+    "tagline": "Identify Website Platforms & Technologies",
+    "description": "Use our CMS detector to identify the content management system behind a website. Scan a domain to discover supported CMS platforms and CDN providers.",
     "url": "https://cmsdetectorai.com"
   },
   "nav": {
@@ -87,14 +87,14 @@
     ]
   },
   "hero": {
-    "eyebrow": "Free · Instant · Evidence-based",
-    "h1": "What CMS Is This Website Using?",
-    "subtitle": "Paste any URL and we'll identify the platform, theme, framework, and hosting — with proof, not guesses.",
+    "eyebrow": "Deterministic Web Intelligence · Cloudflare Edge",
+    "h1": "CMS Detector",
+    "subtitle": "Discover which CMS powers a website, with additional detection of its CDN provider and other supported technologies.",
     "inputPlaceholder": "https://example.com",
     "inputLabel": "Website URL",
     "submitButton": "Detect",
     "detectingLabel": "Detecting…",
-    "inputHint": "Accepts bare domains. No account needed.",
+    "inputHint": "Accepts bare domains (e.g. example.com) or full URLs. Zero registration required.",
     "recentLabel": "Recent:",
     "clearRecent": "Clear"
   },
@@ -268,8 +268,8 @@
   },
   "seo": {
     "home": {
-      "title": "CMS Detector: What CMS Is This Website Using? | CMS Detector AI",
-      "description": "Free, instant CMS detection — discover the platform, theme, and hosting of any website with evidence-based results. No sign-up needed."
+      "title": "CMS Detector – Identify Website Platforms & Technologies",
+      "description": "Use our CMS detector to identify the content management system behind a website. Scan a domain to discover supported CMS platforms and CDN providers."
     },
     "wpDetector": {
       "title": "WordPress Theme Detector — Find Any WordPress Theme Free",

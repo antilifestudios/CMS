@@ -1,0 +1,183 @@
+---
+/**
+ * CmsExplainer.astro — Comprehensive plain-English explainer on CMS detection,
+ * digital footprints, architecture variations, and non-invasive public inspection.
+ */
+---
+
+<section class="cms-explainer-section" id="what-is-a-cms-detector" aria-labelledby="explainer-h2">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow text-brand">Educational Overview</span>
+        <h2 id="explainer-h2" class="type-display-sm section-title">
+          What Is a CMS Detector?
+        </h2>
+        <p class="type-subtitle text-ash section-subtitle">
+          A plain-English guide to content management systems, digital footprints, and how automated tools identify website platforms.
+        </p>
+      </div>
+    </div>
+
+    <div class="explainer-grid">
+      <!-- Article block 1 -->
+      <article class="explainer-card card-dark">
+        <h3 class="type-heading-sm explainer-heading">
+          What Is a Content Management System (CMS)?
+        </h3>
+        <p class="type-body-sm text-ash">
+          A <strong>Content Management System (CMS)</strong> is software that allows people to create, edit, organize, and publish website content through a user-friendly interface—without having to write raw HTML, CSS, or backend code for every update.
+        </p>
+        <p class="type-body-sm text-ash">
+          Today, according to independent market surveys by <a href="https://w3techs.com/technologies/overview/content_management" target="_blank" rel="noopener noreferrer" class="text-link-soft">W3Techs CMS usage statistics</a>, over 68% of all websites use an identifiable content management system. Leading open-source platforms like <a href="https://wordpress.org/documentation/" target="_blank" rel="noopener noreferrer" class="text-link-soft">WordPress</a> and <a href="https://www.drupal.org/docs" target="_blank" rel="noopener noreferrer" class="text-link-soft">Drupal</a> power blogs, news portals, and enterprise sites, while hosted platforms like <a href="https://shopify.dev/docs" target="_blank" rel="noopener noreferrer" class="text-link-soft">Shopify</a> and <a href="/cms/webflow" class="text-link-soft">Webflow</a> provide integrated hosting and visual editors.
+        </p>
+      </article>
+
+      <!-- Article block 2 -->
+      <article class="explainer-card card-dark">
+        <h3 class="type-heading-sm explainer-heading">
+          How a CMS Detector Finds Platform Clues
+        </h3>
+        <p class="type-body-sm text-ash">
+          When a web server delivers a page to your browser, it includes dozens of observable technical signals that reveal the software stack powering the page. A <strong>CMS detector</strong> automates the process of reading these clues:
+        </p>
+        <ul class="explainer-list type-body-sm text-ash">
+          <li>
+            <strong>HTML Meta Generator Tags:</strong> Many CMS platforms declare themselves in the document <code>&lt;head&gt;</code>, such as <code>&lt;meta name="generator" content="WordPress 6.7"&gt;</code> or <code>&lt;meta name="generator" content="Webflow"&gt;</code>.
+          </li>
+          <li>
+            <strong>Asset Directory Patterns:</strong> Platforms store theme stylesheets and scripts in standardized directories, such as <code>/wp-content/themes/</code> (WordPress) or <code>/sites/default/files/</code> (Drupal).
+          </li>
+          <li>
+            <strong>Hosted Script Hostnames:</strong> Platforms like Shopify and Wix load storefront libraries from specific CDN domains, such as <code>cdn.shopify.com</code> or <code>static.parastorage.com</code>.
+          </li>
+          <li>
+            <strong>HTTP Response Headers:</strong> Web servers append revealing header fields to HTTP responses, such as <code>x-generator: Drupal</code>, <code>x-powered-by: Craft CMS</code>, or <code>x-shopify-stage</code>, as documented on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers" target="_blank" rel="noopener noreferrer" class="text-link-soft">MDN Web Docs</a>.
+          </li>
+        </ul>
+      </article>
+
+      <!-- Article block 3 -->
+      <article class="explainer-card card-dark">
+        <h3 class="type-heading-sm explainer-heading">
+          Why Some Websites Cannot Be Identified
+        </h3>
+        <p class="type-body-sm text-ash">
+          No detector can identify 100% of websites. A result of "No known platform detected" or "Custom CMS" happens for several legitimate technical reasons:
+        </p>
+        <ul class="explainer-list type-body-sm text-ash">
+          <li>
+            <strong>Custom-Built Backends:</strong> Many corporate and enterprise websites use proprietary internal platforms written in Python (Django), Ruby on Rails, or Java that share no common commercial signatures.
+          </li>
+          <li>
+            <strong>Headless & Decoupled Stacks:</strong> In headless architectures, a CMS (like Sanity, Strapi, or Contentful) manages content behind an API, while a separate frontend framework (like Astro, Next.js, or Nuxt) renders the HTML. The public HTML exposes only the frontend framework, completely hiding the CMS.
+          </li>
+          <li>
+            <strong>Security Hardening:</strong> Site administrators often install security plugins or web server rules that strip <code>generator</code> meta tags, rename asset directories, and scrub identifying HTTP headers to reduce targeted automated bot probing.
+          </li>
+        </ul>
+      </article>
+
+      <!-- Article block 4 -->
+      <article class="explainer-card card-dark">
+        <h3 class="type-heading-sm explainer-heading">
+          Safe, Public, Non-Invasive Inspection
+        </h3>
+        <p class="type-body-sm text-ash">
+          Using a CMS detector is completely safe, legal, and non-invasive. The detector works exactly like a regular web browser (such as Google Chrome or Mozilla Firefox) requesting a public webpage:
+        </p>
+        <p class="type-body-sm text-ash">
+          It only inspects the public HTTP responses and HTML markup that the website intentionally sends to every visitor. It never attempts to bypass login walls, access private databases, penetrate internal servers, or exploit vulnerabilities. It is purely an analytical utility for developers, designers, and site owners to inspect public web technologies.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cms-explainer-section {
+    padding-block: var(--spacing-section-lg);
+    border-block-start: 1px solid var(--color-hairline-soft);
+  }
+
+  .section-header {
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .section-title {
+    color: var(--color-on-primary);
+    margin-block: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .section-subtitle {
+    margin: 0;
+    max-inline-size: 680px;
+  }
+
+  .explainer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+  }
+
+  @media (min-width: 860px) {
+    .explainer-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--spacing-xl);
+    }
+  }
+
+  .explainer-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    gap: var(--spacing-sm);
+  }
+
+  .explainer-heading {
+    color: var(--color-on-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 20px;
+    line-height: 1.3;
+  }
+
+  .explainer-card p {
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .explainer-list {
+    margin: var(--spacing-xs) 0 0 0;
+    padding-inline-start: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .explainer-list li {
+    line-height: 1.55;
+  }
+
+  .explainer-list code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--color-on-primary);
+    padding: 1px 4px;
+    border-radius: var(--radius-app-xs);
+  }
+
+  .text-link-soft {
+    color: var(--color-link-blue-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+  }
+
+  .text-link-soft:hover {
+    color: var(--color-on-primary);
+  }
+</style>

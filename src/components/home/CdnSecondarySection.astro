@@ -1,0 +1,241 @@
+---
+/**
+ * CdnSecondarySection.astro — Secondary feature showcasing CDN provider detection.
+ * Clearly positioned as a complementary capability to the primary CMS Detector.
+ */
+
+const CDN_PROVIDERS = [
+  {
+    name: 'Cloudflare',
+    slug: 'cloudflare',
+    tag: 'Global Edge & Security',
+    signals: 'cf-ray, server: cloudflare, cf-cache-status',
+    desc: 'The most common edge network and reverse proxy, providing DDoS mitigation and edge caching.',
+  },
+  {
+    name: 'AWS CloudFront',
+    slug: 'aws-cloudfront',
+    tag: 'Amazon Web Services',
+    signals: 'x-amz-cf-id, x-amz-cf-pop, via: CloudFront',
+    desc: 'Amazon\'s low-latency CDN integrating natively with S3 buckets and AWS origin infrastructure.',
+  },
+  {
+    name: 'Fastly',
+    slug: 'fastly',
+    tag: 'Programmable Edge',
+    signals: 'x-served-by: cache-*-fastly, x-fastly-request-id',
+    desc: 'High-performance edge cloud known for real-time purging and Varnish Configuration Language (VCL).',
+  },
+  {
+    name: 'Vercel Edge Network',
+    slug: 'vercel',
+    tag: 'Serverless Edge',
+    signals: 'x-vercel-id, x-vercel-cache, server: Vercel',
+    desc: 'Global edge platform optimized for Next.js, frontend frameworks, and serverless edge functions.',
+  },
+  {
+    name: 'Netlify Edge',
+    slug: 'netlify',
+    tag: 'Jamstack & Edge',
+    signals: 'x-nf-request-id, server: Netlify',
+    desc: 'Edge deployment platform powering modern Jamstack applications and static site workflows.',
+  },
+  {
+    name: 'Akamai',
+    slug: 'akamai',
+    tag: 'Enterprise CDN',
+    signals: 'server: AkamaiGHost, x-akamai-request-id',
+    desc: 'Pioneering global content delivery network serving mission-critical enterprise traffic.',
+  },
+];
+---
+
+<section class="cdn-section" id="cdn-detection" aria-labelledby="cdn-h2">
+  <div class="container">
+    <div class="cdn-card card-dark">
+      <div class="cdn-header">
+        <span class="eyebrow type-mono-eyebrow text-mute">Complementary Feature</span>
+        <h2 id="cdn-h2" class="type-display-sm cdn-title">
+          Also Identify a Website's CDN Provider
+        </h2>
+        <p class="type-subtitle text-ash cdn-subtitle">
+          While CMS detection identifies <em>how</em> content is managed, our tool also inspects HTTP headers to identify <em>how</em> that content is delivered across global edge networks.
+        </p>
+      </div>
+
+      <div class="cdn-explainer-text type-body-sm text-ash">
+        <p>
+          A <strong>Content Delivery Network (CDN)</strong> distributes website static assets—including images, JavaScript bundles, stylesheets, and cached HTML—across a worldwide network of edge servers. As explained by the <a href="https://www.cloudflare.com/learning/cdn/what-is-a-cdn/" target="_blank" rel="noopener noreferrer" class="text-link-soft">Cloudflare Learning Center</a>, CDNs significantly reduce page latency by serving requests from edge locations closest to the visitor.
+        </p>
+        <p>
+          During every scan, our engine checks response headers and network markers for the following supported CDN and edge providers:
+        </p>
+      </div>
+
+      <div class="cdn-grid">
+        {CDN_PROVIDERS.map((provider) => (
+          <a href={`/cms/${provider.slug}`} class="cdn-item-card" title={`View ${provider.name} detection details`}>
+            <div class="cdn-item-top">
+              <span class="type-heading-sm cdn-provider-name">{provider.name}</span>
+              <span class="type-mono-micro text-mute">{provider.tag}</span>
+            </div>
+            <p class="type-body-sm text-ash cdn-provider-desc">
+              {provider.desc}
+            </p>
+            <div class="cdn-signals-row">
+              <span class="type-mono-micro text-mute">Headers:</span>
+              <code class="cdn-sig-code">{provider.signals}</code>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div class="cdn-note type-caption text-mute">
+        <span>Note: CDN detection reflects observable public edge headers. Some enterprise custom domains route through private origins or multi-tiered proxies that may mask the primary edge layer.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cdn-section {
+    padding-block: var(--spacing-section-lg);
+    border-block-start: 1px solid var(--color-hairline-soft);
+  }
+
+  .cdn-card {
+    padding: var(--spacing-xl);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  @media (min-width: 768px) {
+    .cdn-card {
+      padding: var(--spacing-xxl);
+    }
+  }
+
+  .cdn-header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .cdn-title {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .cdn-subtitle {
+    margin: 0;
+    max-inline-size: 720px;
+  }
+
+  .cdn-explainer-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    line-height: 1.6;
+    max-inline-size: 780px;
+  }
+
+  .cdn-explainer-text p {
+    margin: 0;
+  }
+
+  .cdn-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+    margin-block-start: var(--spacing-xs);
+  }
+
+  @media (min-width: 640px) {
+    .cdn-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cdn-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .cdn-item-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-lg);
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .cdn-item-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .cdn-item-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-block-end: var(--spacing-xs);
+    gap: var(--spacing-xs);
+    flex-wrap: wrap;
+  }
+
+  .cdn-provider-name {
+    color: var(--color-on-primary);
+    font-size: 17px;
+    margin: 0;
+  }
+
+  .cdn-provider-desc {
+    margin: 0 0 var(--spacing-md) 0;
+    line-height: 1.5;
+    flex: 1;
+    font-size: 13.5px;
+  }
+
+  .cdn-signals-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-block-start: var(--spacing-xs);
+    border-block-start: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .cdn-sig-code {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-ash);
+    padding: 1px 5px;
+    border-radius: var(--radius-app-xs);
+  }
+
+  .cdn-note {
+    line-height: 1.5;
+    padding-block-start: var(--spacing-xs);
+    border-block-start: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .text-link-soft {
+    color: var(--color-link-blue-soft);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .text-link-soft:hover {
+    color: var(--color-on-primary);
+  }
+</style>

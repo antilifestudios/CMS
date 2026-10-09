@@ -1,0 +1,320 @@
+---
+/**
+ * SupportedCmsGrid.astro — Showcase genuinely supported CMS platforms and builders.
+ * Connects directly to dedicated deep-dive guides at /cms/[slug].
+ */
+
+interface CmsItem {
+  name: string;
+  slug: string;
+  category: string;
+  share: string;
+  signals: string[];
+  description: string;
+}
+
+const SUPPORTED_CMS: CmsItem[] = [
+  {
+    name: 'WordPress',
+    slug: 'wordpress',
+    category: 'Open Source CMS',
+    share: '>43% of the web',
+    signals: ['meta generator', '/wp-content/', 'api.w.org REST link', 'style.css headers'],
+    description: 'The world\'s most popular CMS. We detect theme structures, core plugins, and REST API endpoints.',
+  },
+  {
+    name: 'Shopify',
+    slug: 'shopify',
+    category: 'Hosted E-Commerce',
+    share: 'Leading store platform',
+    signals: ['cdn.shopify.com', 'x-shopify-stage', 'Shopify.theme JS', 'storefront assets'],
+    description: 'Cloud commerce platform. We identify active Shopify themes, CDN assets, and checkout signatures.',
+  },
+  {
+    name: 'Drupal',
+    slug: 'drupal',
+    category: 'Enterprise Open Source',
+    share: 'Enterprise & Gov',
+    signals: ['x-generator: Drupal', 'x-drupal-cache', '/sites/default/files/', 'drupal.js'],
+    description: 'High-security enterprise CMS powering government, academic, and large publishing sites.',
+  },
+  {
+    name: 'Webflow',
+    slug: 'webflow',
+    category: 'Visual CMS & Builder',
+    share: 'Modern visual stack',
+    signals: ['meta generator: Webflow', 'assets.website-files.com', 'x-wf-request-id'],
+    description: 'Visual content platform used by agencies and SaaS companies for responsive custom design.',
+  },
+  {
+    name: 'Wix',
+    slug: 'wix',
+    category: 'Cloud Site Builder',
+    share: 'Millions of sites',
+    signals: ['Wix.com Website Builder', 'static.parastorage.com', 'x-wix-request-id'],
+    description: 'Hosted website builder. We recognize Wix Studio, editor signatures, and media delivery networks.',
+  },
+  {
+    name: 'Squarespace',
+    slug: 'squarespace',
+    category: 'Hosted Platform',
+    share: 'Creative & Small Business',
+    signals: ['Squarespace generator', 'static1.squarespace.com', 'ss- session cookies'],
+    description: 'All-in-one website platform popular with portfolios, restaurants, and creative businesses.',
+  },
+  {
+    name: 'Ghost',
+    slug: 'ghost',
+    category: 'Publishing & Headless',
+    share: 'Independent publishing',
+    signals: ['meta generator: Ghost', 'x-ghost-cache-status', '/content/images/', 'ghost.io'],
+    description: 'Fast Node.js publishing platform favored by newsletters, publications, and independent creators.',
+  },
+  {
+    name: 'Joomla',
+    slug: 'joomla',
+    category: 'Open Source CMS',
+    share: 'Community open-source',
+    signals: ['Joomla! generator tag', '/media/jui/', '/components/com_', 'joomla.js'],
+    description: 'Flexible open-source content management system powering international community portals.',
+  },
+  {
+    name: 'Craft CMS',
+    slug: 'craft-cms',
+    category: 'Developer-First CMS',
+    share: 'Bespoke web projects',
+    signals: ['x-powered-by: Craft CMS', 'CRAFT_CSRF_TOKEN', 'CraftSessionId'],
+    description: 'Tailored content management system designed for developers creating custom digital experiences.',
+  },
+  {
+    name: 'WooCommerce',
+    slug: 'woocommerce',
+    category: 'WordPress E-Commerce',
+    share: 'Leading WP store engine',
+    signals: ['/wp-content/plugins/woocommerce/', 'woocommerce.min.js', 'wc-session cookies'],
+    description: 'Open-source e-commerce solution built on WordPress for customizable merchant storefronts.',
+  },
+  {
+    name: 'Magento / Adobe Commerce',
+    slug: 'magento',
+    category: 'Enterprise E-Commerce',
+    share: 'High-volume commerce',
+    signals: ['meta generator: Magento', '/pub/static/', 'frontend session cookies'],
+    description: 'Complex e-commerce architecture for high-volume enterprise stores and B2B catalog sites.',
+  },
+  {
+    name: 'HubSpot CMS',
+    slug: 'hubspot-cms',
+    category: 'Inbound Marketing CMS',
+    share: 'B2B & Lead gen',
+    signals: ['x-hs-cf-cache-status', 'js.hs-scripts.com', 'hs-analytics.net'],
+    description: 'Integrated marketing and sales CMS focused on personalization, forms, and CRM integration.',
+  },
+];
+---
+
+<section class="supported-cms-section" id="supported-cms" aria-labelledby="supported-cms-h2">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow text-brand">Platform Coverage</span>
+        <h2 id="supported-cms-h2" class="type-display-sm section-title">
+          Supported CMS Platforms & Site Builders
+        </h2>
+        <p class="type-subtitle text-ash section-subtitle">
+          Our detection engine recognizes major content management systems and builders through verified, deterministic signatures. Explore our in-depth guides for each platform:
+        </p>
+      </div>
+    </div>
+
+    <div class="cms-grid">
+      {SUPPORTED_CMS.map((cms) => (
+        <a href={`/cms/${cms.slug}`} class="cms-card card-dark" title={`View ${cms.name} detection guide`}>
+          <div class="cms-card-top">
+            <span class="cms-category type-mono-micro text-mute">{cms.category}</span>
+            <span class="cms-share type-mono-micro text-brand">{cms.share}</span>
+          </div>
+
+          <h3 class="type-heading-sm cms-name">
+            {cms.name}
+            <svg class="cms-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M2.5 7h9M8 3.5l3.5 3.5L8 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </h3>
+
+          <p class="type-body-sm text-ash cms-desc">
+            {cms.description}
+          </p>
+
+          <div class="cms-signals">
+            <span class="cms-signals-label type-mono-micro text-mute">Key Signals:</span>
+            <div class="signals-tags">
+              {cms.signals.slice(0, 3).map((sig) => (
+                <code class="sig-tag">{sig}</code>
+              ))}
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <div class="cms-footer-strip">
+      <div class="cms-footer-text">
+        <span class="type-mono-caps text-mute">Looking for specialized theme inspection?</span>
+        <p class="type-body-sm text-ash" style="margin: 4px 0 0 0;">
+          Need to identify the specific theme, parent template, or author of a WordPress or Shopify store?
+        </p>
+      </div>
+      <div class="cms-footer-links">
+        <a href="/wordpress-theme-detector" class="btn btn-secondary-dark type-button-sm">
+          <span>WordPress Theme Detector</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="/shopify-theme-detector" class="btn btn-secondary-dark type-button-sm">
+          <span>Shopify Theme Detector</span>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+            <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .supported-cms-section {
+    padding-block: var(--spacing-section-lg);
+    border-block-start: 1px solid var(--color-hairline-soft);
+  }
+
+  .section-header {
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .section-title {
+    color: var(--color-on-primary);
+    margin-block: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .section-subtitle {
+    margin: 0;
+    max-inline-size: 680px;
+  }
+
+  .cms-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  @media (min-width: 640px) {
+    .cms-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .cms-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+  }
+
+  .cms-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+    text-decoration: none;
+  }
+
+  .cms-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(33, 33, 33, 0.95);
+    transform: translateY(-2px);
+  }
+
+  .cms-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block-end: var(--spacing-xs);
+  }
+
+  .cms-name {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--color-on-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+  }
+
+  .cms-arrow {
+    color: var(--color-mute);
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  .cms-card:hover .cms-arrow {
+    color: var(--color-brand);
+    transform: translateX(3px);
+  }
+
+  .cms-desc {
+    margin: 0 0 var(--spacing-md) 0;
+    flex: 1;
+    line-height: 1.5;
+  }
+
+  .cms-signals {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-block-start: var(--spacing-xs);
+    border-block-start: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .signals-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .sig-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--color-ash);
+    padding: 2px 6px;
+    border-radius: var(--radius-app-sm);
+  }
+
+  .cms-footer-strip {
+    margin-block-start: var(--spacing-xl);
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+  }
+
+  @media (min-width: 768px) {
+    .cms-footer-strip {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  .cms-footer-links {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+  }
+</style>

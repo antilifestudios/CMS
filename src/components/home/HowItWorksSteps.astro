@@ -1,0 +1,201 @@
+---
+/**
+ * HowItWorksSteps.astro — 4-step detection workflow explaining technical signals and honest uncertainty.
+ */
+---
+
+<section class="how-it-works-section" id="how-it-works" aria-labelledby="how-it-works-h2">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow text-mute">Detection Workflow</span>
+        <h2 id="how-it-works-h2" class="type-display-sm section-title">
+          How the CMS Detector Works
+        </h2>
+        <p class="type-subtitle text-ash section-subtitle">
+          From initial URL lookup to deterministic fingerprint matching—here is how our edge inspection engine identifies website platforms without guessing.
+        </p>
+      </div>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card card-dark">
+        <div class="step-badge">
+          <span class="step-num type-mono-caps text-brand">01</span>
+          <span class="step-tag type-mono-micro text-mute">Input & Validation</span>
+        </div>
+        <h3 class="type-heading-sm step-title">Enter Any Website or Domain</h3>
+        <p class="type-body-sm text-ash step-body">
+          Submit any website domain or path (e.g. <code>example.com</code> or <code>https://example.com/blog</code>). Our edge proxy validates the input format, guards against private IP subnets (SSRF protection), and executes a fast HTTPS document request.
+        </p>
+      </div>
+
+      <div class="step-card card-dark">
+        <div class="step-badge">
+          <span class="step-num type-mono-caps text-brand">02</span>
+          <span class="step-tag type-mono-micro text-mute">Signal Harvesting</span>
+        </div>
+        <h3 class="type-heading-sm step-title">Analyze Observable Technical Signals</h3>
+        <p class="type-body-sm text-ash step-body">
+          The engine inspects publicly delivered clues: HTTP response headers (<code>x-powered-by</code>, <code>x-generator</code>), HTML <code>&lt;meta name="generator"&gt;</code> tags, asset paths (such as <code>/wp-content/</code> or <code>/sites/default/files/</code>), script hostnames, and known public API endpoints.
+        </p>
+      </div>
+
+      <div class="step-card card-dark">
+        <div class="step-badge">
+          <span class="step-num type-mono-caps text-brand">03</span>
+          <span class="step-tag type-mono-micro text-mute">Engine Matching</span>
+        </div>
+        <h3 class="type-heading-sm step-title">Match Deterministic Signatures</h3>
+        <p class="type-body-sm text-ash step-body">
+          Harvested signals are cross-referenced against over 100 technology signatures. Each match calculates evidence strength across independent signal types (headers, HTML markers, scripts), assigning transparent confidence ratings (High, Medium, or Low).
+        </p>
+      </div>
+
+      <div class="step-card card-dark">
+        <div class="step-badge">
+          <span class="step-num type-mono-caps text-brand">04</span>
+          <span class="step-tag type-mono-micro text-mute">Verifiable Proof</span>
+        </div>
+        <h3 class="type-heading-sm step-title">Review CMS & CDN Results</h3>
+        <p class="type-body-sm text-ash step-body">
+          You receive an itemized report displaying the detected CMS platform, active CDN providers, and underlying frontend framework. Every detected technology includes the exact proof string (e.g., matched header value or HTML path) so you can verify the result.
+        </p>
+      </div>
+    </div>
+
+    <!-- Honest Uncertainty Notice -->
+    <div class="uncertainty-box card-dark">
+      <div class="uncertainty-icon" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <circle cx="10" cy="10" r="8.5" stroke="var(--color-brand)" stroke-width="1.5"/>
+          <path d="M10 6v5" stroke="var(--color-brand)" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="10" cy="14" r="0.9" fill="var(--color-brand)"/>
+        </svg>
+      </div>
+      <div class="uncertainty-content">
+        <h4 class="type-heading-sm text-white" style="margin: 0 0 4px 0;">
+          Honest Detection Transparency: Understanding Undetected Sites
+        </h4>
+        <p class="type-body-sm text-ash" style="margin: 0; line-height: 1.6;">
+          A missing detection does not guarantee a website does not use a CMS. Modern <strong>headless architectures</strong> (where WordPress or Contentful delivers content via API to a custom Astro, Next.js, or static frontend), <strong>custom reverse proxies</strong>, and <strong>hardened security settings</strong> often strip generator tags and standard asset paths. When signals are absent, our engine reports "No known platform detected" rather than guessing.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .how-it-works-section {
+    padding-block: var(--spacing-section-lg);
+    border-block-start: 1px solid var(--color-hairline-soft);
+  }
+
+  .section-header {
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .section-title {
+    color: var(--color-on-primary);
+    margin-block: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .section-subtitle {
+    margin: 0;
+    max-inline-size: 680px;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  @media (min-width: 640px) {
+    .steps-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .steps-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--spacing-lg);
+    }
+  }
+
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-xl);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    gap: var(--spacing-xs);
+  }
+
+  .step-badge {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: var(--spacing-xs);
+  }
+
+  .step-num {
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .step-title {
+    color: var(--color-on-primary);
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.3;
+  }
+
+  .step-body {
+    margin: 0;
+    line-height: 1.55;
+    font-size: 14px;
+  }
+
+  .step-body code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background-color: rgba(255, 255, 255, 0.06);
+    padding: 1px 4px;
+    border-radius: var(--radius-app-xs);
+    color: var(--color-on-primary);
+  }
+
+  .uncertainty-box {
+    margin-block-start: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background-color: rgba(243, 100, 88, 0.04);
+    border: 1px solid rgba(243, 100, 88, 0.25);
+    border-radius: var(--radius-marketing);
+    display: flex;
+    gap: var(--spacing-lg);
+    align-items: flex-start;
+  }
+
+  @media (max-width: 640px) {
+    .uncertainty-box {
+      flex-direction: column;
+      gap: var(--spacing-sm);
+    }
+  }
+
+  .uncertainty-icon {
+    flex-shrink: 0;
+    margin-block-start: 2px;
+  }
+
+  .uncertainty-content {
+    flex: 1;
+  }
+
+  .text-white {
+    color: var(--color-on-primary);
+  }
+</style>

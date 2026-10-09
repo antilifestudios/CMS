@@ -1,0 +1,131 @@
+---
+/**
+ * ToolIntro.astro — Short CMS-first tool introduction.
+ * Placed immediately after the hero scanner to give visitors clear,
+ * upfront guidance on what the detector does.
+ */
+---
+
+<section class="tool-intro-section" aria-label="Tool Overview">
+  <div class="container">
+    <div class="intro-card card-dark">
+      <div class="intro-text">
+        <span class="type-mono-eyebrow text-brand">CMS Detection Engine</span>
+        <h2 class="type-heading-md intro-title">
+          Fast, Evidence-Based Website Platform Inspection
+        </h2>
+        <p class="type-subtitle text-ash intro-body">
+          Use this CMS detector to discover which content management system powers any website. Submit a domain or page URL to inspect observable technology signals—identifying supported CMS platforms, site builders, and frameworks, with additional detection of its CDN provider and edge hosting layer.
+        </p>
+      </div>
+      <div class="intro-features">
+        <div class="intro-pill">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M8 1v14M1 8h14" stroke="var(--color-brand)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="type-caption-tight text-white">No Account Required</span>
+          <span class="type-mono-micro text-mute">Instant browser access</span>
+        </div>
+        <div class="intro-pill">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M13.5 4.5l-7 7L3 8" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="type-caption-tight text-white">Deterministic Signals</span>
+          <span class="type-mono-micro text-mute">Exact headers & tags</span>
+        </div>
+        <div class="intro-pill">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="8" r="6" stroke="var(--color-link-blue-soft)" stroke-width="1.8"/>
+            <path d="M8 4v4l2.5 2.5" stroke="var(--color-link-blue-soft)" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="type-caption-tight text-white">&lt; 3s Edge Speed</span>
+          <span class="type-mono-micro text-mute">Cloudflare Workers</span>
+        </div>
+        <div class="intro-pill">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="2" y="3" width="12" height="10" rx="2" stroke="var(--color-ash)" stroke-width="1.6"/>
+            <path d="M5 7h6M5 10h4" stroke="var(--color-ash)" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span class="type-caption-tight text-white">CDN Provider Detection</span>
+          <span class="type-mono-micro text-mute">Edge caching & proxy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .tool-intro-section {
+    padding-block-end: var(--spacing-xl);
+  }
+
+  .intro-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl);
+    background: linear-gradient(180deg, rgba(33, 33, 33, 0.6) 0%, rgba(18, 18, 18, 0.8) 100%);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+  }
+
+  @media (min-width: 900px) {
+    .intro-card {
+      grid-template-columns: 1.3fr 1fr;
+      align-items: center;
+      gap: var(--spacing-xxl);
+      padding: var(--spacing-xxl);
+    }
+  }
+
+  .intro-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .intro-title {
+    color: var(--color-on-primary);
+    margin: 0;
+  }
+
+  .intro-body {
+    margin: 0;
+    max-inline-size: 640px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .intro-features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-sm);
+  }
+
+  @media (max-width: 480px) {
+    .intro-features {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .intro-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: var(--spacing-md);
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-lg);
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .intro-pill:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .text-white {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+</style>

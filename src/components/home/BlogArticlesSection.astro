@@ -1,0 +1,206 @@
+---
+/**
+ * BlogArticlesSection.astro — Highlights real published guides & blog posts
+ * from src/content/blog/ to build topical authority and internal linking.
+ */
+
+interface ArticleItem {
+  slug: string;
+  title: string;
+  description: string;
+  tag: string;
+  readingTime: string;
+}
+
+const ARTICLES: ArticleItem[] = [
+  {
+    slug: 'how-to-find-a-cms',
+    title: 'How to Find What CMS a Website Uses: Step-by-Step Guide',
+    description: 'Learn how to inspect any website using browser DevTools, page source view-source indicators, HTTP response headers, and direct REST endpoint probes.',
+    tag: 'Inspection Guide',
+    readingTime: '4 min read',
+  },
+  {
+    slug: 'what-is-a-cms',
+    title: 'What Is a CMS? Architecture, Modern Types, and Comparisons',
+    description: 'An engineering-first explainer on traditional monolithic CMSs, modern headless content platforms, and closed website builders. Discover the trade-offs in speed and control.',
+    tag: 'Architecture',
+    readingTime: '4 min read',
+  },
+  {
+    slug: 'wordpress-signatures',
+    title: '5 Ways to Tell If a Website Is Built on WordPress',
+    description: 'Explore the most reliable forensic indicators of WordPress: meta generator tags, wp-content paths, the REST API namespace endpoint, and stylesheet headers.',
+    tag: 'WordPress',
+    readingTime: '3 min read',
+  },
+  {
+    slug: 'shopify-signatures',
+    title: 'How to Tell If a Store Is Running on Shopify',
+    description: 'Discover how to identify Shopify e-commerce stores using storefront asset URLs, CDN hostnames, JavaScript globals, and theme identifiers.',
+    tag: 'E-Commerce',
+    readingTime: '4 min read',
+  },
+  {
+    slug: 'how-it-works',
+    title: 'How Website Technology Detection Works: Under the Hood',
+    description: 'A deep dive into response header inspection, DOM fingerprinting, and subrequest edge execution inside Cloudflare Workers without executing untrusted client code.',
+    tag: 'Engineering',
+    readingTime: '5 min read',
+  },
+];
+---
+
+<section class="blog-articles-section" id="cms-guides" aria-labelledby="guides-h2">
+  <div class="container">
+    <div class="section-header">
+      <div class="eyebrow-lockup">
+        <span class="eyebrow type-mono-eyebrow text-brand">Educational Guides</span>
+        <h2 id="guides-h2" class="type-display-sm section-title">
+          CMS Detection Guides & Resources
+        </h2>
+        <p class="type-subtitle text-ash section-subtitle">
+          In-depth tutorials and architectural breakdowns to help you understand web technologies, inspect page source code, and identify website platforms manually.
+        </p>
+      </div>
+    </div>
+
+    <div class="articles-grid">
+      {ARTICLES.map((article) => (
+        <a href={`/blog/${article.slug}`} class="article-card card-dark" title={`Read: ${article.title}`}>
+          <div class="article-top">
+            <span class="type-mono-micro text-brand article-tag">{article.tag}</span>
+            <span class="type-mono-micro text-mute">{article.readingTime}</span>
+          </div>
+
+          <h3 class="type-heading-sm article-title">
+            {article.title}
+          </h3>
+
+          <p class="type-body-sm text-ash article-desc">
+            {article.description}
+          </p>
+
+          <span class="article-read-link type-caption-tight text-white">
+            <span>Read guide</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+              <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </a>
+      ))}
+    </div>
+
+    <div class="articles-footer">
+      <a href="/blog" class="btn btn-secondary-dark type-button-sm">
+        <span>View all articles & tutorials in the Blog</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+          <path d="M2.5 6h7M6.5 2.5 10 6l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .blog-articles-section {
+    padding-block: var(--spacing-section-lg);
+    border-block-start: 1px solid var(--color-hairline-soft);
+  }
+
+  .section-header {
+    margin-block-end: var(--spacing-xl);
+  }
+
+  .section-title {
+    color: var(--color-on-primary);
+    margin-block: var(--spacing-xs) var(--spacing-xs);
+  }
+
+  .section-subtitle {
+    margin: 0;
+    max-inline-size: 680px;
+  }
+
+  .articles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  @media (min-width: 640px) {
+    .articles-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .articles-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--spacing-lg);
+    }
+  }
+
+  .article-card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--spacing-lg);
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    text-decoration: none;
+    transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  }
+
+  .article-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    background-color: rgba(33, 33, 33, 0.95);
+    transform: translateY(-2px);
+  }
+
+  .article-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block-end: var(--spacing-xs);
+  }
+
+  .article-tag {
+    background-color: rgba(243, 100, 88, 0.1);
+    padding: 2px 6px;
+    border-radius: var(--radius-app-xs);
+  }
+
+  .article-title {
+    color: var(--color-on-primary);
+    margin: 0 0 var(--spacing-xs) 0;
+    font-size: 17px;
+    line-height: 1.35;
+  }
+
+  .article-desc {
+    margin: 0 0 var(--spacing-lg) 0;
+    line-height: 1.55;
+    flex: 1;
+    font-size: 13.5px;
+  }
+
+  .article-read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-on-primary);
+    transition: color 0.15s ease;
+    margin-block-start: auto;
+  }
+
+  .article-card:hover .article-read-link {
+    color: var(--color-brand);
+  }
+
+  .articles-footer {
+    display: flex;
+    justify-content: center;
+    margin-block-start: var(--spacing-xl);
+  }
+</style>
