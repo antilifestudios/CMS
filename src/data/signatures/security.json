@@ -156,7 +156,7 @@
     "name": "Fingerprint",
     "category": "security",
     "signals": [
-      { "type": "script-host", "pattern": "cdn\\.fingerprint\\.com/|cdn\\.fingerprintjs\\.com/|fp\\.cdn\\.io/v\\d+/", "weight": 92, "strength": "definitive", "description": "Known Fingerprint SDK detected" },
+      { "type": "script-host", "pattern": "cdn\\.fingerprint(js)?\\.com/|fp\\.cdn\\.io/v\\d+/", "weight": 92, "strength": "definitive", "description": "Known Fingerprint SDK detected" },
       { "type": "html-regex", "pattern": "FingerprintJS\\.load\\(|@fingerprintjs/fingerprintjs|fpjs\\.io/v\\d+|fingerprint\\.com/v\\d+/[^\"']+\\.js", "weight": 88, "strength": "definitive", "description": "Fingerprint device-identification call detected" }
     ]
   },

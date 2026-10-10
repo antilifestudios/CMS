@@ -16,6 +16,7 @@ import CmsExplainer from '../components/home/CmsExplainer.astro';
 import CdnSecondarySection from '../components/home/CdnSecondarySection.astro';
 import BlogArticlesSection from '../components/home/BlogArticlesSection.astro';
 import ExternalSourcesSection from '../components/home/ExternalSourcesSection.astro';
+import HomeMiniFaq, { miniFaqItems } from '../components/home/HomeMiniFaq.astro';
 import { SCAN_CONFIG } from '../lib/scan/config';
 import en from '../i18n/en.json';
 
@@ -103,6 +104,19 @@ const breadcrumbJsonLd = {
     },
   ],
 };
+
+const homeFaqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: miniFaqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
 ---
 
 <Base
@@ -110,7 +124,7 @@ const breadcrumbJsonLd = {
   description="Use our CMS detector to identify the content management system behind a website. Scan a domain to discover supported CMS platforms and CDN providers."
   pagePath="/"
   noindex={isShareView}
-  jsonLd={[webAppJsonLd, breadcrumbJsonLd]}
+  jsonLd={[webAppJsonLd, breadcrumbJsonLd, homeFaqJsonLd]}
 >
   <!-- ============================================================
     HERO  (dark section)
@@ -415,7 +429,12 @@ const breadcrumbJsonLd = {
   <ExternalSourcesSection />
 
   <!-- ============================================================
-    12. FINAL CALL TO ACTION
+    12. MINI FAQ (Compact, strictly 5 questions, Vercel/Sanity style)
+    ============================================================ -->
+  <HomeMiniFaq />
+
+  <!-- ============================================================
+    13. FINAL CALL TO ACTION
     ============================================================ -->
   <Section theme="dark" class="final-cta-section" style="border-block-start: 1px solid var(--color-hairline-soft);">
     <div class="container">
@@ -1231,13 +1250,20 @@ function renderDetection(d: Detection): string {
   const versionStr = d.version ? ` <span class="text-mute type-caption">v${esc(d.version)}</span>` : '';
   const showInHeadline = d.confidenceLabel === 'confirmed' || d.confidenceLabel === 'likely';
 
-  if (!showInHeadline) return '';
+  if (!showInHeadline || d.category === 'analytics') return '';
 
   const evidenceHtml = d.evidence
     .map((e) => `
       <li class="evidence-item">
         <span class="type-mono-micro evidence-type">${esc(SIGNAL_LABELS[e.type] ?? e.type)}</span>
         <code class="evidence-artifact">${esc(e.artifact)}</code>
+        <button type="button" class="evidence-copy-btn" data-copy-evidence="${esc(e.artifact)}" title="Copy reason" aria-label="Copy reason">
+          <svg class="copy-icon-svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span class="copy-label">Copy</span>
+        </button>
       </li>`)
     .join('');
 
@@ -1283,7 +1309,8 @@ function renderResults(data: {
   results: Detection[];
   isClientRendered: boolean;
 }): string {
-  const { finalUrl, results, isClientRendered } = data;
+  const { finalUrl, results: rawResults, isClientRendered } = data;
+  const results = rawResults.filter((r) => r.category !== 'analytics');
 
   const headlineResult = results.find(
     (r) => (r.confidenceLabel === 'confirmed' || r.confidenceLabel === 'likely') &&
@@ -1733,6 +1760,26 @@ function wireScanActions(scope: ParentNode): void {
       setTimeout(() => { b.style.color = ''; }, 1200);
     });
   });
+
+  // Copy evidence reasons to clipboard
+  scope.querySelectorAll('[data-copy-evidence]').forEach((btn) => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const b = btn as HTMLButtonElement;
+      const val = b.dataset.copyEvidence ?? '';
+      if (!val) return;
+      const ok = await copyText(val);
+      const label = b.querySelector<HTMLElement>('.copy-label');
+      if (ok) {
+        b.classList.add('is-copied');
+        if (label) label.textContent = 'Copied!';
+        setTimeout(() => {
+          b.classList.remove('is-copied');
+          if (label) label.textContent = 'Copy';
+        }, 1500);
+      }
+    });
+  });
 }
 
 // ----------------------------------------------------------------
@@ -1911,7 +1958,17 @@ function renderScanSummary(data: {
     return out;
   };
   const evList = (items: string[]): string => items.length > 0
-    ? `<ul class="evidence-list" role="list">${items.map((e) => `<li class="evidence-item"><code class="evidence-artifact">${esc(e)}</code></li>`).join('')}</ul>`
+    ? `<ul class="evidence-list" role="list">${items.map((e) => `
+        <li class="evidence-item">
+          <code class="evidence-artifact">${esc(e)}</code>
+          <button type="button" class="evidence-copy-btn" data-copy-evidence="${esc(e)}" title="Copy reason" aria-label="Copy reason">
+            <svg class="copy-icon-svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+            <span class="copy-label">Copy</span>
+          </button>
+        </li>`).join('')}</ul>`
     : '';
 
   // One card template for every category. Top to bottom, always:
@@ -1951,12 +2008,28 @@ function renderScanSummary(data: {
       groups.get(g)!.push(e);
     }
     return [...groups.entries()].map(([group, items]) => {
-      const lines = items.map((e) => `
+      const lines = items.map((e) => {
+        const copyPayload = e.sampleValue
+          ? (e.name && e.name !== e.sampleValue ? `${e.name}: ${e.sampleValue}` : e.sampleValue)
+          : e.name;
+        return `
         <li class="evidence-row">
-          <span class="evidence-name" title="${esc(e.name)}">${esc(e.name)}</span>
-          <span class="evidence-value" title="${esc(e.sampleValue)}">${esc(e.sampleValue)}</span>
-          <span class="evidence-count">${esc(String(e.pagesSeen))}/${esc(String(tech.checkedPages))}</span>
-        </li>`).join('');
+          <div class="evidence-main">
+            <span class="evidence-name" title="${esc(e.name)}">${esc(e.name)}</span>
+            <span class="evidence-value">${esc(e.sampleValue)}</span>
+          </div>
+          <div class="evidence-meta">
+            <span class="evidence-count">${esc(String(e.pagesSeen))}/${esc(String(tech.checkedPages))}</span>
+            <button type="button" class="evidence-copy-btn" data-copy-evidence="${esc(copyPayload)}" title="Copy reason" aria-label="Copy reason">
+              <svg class="copy-icon-svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+              <span class="copy-label">Copy</span>
+            </button>
+          </div>
+        </li>`;
+      }).join('');
       return `<li class="evidence-group"><span class="evidence-group-label type-mono-caps text-mute">${esc(GROUP_LABELS[group] ?? group)}</span><ul class="evidence-rows" role="list">${lines}</ul></li>`;
     }).join('');
   };
@@ -2632,6 +2705,7 @@ init();
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-xs);
+    flex-wrap: wrap;
   }
   .evidence-type {
     flex-shrink: 0;
@@ -2647,9 +2721,13 @@ init();
     font-size: 11px;
     color: var(--color-ash);
     word-break: break-all;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
     background-color: var(--color-canvas);
     padding: 2px 6px;
     border-radius: var(--radius-app-sm);
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   /* ---- One card template (scan summary cards) ---- */
@@ -2722,34 +2800,62 @@ init();
   }
 
   .evidence-row {
-    display: grid;
-    grid-template-columns: minmax(0, auto) minmax(0, 1fr) auto;
-    gap: var(--spacing-xs);
-    align-items: baseline;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
     background-color: var(--color-canvas);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: var(--radius-app-sm);
-    padding: 6px 8px;
+    padding: 7px 10px;
     min-width: 0;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
   }
 
-  .evidence-name,
+  .evidence-row:hover {
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .evidence-main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 6px 8px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .evidence-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--color-on-primary);
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    flex-shrink: 0;
+  }
+
   .evidence-value {
     font-family: var(--font-mono);
     font-size: 11px;
     line-height: 1.5;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--color-ash);
+    user-select: text;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    flex: 1 1 auto;
     min-width: 0;
   }
 
-  .evidence-name {
-    color: var(--color-on-primary);
-  }
-
-  .evidence-value {
-    color: var(--color-ash);
-    user-select: text;
+  .evidence-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: auto;
+    padding-top: 1px;
   }
 
   .evidence-count {
@@ -2759,6 +2865,41 @@ init();
     color: var(--color-mute);
     white-space: nowrap;
     font-variant-numeric: tabular-nums;
+  }
+
+  .evidence-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-xs);
+    color: var(--color-mute);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1;
+    padding: 3px 6px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+
+  .evidence-copy-btn:hover {
+    color: var(--color-on-primary);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+
+  .evidence-copy-btn.is-copied {
+    color: #4ade80;
+    border-color: rgba(74, 222, 128, 0.35);
+    background-color: rgba(74, 222, 128, 0.1);
+  }
+
+  .evidence-copy-btn svg {
+    flex-shrink: 0;
   }
 
   .result-actions-row {

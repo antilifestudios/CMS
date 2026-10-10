@@ -295,7 +295,7 @@
     "category": "chat",
     "signals": [
       { "type": "script-host", "pattern": "static\\.zdassets\\.com/ekr/|[^\\s\"']+\\.zendesk\\.com/embeddable_framework/main\\.js", "weight": 90, "strength": "strong" },
-      { "type": "html-regex", "pattern": "static\\.zdassets\\.com/ekr/[^\"']+\\.js|zE\\(\\s*['\"]webWidget|ze\\.activate\\(|d3v0px0pttie9i\\.cloudfront\\.net", "weight": 85, "strength": "strong" }
+      { "type": "html-regex", "pattern": "static\\.zdassets\\.com/ekr/[^/\"'\\s]+\\.js|zE\\(\\s*['\"]webWidget|ze\\.activate\\(|d3v0px0pttie9i\\.cloudfront\\.net", "weight": 85, "strength": "strong" }
     ]
   },
   {

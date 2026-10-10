@@ -1,0 +1,147 @@
+---
+/**
+ * HomeMiniFaq.astro — Homepage FAQ section.
+ * Consistent layout and typography with other pages (left-aligned lockup, clean cards,
+ * 16px arrow chevron), styled on a dark/black canvas to match the homepage theme.
+ */
+import Section from '../Section.astro';
+
+export interface MiniFaqItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
+export const miniFaqItems: MiniFaqItem[] = [
+  {
+    id: 'how-it-works',
+    question: 'How does CMS Detector AI determine which CMS powers a website?',
+    answer: 'CMS Detector AI inspects public HTTP response headers, HTML meta generator tags, script src hosts, DOM structure fingerprints, linked stylesheet paths, and known public API endpoints without executing untrusted client scripts. Each detected technology is backed by verifiable cryptographic, DOM, or header evidence strings with assigned confidence scores.',
+  },
+  {
+    id: 'headless-and-modern',
+    question: 'Can it detect modern headless architectures and static site generators?',
+    answer: 'Yes. In addition to traditional monolithic platforms like WordPress, Shopify, and Drupal, the engine detects modern headless CMSs (Sanity, Strapi, Contentful, Ghost) and frontend frameworks (Next.js, Astro, Nuxt, Remix, SvelteKit).',
+  },
+  {
+    id: 'unknown-cms',
+    question: 'Why do some websites show as "Custom / Unknown CMS"?',
+    answer: 'A "Custom / Unknown CMS" result occurs when a website does not expose recognizable commercial or open-source signatures. This usually indicates a proprietary in-house backend, a fully decoupled static architecture, or hardened security headers that deliberately strip identifying generator tokens.',
+  },
+  {
+    id: 'privacy-and-storage',
+    question: 'Is this tool completely free and private to use?',
+    answer: 'Yes. CMS Detector AI is 100% free with no account creation or paywalls. Target URLs are inspected ephemerally in Cloudflare Worker edge memory strictly for the duration of the scan—we never store submitted URLs in databases or track user queries.',
+  },
+  {
+    id: 'multi-page-correlation',
+    question: 'How does multi-page scanning improve detection accuracy?',
+    answer: 'Scanning multiple internal pages across a domain corroborates technology signals, reveals subpath-specific platforms (such as a WordPress blog mounted under a Next.js main site), and eliminates false positives from isolated third-party embeds.',
+  },
+];
+
+interface Props {
+  includeSchema?: boolean;
+}
+
+const { includeSchema = false } = Astro.props;
+
+// Generate valid Schema.org FAQPage JSON-LD
+export const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: miniFaqItems.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+---
+
+<Section theme="dark" id="faq" ariaLabelledby="home-faq" style="border-block-start: 1px solid var(--color-hairline-soft);">
+  <div class="container">
+    <div style="max-inline-size: 860px;">
+      <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
+        <span class="eyebrow" style="color: var(--color-mute);">Common questions</span>
+        <h2 id="home-faq" class="type-display-sm" style="color: var(--color-on-primary);">
+          Frequently Asked Questions
+        </h2>
+        <p class="type-subtitle" style="color: var(--color-ash);">
+          Essential answers about our deterministic edge inspection, headless stack detection, and privacy guarantees.
+        </p>
+      </div>
+
+      <div class="home-faqs">
+        {miniFaqItems.map((item, i) => (
+          <details class="home-faq-item" id={`faq-${item.id || i}`}>
+            <summary class="home-faq-summary">
+              <span class="home-faq-q">{item.question}</span>
+              <svg class="home-faq-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="home-faq-answer">
+              <p>{item.answer}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </div>
+</Section>
+
+{includeSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(faqSchema)} />
+)}
+
+<style>
+  /* FAQ Accordions */
+  .home-faqs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .home-faq-item {
+    background: rgba(18, 18, 20, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-app-lg);
+    overflow: hidden;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+  .home-faq-item:hover {
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .home-faq-item[open] {
+    background: rgba(24, 24, 28, 0.85);
+    border-color: rgba(255, 255, 255, 0.18);
+  }
+  .home-faq-summary {
+    padding: 18px 20px;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    list-style: none;
+    user-select: none;
+  }
+  .home-faq-summary::-webkit-details-marker { display: none; }
+  .home-faq-arrow {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--color-mute);
+    flex-shrink: 0;
+  }
+  details[open] .home-faq-arrow {
+    transform: rotate(180deg);
+  }
+  .home-faq-answer {
+    padding: 0 20px 20px 20px;
+    font-size: 15px;
+    color: var(--color-ash);
+    line-height: 1.6;
+  }
+  .home-faq-answer p { margin: 0; }
+</style>

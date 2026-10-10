@@ -51,38 +51,99 @@
     "items": [
       {
         "id": "how-it-works",
-        "question": "How does CMS Detector AI determine what CMS a website uses?",
-        "answer": "CMS Detector AI inspects public HTTP response headers, meta generator tags, script signatures, DOM fingerprints, linked stylesheet paths, and known API endpoints without executing untrusted client scripts. Each detected technology is backed by verifiable cryptographic, DOM, or header evidence strings with defined confidence levels."
+        "category": "detection",
+        "question": "How does CMS Detector AI determine what CMS powers a website?",
+        "answer": "CMS Detector AI inspects public HTTP response headers, HTML meta generator tags, script src hosts, DOM structure fingerprints, linked stylesheet paths, and known public API endpoints without executing untrusted client scripts. Each detected technology is backed by verifiable cryptographic, DOM, or header evidence strings with assigned confidence scores."
       },
       {
-        "id": "headless-and-modern",
-        "question": "Can CMS Detector AI detect modern headless CMSs and static generators?",
-        "answer": "Yes. In addition to traditional monolithic platforms like WordPress, Shopify, and Drupal, our signature engine recognizes modern headless systems including Sanity, Strapi, Contentful, and Ghost, as well as modern static frameworks like Next.js, Astro, Nuxt, SvelteKit, and Remix."
+        "id": "multi-page-correlation",
+        "category": "detection",
+        "question": "How does multi-page correlation scanning eliminate false positives?",
+        "answer": "A single webpage may load isolated third-party widgets that look like a CMS. Our multi-page correlation engine evaluates signal recurrence across internal subpages (e.g. homepage, blog subpaths, documentation, or legal pages). Technologies present across primary site templates are confirmed, while isolated script widgets are scoped accurately without misidentifying the primary content management system."
       },
       {
-        "id": "pricing-and-limits",
-        "question": "Is CMS Detector AI free to use, and is there any query limit?",
-        "answer": "CMS Detector AI is completely free to use. There are no paid tiers, no required user accounts, and no paywalled features. Fair-use edge rate limits apply to protect our infrastructure from automated scraping."
-      },
-      {
-        "id": "privacy-and-storage",
-        "question": "Does CMS Detector AI store or log the URLs I submit?",
-        "answer": "No. Target URLs are analyzed ephemerally in Cloudflare Worker edge memory strictly for the duration of the scan. We do not store submitted URLs in databases, do not log personal user queries, and never sell or share scan queries with third parties."
+        "id": "confidence-scoring",
+        "category": "detection",
+        "question": "What do the confidence ratings (Confirmed, Likely, Possible) mean?",
+        "answer": "'Confirmed' (0.90+) requires definitive deterministic evidence, such as a vendor meta generator tag (<meta name=\"generator\" content=\"WordPress 6.4\">), unique HTTP header (X-Shopify-Stage), or core runtime global. 'Likely' (0.70–0.89) indicates multiple corroborating DOM asset paths and script hosts. 'Possible' (0.50–0.69) reflects secondary indicators like CDN storage endpoints or helper libraries that suggest a platform without conclusive proof."
       },
       {
         "id": "unknown-cms",
+        "category": "detection",
         "question": "Why does my website return 'Custom / Unknown CMS'?",
         "answer": "A result of 'Custom / Unknown CMS' indicates that the target website does not expose identifiable signatures of known commercial or open-source CMSs. This typically means the site uses a bespoke in-house backend, a fully decoupled static architecture, or has stripped its identifying headers and generator tags."
       },
       {
+        "id": "masking-cms",
+        "category": "detection",
+        "question": "Can website owners deliberately mask or conceal their CMS from detection?",
+        "answer": "Yes. Security-conscious teams frequently harden their public footprint by disabling generator meta tags, removing X-Powered-By headers, proxying assets through neutral reverse proxies, and minifying bundle paths. While our engine inspects dozens of subtle architectural fingerprints, a thoroughly hardened custom build may deliberately report as Custom/Unknown."
+      },
+      {
+        "id": "headless-and-modern",
+        "category": "tech",
+        "question": "Can CMS Detector AI detect modern headless CMSs and static generators?",
+        "answer": "Yes. In addition to traditional monolithic platforms like WordPress, Shopify, Drupal, and Joomla, our signature engine recognizes modern headless systems including Sanity, Strapi, Contentful, Ghost, and Prismic, as well as modern static frameworks like Next.js, Astro, Nuxt, SvelteKit, and Remix."
+      },
+      {
+        "id": "cms-vs-builder-vs-cdn",
+        "category": "tech",
+        "question": "How does the detector distinguish between a CMS, a site builder, and an edge host?",
+        "answer": "We separate web infrastructure into strict taxonomy layers: Content Management Systems (e.g. WordPress, Sanity, Ghost) manage content models and editorial workflows; Site Builders (e.g. Webflow, Squarespace, Wix) compile visual design systems and templates; Edge Hosting & CDNs (e.g. Vercel, Cloudflare, Netlify, AWS CloudFront) handle HTTP routing, SSL termination, and global edge caching."
+      },
+      {
         "id": "themes-and-plugins",
-        "question": "Can this tool detect WordPress themes, Shopify themes, and plugins?",
+        "category": "tech",
+        "question": "Can this tool detect WordPress themes, Shopify themes, and installed plugins?",
         "answer": "Yes. We offer specialized detectors for WordPress and Shopify themes. Our engine parses stylesheet headers, storefront JSON objects, and asset directory signatures to reveal active theme names, authors, parent/child relationships, and version numbers."
       },
       {
+        "id": "cdn-and-hosting",
+        "category": "tech",
+        "question": "How does edge CDN and hosting provider detection work?",
+        "answer": "Edge infrastructure detection inspects low-level response headers and TLS routing cues. We look for provider-specific diagnostic headers—such as Cloudflare's cf-ray, Vercel's x-vercel-id, Netlify's x-nf-request-id, AWS CloudFront's x-amz-cf-id, Fastly's x-served-by, and Akamai's cache routing headers—identifying reverse proxies and serverless host layers in real time."
+      },
+      {
+        "id": "ecommerce-detection",
+        "category": "tech",
+        "question": "Does CMS Detector AI analyze e-commerce platforms and payment gateways?",
+        "answer": "Yes. Our detection taxonomy identifies both standalone e-commerce systems (Shopify, Magento, WooCommerce, BigCommerce, PrestaShop) and headless transactional engines (Stripe Checkout, LemonSqueezy, Paddle, PayPal SDK, Adyen, and Recharge Subscriptions) with exact integration evidence."
+      },
+      {
+        "id": "privacy-and-storage",
+        "category": "privacy",
+        "question": "Does CMS Detector AI store, log, or sell the URLs I submit?",
+        "answer": "No. Target URLs are analyzed ephemerally in Cloudflare Worker edge memory strictly for the duration of the scan. We do not store submitted URLs in databases, do not log personal user queries, and never sell or share scan queries with third parties."
+      },
+      {
+        "id": "safety-and-legality",
+        "category": "privacy",
+        "question": "Is scanning a website with CMS Detector AI legal and safe?",
+        "answer": "Completely legal and non-invasive. The scanner issues standard, read-only HTTP GET requests that mirror an ordinary web browser visit. It never probes protected admin directories, never tests SQL injection or authentication bypasses, respects robots.txt directives, and never executes invasive penetration tests."
+      },
+      {
+        "id": "no-client-js-execution",
+        "category": "privacy",
+        "question": "Does the engine execute untrusted third-party JavaScript?",
+        "answer": "No. Headless browser script execution presents severe security and resource isolation risks. Our engine employs safe static streaming HTML parsers and HTTP header inspection inside Cloudflare Workers edge isolates, analyzing markup without executing malicious or untrusted third-party client code."
+      },
+      {
+        "id": "pricing-and-limits",
+        "category": "general",
+        "question": "Is CMS Detector AI free to use, and is there any query limit?",
+        "answer": "CMS Detector AI is completely free to use. There are no paid tiers, no required user accounts, and no paywalled features. Fair-use edge rate limits apply to protect our infrastructure from automated scraping."
+      },
+      {
         "id": "comparison",
-        "question": "How is CMS Detector AI different from legacy detectors?",
+        "category": "general",
+        "question": "How is CMS Detector AI different from legacy detectors like Wappalyzer or BuiltWith?",
         "answer": "Legacy tools often rely on stale databases, guess without evidence, or push users into paywalls and aggressive affiliate funnels. CMS Detector AI provides verifiable evidence strings, sub-3-second edge execution, a clean modern interface, and zero registration requirements."
+      },
+      {
+        "id": "contribute-signatures",
+        "category": "general",
+        "question": "How can I report a false positive or submit a new technology signature?",
+        "answer": "Our signature engine is maintained under rigorous CI testing with over 280 automated fixture regression tests. If a technology on your website is misidentified or if you represent a modern CMS platform wishing to submit official signature rules, reach out through our contact page or GitHub repository."
       }
     ]
   },

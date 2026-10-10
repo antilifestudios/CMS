@@ -391,8 +391,8 @@ export async function runDetectionPipeline(
     });
   }
 
-  // 9. Apply evidence confidence model
-  results = applyConfidenceModel(results);
+  // 9. Apply evidence confidence model & filter out analytics (CMS detector does not detect analytics)
+  results = applyConfidenceModel(results).filter((r) => r.category !== 'analytics');
 
   const themeSlug = /\/wp-content\/themes\/([^/]+)\//i.exec(html)?.[1];
 

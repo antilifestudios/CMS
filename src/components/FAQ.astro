@@ -25,7 +25,7 @@ interface Props {
 
 const defaultItems: FAQItem[] = (en.faq.items as FAQItem[]).map((item, idx) => ({
   ...item,
-  category: idx % 3 === 0 ? 'detection' : idx % 3 === 1 ? 'privacy' : 'tech',
+  category: item.category || (idx % 4 === 0 ? 'detection' : idx % 4 === 1 ? 'tech' : idx % 4 === 2 ? 'privacy' : 'general'),
 }));
 
 const {
@@ -56,7 +56,7 @@ const faqSchema = {
   <div class="container">
     <div class="faq-header">
       <div class="eyebrow-lockup">
-        {eyebrow && <span class="eyebrow type-mono-eyebrow">{eyebrow}</span>}
+        {eyebrow && <span class="eyebrow type-mono-eyebrow text-brand">{eyebrow}</span>}
         <h2 id="faq-heading" class="type-display-md faq-title">
           {title}
         </h2>
@@ -72,8 +72,9 @@ const faqSchema = {
     <div class="faq-filters" role="tablist" aria-label="FAQ categories">
       <button type="button" class="faq-filter-btn is-active" data-filter="all">All Questions</button>
       <button type="button" class="faq-filter-btn" data-filter="detection">Detection Engine</button>
-      <button type="button" class="faq-filter-btn" data-filter="privacy">Privacy & Edge</button>
       <button type="button" class="faq-filter-btn" data-filter="tech">Coverage & Stacks</button>
+      <button type="button" class="faq-filter-btn" data-filter="privacy">Privacy & Edge</button>
+      <button type="button" class="faq-filter-btn" data-filter="general">General & Platform</button>
     </div>
 
     <!-- FAQ items -->

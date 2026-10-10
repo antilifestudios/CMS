@@ -158,7 +158,11 @@ export const POST: APIRoute = async ({ request }) => {
     if (cacheKey) {
       const cached = await cache.match(cacheKey);
       if (cached) {
-        return json(JSON.parse(await cached.text()), 200, { 'X-Cache': 'HIT' });
+        const payload = JSON.parse(await cached.text());
+        if (payload?.data?.results) {
+          payload.data.results = payload.data.results.filter((r: { category?: string }) => r.category !== 'analytics');
+        }
+        return json(payload, 200, { 'X-Cache': 'HIT' });
       }
     }
   } catch {
@@ -167,6 +171,9 @@ export const POST: APIRoute = async ({ request }) => {
 
   const startTime = performance.now();
   const result = await runDetectionPipeline(rawUrl);
+  if (result.ok && result.data?.results) {
+    result.data.results = result.data.results.filter((r) => r.category !== 'analytics');
+  }
   const durationMs = Math.round(performance.now() - startTime);
 
   // Extract host only for logging (never log full query/path)

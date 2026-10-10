@@ -27,13 +27,26 @@ const breadcrumbJsonLd = {
     },
   ],
 };
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: (en.faq.items as Array<{ question: string; answer: string }>).map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
 ---
 
 <Base
   title={pageTitle}
   description={pageDescription}
   pagePath="/faq"
-  jsonLd={breadcrumbJsonLd}
+  jsonLd={[breadcrumbJsonLd, faqJsonLd]}
 >
   <!-- Hero Section -->
   <Section theme="dark" class="faq-hero" ariaLabelledby="faq-h1">
@@ -55,8 +68,8 @@ const breadcrumbJsonLd = {
     </div>
   </Section>
 
-  <!-- Global FAQ component with JSON-LD -->
-  <FAQ includeSchema={true} />
+  <!-- Global FAQ component -->
+  <FAQ includeSchema={false} />
 
   <!-- Quick Links section -->
   <Section theme="dark" style="border-block-start: 1px solid var(--color-hairline-soft); padding-block: var(--spacing-section);">

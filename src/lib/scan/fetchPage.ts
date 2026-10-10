@@ -223,7 +223,7 @@ export async function fetchSinglePage(
       // A challenge page served with status 200 must never be scanned
       // as normal HTML — headers/cookies only, flagged as limited.
       const challenged = isChallengeResponse(res.status, html);
-      const results = runSignatureEngine({ html: challenged ? '' : html, headers, cookies });
+      const results = runSignatureEngine({ html: challenged ? '' : html, headers, cookies }).filter((r) => r.category !== 'analytics');
       const fw = results.find((r) => FRAMEWORK_CATEGORIES.has(r.category));
       const prov = results.find((r) => r.category === 'hosting');
 
