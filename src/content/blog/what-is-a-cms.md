@@ -47,3 +47,12 @@ Selecting the right platform depends on your team's development capabilities and
 - **E-Commerce at Scale:** Shopify (hosted) or WooCommerce (customizable on WordPress) provide robust inventory and checkout capabilities.
 - **High-Performance Marketing Sites:** Headless CMSs paired with static edge rendering (e.g. Astro on Cloudflare) yield optimal Core Web Vitals and minimal infrastructure costs.
 - **Design-Centric Landing Pages:** Visual builders like Webflow or Framer give marketing designers direct creative control without code overhead.
+
+## Discovering What CMS Powers Any Website
+
+Whether you are auditing competitor infrastructure, evaluating themes, or planning a migration, our free tools inspect live sites deterministically at the edge:
+
+- **[CMS Detector AI](/)** — Instant scan for CMS engines, frameworks, hosting, and CDNs.
+- **[WordPress Theme Detector](/wordpress-theme-detector)** — Find active WordPress themes, parent templates, and plugins.
+- **[Shopify Theme Detector](/shopify-theme-detector)** — Identify active Shopify themes, versions, and Theme Store links.
+- **[Growth & Marketing Tech Detector](/growth-marketing-detector)** — Reveal third-party pixels, analytics, and CRM tools.

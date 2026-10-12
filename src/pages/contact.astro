@@ -3,7 +3,17 @@ export const prerender = true;
 
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
 import { CONTACT_EMAIL } from '../data/legal.ts';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cmsdetectorai.com' },
+    { '@type': 'ListItem', position: 2, name: 'Contact', item: 'https://cmsdetectorai.com/contact' },
+  ],
+};
 
 const contactJsonLd = {
   '@context': 'https://schema.org',
@@ -29,12 +39,18 @@ const contactJsonLd = {
   title="Contact Us — CMS Detector AI"
   description="Contact the CMS Detector AI team. Report inaccurate results, request new framework signatures, or inquire about partnerships."
   pagePath="/contact"
-  jsonLd={contactJsonLd}
+  jsonLd={[breadcrumbJsonLd, contactJsonLd]}
 >
   <!-- Hero Section -->
   <Section theme="dark" class="contact-hero" ariaLabelledby="contact-h1">
     <div class="container">
       <div class="hero-inner">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Contact Us' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow">
             <span class="dot"></span>

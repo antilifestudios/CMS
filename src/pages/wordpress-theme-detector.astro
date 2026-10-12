@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
 import ThemeCard from '../components/ThemeCard.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
 
 const faqs = [
   {
@@ -41,6 +42,7 @@ const faqs = [
   description="Free WordPress theme detector to instantly find what WordPress theme, child theme, author, and plugins any site is using. 100% free with no sign-up."
   pagePath="/wordpress-theme-detector"
   canonical="https://cmsdetectorai.com/wordpress-theme-detector"
+  ogImage="https://cmsdetectorai.com/og-wordpress.png"
   jsonLd={[
     {
       '@context': 'https://schema.org',
@@ -146,6 +148,13 @@ const faqs = [
   <Section theme="dark" class="hero" ariaLabelledby="wp-h1">
     <div class="container">
       <div style="max-inline-size: 880px;">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Tools', href: '/' },
+            { label: 'WordPress Theme Detector' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow" style="margin-block-end: 2px; align-self: flex-start;">
             <span class="dot"></span>
@@ -571,8 +580,17 @@ Template: (present only if this is a child theme)
         <a href="/growth-marketing-detector" class="crosslink-card">
           <span class="crosslink-icon"><NavIcon name="growth" size={20} /></span>
           <div class="crosslink-text">
-            <h3 class="crosslink-title">Growth &amp; Marketing Tech Detector</h3>
-            <p class="crosslink-desc">Scan for analytics, ad pixels, CRM tools, payment gateways, and live chat.</p>
+            <h3 class="crosslink-title">Marketing Tech Stack Detector</h3>
+            <p class="crosslink-desc">Detect analytics, ad pixels, CRM tools, payment gateways, and live chat.</p>
+          </div>
+          <span class="crosslink-arrow" aria-hidden="true">→</span>
+        </a>
+
+        <a href="/security-privacy-detector" class="crosslink-card">
+          <span class="crosslink-icon"><NavIcon name="security" size={20} /></span>
+          <div class="crosslink-text">
+            <h3 class="crosslink-title">Website Safety &amp; Security Checker</h3>
+            <p class="crosslink-desc">Audit domain threats, phishing signals, malicious redirects, and HTTPS headers.</p>
           </div>
           <span class="crosslink-arrow" aria-hidden="true">→</span>
         </a>

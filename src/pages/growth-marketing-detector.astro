@@ -4,6 +4,8 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
+import RelatedTools from '../components/RelatedTools.astro';
 
 const groups = [
   {
@@ -35,8 +37,20 @@ const groups = [
 
 const faqs = [
   {
-    q: 'How do you detect marketing technology on a website?',
-    a: 'We perform a real-time, isolated edge inspection of the website. We match known vendor script hosts, SDK initialization calls, DOM elements, asset paths, tracking cookies, and Google Tag Manager (GTM) container tags. Passing mentions of a brand name in page copy or footer links are never counted.',
+    q: 'What is a marketing tech stack (MarTech stack)?',
+    a: 'A marketing tech stack is the complete ecosystem of digital technologies, platforms, and software tools that a company uses to run marketing campaigns, collect behavioral data, drive customer acquisition, and retain users. A modern marketing tech stack typically includes tag managers, web and product analytics, advertising pixels, marketing automation/CRMs, payment gateways, and live customer support widgets.',
+  },
+  {
+    q: 'How does this marketing tech stack detector work?',
+    a: 'Our detector executes an isolated, real-time edge inspection of any website URL. It scans the rendered DOM, script sources, SDK initialization payloads, cookies, and decompiled Google Tag Manager (GTM) containers to detect active marketing tools with mathematical confidence ratings and raw technical proof.',
+  },
+  {
+    q: 'Why should I detect a competitor’s marketing tech stack?',
+    a: 'Analyzing a competitor\'s marketing tech stack reveals the exact channels and tools driving their growth. For example, detecting a Meta Pixel or TikTok Pixel tells you they invest in paid social campaigns, while finding PostHog or Mixpanel indicates sophisticated product event tracking. It helps you benchmark your own MarTech investments and discover proven growth software.',
+  },
+  {
+    q: 'What tools are in a standard marketing tech stack?',
+    a: 'A standard marketing tech stack spans five core pillars: (1) Analytics (e.g. Google Analytics 4, Mixpanel, Hotjar), (2) Advertising & Pixels (e.g. Google Ads, Meta Pixel, LinkedIn Insight Tag), (3) Marketing Automation & CRM (e.g. HubSpot, Klaviyo, Mailchimp), (4) Payments & Billing (e.g. Stripe, PayPal), and (5) Customer Support & Chat (e.g. Intercom, Zendesk).',
   },
   {
     q: 'Can this tool detect server-side tracking (GTM Server-Side, Segment, or CNAME cloaking)?',
@@ -61,21 +75,79 @@ const faqs = [
 ];
 ---
 <Base
-  title="What Marketing Tech Is This Site Using? Free MarTech Detector | CMS Detector AI"
-  description="Detect the analytics, advertising pixels, marketing platforms, payment providers, and chat widgets any website uses — free, evidence-based, no sign-up."
+  title="Marketing Tech Stack Detector: Find Any Site's Stack | CMS Detector AI"
+  description="Detect the marketing tech stack of any website for free. Discover analytics, advertising pixels, CRM platforms, payments, and chat widgets with verified evidence."
   pagePath="/growth-marketing-detector"
   canonical="https://cmsdetectorai.com/growth-marketing-detector"
+  ogImage="https://cmsdetectorai.com/og-martech.png"
   jsonLd={[
     {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
-      name: 'Growth & Marketing Tech Detector',
+      name: 'Marketing Tech Stack Detector',
+      alternateName: ['MarTech Stack Detector', 'Marketing Technology Stack Finder', 'Growth Marketing Detector'],
       url: 'https://cmsdetectorai.com/growth-marketing-detector',
       applicationCategory: 'DeveloperApplication',
       operatingSystem: 'All',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-      description: 'Detect the analytics, advertising pixels, marketing platforms, payment providers, and chat widgets any website uses — free, evidence-based, no sign-up.',
+      description: 'Detect and inspect the complete marketing tech stack of any website — discover analytics, advertising pixels, CRM automation, payment gateways, and chat widgets.',
       inLanguage: 'en',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://cmsdetectorai.com',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Tools',
+          item: 'https://cmsdetectorai.com',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Marketing Tech Stack Detector',
+          item: 'https://cmsdetectorai.com/growth-marketing-detector',
+        },
+      ],
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      name: 'How to detect a website\'s marketing tech stack',
+      description: 'Step-by-step instructions for detecting the analytics, ad pixels, CRM platforms, and payment tools in any website\'s marketing tech stack.',
+      step: [
+        {
+          '@type': 'HowToStep',
+          position: 1,
+          name: 'Enter the target website URL',
+          text: 'Paste the domain or URL of the website you want to inspect (e.g., example.com) into the search bar.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 2,
+          name: 'Run edge marketing tech stack analysis',
+          text: 'Click Detect Stack to perform a real-time, isolated edge inspection of scripts, containers, and DOM markers.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 3,
+          name: 'Review the 5 marketing tech stack layers',
+          text: 'Browse detected tools organized across Analytics, Advertising, Marketing & CRM, Payments, and Live Chat.',
+        },
+        {
+          '@type': 'HowToStep',
+          position: 4,
+          name: 'Inspect verified evidence and extract IDs',
+          text: 'Expand each detected tool to inspect verbatim script sources, initialization codes, and copy public tracking IDs.',
+        },
+      ],
     },
     {
       '@context': 'https://schema.org',
@@ -96,29 +168,37 @@ const faqs = [
   <Section theme="dark" class="gm-hero-section" ariaLabelledby="growth-h1">
     <div class="container">
       <div class="gm-hero-shell">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Tools', href: '/' },
+            { label: 'Marketing Tech Stack Detector' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow" style="margin-block-end: 2px; align-self: flex-start;">
             <span class="dot"></span>
-            <span>Real-Time MarTech Intelligence · Cloudflare Edge</span>
+            <span>Real-Time Marketing Tech Stack Intelligence · Cloudflare Edge</span>
           </div>
           <div class="gm-eyebrow-row">
             <span class="eyebrow type-mono-eyebrow eyebrow-with-icon">
-              <NavIcon name="growth" size={16} />Growth &amp; Marketing Tech Detector
+              <NavIcon name="growth" size={16} />Marketing Tech Stack Detector
             </span>
           </div>
           <h1 id="growth-h1" class="type-display-xl gm-hero-title">
-            What Marketing Tech<br />Is This Site Using?
+            Marketing Tech Stack<br />Detector
           </h1>
           <p class="type-subtitle text-ash gm-hero-sub">
-            Detect analytics, advertising pixels, marketing platforms, payment
-            providers, and chat widgets — with the exact evidence behind every
-            finding. Free, instant, no sign-up.
+            Detect, inspect, and reverse-engineer the complete marketing tech stack
+            powering any website. Discover analytics platforms, advertising pixels,
+            CRM automation, payment gateways, and support widgets — backed by verifiable
+            technical evidence.
           </p>
         </div>
 
         <div class="gm-scanner-container">
           <div class="gm-detector" id="gm-root">
-            <form id="gm-form" class="gm-form" novalidate aria-label="Marketing Tech Detector">
+            <form id="gm-form" class="gm-form" novalidate aria-label="Marketing Tech Stack Detector">
               <div class="gm-search-bar">
                 <div class="gm-search-icon" aria-hidden="true">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -189,7 +269,7 @@ const faqs = [
                 <div class="gm-loading-head">
                   <div class="gm-radar-spinner" aria-hidden="true"></div>
                   <div class="gm-loading-titles">
-                    <span class="type-mono-caps text-brand">Running Multi-Channel MarTech Audit</span>
+                    <span class="type-mono-caps text-brand">Running Marketing Tech Stack Audit</span>
                     <h3 class="gm-loading-headline" id="gm-loading-status-text">Connecting to destination edge node…</h3>
                   </div>
                 </div>
@@ -228,41 +308,93 @@ const faqs = [
     </div>
   </Section>
 
-  {/* Educational Section 1: How to check */}
+  {/* Educational Section 1: How to check & What is a Marketing Tech Stack */}
   <Section theme="light" ariaLabelledby="growth-how-to" class="gm-how-to-section">
     <div class="container">
       <div style="max-inline-size: 860px;">
         <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xl);">
-          <span class="eyebrow" style="color: var(--color-mute);">Step-by-step discovery</span>
+          <span class="eyebrow" style="color: var(--color-mute);">Step-by-step audit</span>
           <h2 id="growth-how-to" class="type-display-sm" style="color: var(--color-ink);">
-            How to Detect What Marketing Tech a Website Uses
+            How to Detect a Website's Marketing Tech Stack
           </h2>
           <p class="type-subtitle" style="color: var(--color-slate);">
-            Modern websites orchestrate dozens of third-party scripts for measurement, attribution, payments, and customer support. Follow these three verification steps:
+            Modern websites orchestrate dozens of third-party platforms to acquire, convert, and retain visitors. Follow these three steps to inspect any website's marketing tech stack:
           </p>
         </div>
 
         <div class="gm-guide-grid">
           <div class="gm-guide-card">
             <div class="gm-guide-num">01</div>
-            <h3 class="gm-guide-title">Submit the Exact Domain or URL</h3>
+            <h3 class="gm-guide-title">Submit the Target Website URL</h3>
             <p class="gm-guide-text">
-              Paste the target URL (e.g. <code>https://example.com</code> or <code>example.com</code>) into the detector. Our edge worker safely downloads the document, first-party bundles, and GTM container files without running untrusted scripts in your browser.
+              Enter any domain or URL into the marketing tech stack detector. Our isolated edge worker downloads the HTML document, first-party bundles, and public GTM containers in real time without executing untrusted scripts in your browser.
             </p>
           </div>
           <div class="gm-guide-card">
             <div class="gm-guide-num">02</div>
-            <h3 class="gm-guide-title">Explore Grouped Categories &amp; Tools</h3>
+            <h3 class="gm-guide-title">Analyze the 5 Stack Layers</h3>
             <p class="gm-guide-text">
-              Filter findings across five key growth pillars: Analytics, Advertising, Marketing &amp; CRM, Payments, and Live Chat. Each finding is tagged with a transparent confidence rating.
+              Review active tools mapped across five core marketing tech stack layers: Analytics, Advertising &amp; Pixels, Marketing &amp; CRM, Payment Gateways, and Customer Support. Every detection includes an objective confidence rating.
             </p>
           </div>
           <div class="gm-guide-card">
             <div class="gm-guide-num">03</div>
-            <h3 class="gm-guide-title">Inspect Raw Script Evidence &amp; IDs</h3>
+            <h3 class="gm-guide-title">Inspect Proof &amp; Extract IDs</h3>
             <p class="gm-guide-text">
-              Expand any tool card to see the verbatim technical evidence: matched script hosts, SDK initialization code, container tags, and extracted IDs (such as GA4 measurement IDs or Stripe keys) with one-click copying.
+              Examine verbatim technical proof: matched vendor script domains, SDK initialization arguments, DOM forms, and extracted tracking keys (like GA4 measurement IDs or Stripe keys) ready for one-click copy.
             </p>
+          </div>
+        </div>
+
+        {/* Deep dive: What is a marketing tech stack */}
+        <div class="gm-explainer-block" style="margin-block-start: var(--spacing-xxl); border-block-start: 1px solid var(--color-hairline); padding-block-start: var(--spacing-xxl);">
+          <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
+            <span class="eyebrow" style="color: var(--color-mute);">MarTech Fundamentals</span>
+            <h2 id="what-is-marketing-tech-stack" class="type-display-sm" style="color: var(--color-ink);">
+              What is a Marketing Tech Stack?
+            </h2>
+          </div>
+          <p class="type-body" style="color: var(--color-slate); line-height: 1.7; margin-block-end: var(--spacing-lg);">
+            A <strong>marketing tech stack</strong> (or MarTech stack) is the cohesive collection of digital software tools and technologies that organizations use to orchestrate, execute, measure, and optimize marketing throughout the customer lifecycle. Rather than relying on a single monolithic platform, modern digital marketing relies on a specialized stack of best-of-breed services connected through APIs, tracking scripts, and tag containers.
+          </p>
+
+          <div class="gm-stack-why-grid">
+            <div class="gm-stack-why-card">
+              <div class="gm-stack-why-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"/><path d="m12 2 10 10H2Z"/></svg>
+              </div>
+              <h3 class="gm-stack-why-title">Reverse-Engineer Competitor Acquisition</h3>
+              <p class="gm-stack-why-desc">
+                By detecting ad pixels (Meta, Google, TikTok, LinkedIn), you immediately know which paid acquisition channels your competitors allocate ad spend toward.
+              </p>
+            </div>
+            <div class="gm-stack-why-card">
+              <div class="gm-stack-why-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <h3 class="gm-stack-why-title">Benchmark Data &amp; Analytics Maturity</h3>
+              <p class="gm-stack-why-desc">
+                Discover whether market leaders use privacy-first measurement (Plausible), event-driven behavioral tracking (Mixpanel, PostHog), or enterprise suites (Adobe, GA4).
+              </p>
+            </div>
+            <div class="gm-stack-why-card">
+              <div class="gm-stack-why-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              </div>
+              <h3 class="gm-stack-why-title">Audit Site Latency &amp; Tag Bloat</h3>
+              <p class="gm-stack-why-desc">
+                Unnecessary tracking scripts and legacy tags bloat page load speeds. Our detector identifies all third-party payloads so you can prune redundant trackers.
+              </p>
+            </div>
+            <div class="gm-stack-why-card">
+              <div class="gm-stack-why-icon" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <h3 class="gm-stack-why-title">Validate Tracking &amp; Conversion Health</h3>
+              <p class="gm-stack-why-desc">
+                Extract live GA4 measurement IDs, GTM container IDs, and Meta Pixel IDs directly from production code to verify that client marketing pipelines are active.
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -275,10 +407,10 @@ const faqs = [
       <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
         <span class="eyebrow type-mono-eyebrow">Comprehensive Inspection Engine</span>
         <h2 id="growth-checks" class="type-display-sm" style="color: var(--color-on-primary);">
-          What Marketing Technologies Can You Detect?
+          What Tools in a Marketing Tech Stack Can You Detect?
         </h2>
         <p class="type-subtitle text-ash" style="max-inline-size: 680px;">
-          Rather than relying on keyword guessing, our analyzer verifies technical evidence across 38+ industry-standard marketing and growth platforms:
+          Rather than relying on keyword guessing, our marketing tech stack analyzer verifies technical evidence across 38+ industry-standard platforms:
         </p>
       </div>
 
@@ -372,7 +504,7 @@ const faqs = [
           <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
             <span class="eyebrow" style="color: var(--color-mute);">Methodology &amp; Architecture</span>
             <h2 id="growth-methodology" class="type-display-sm" style="color: var(--color-ink);">
-              Understanding Client-Side vs. Server-Side Marketing Tech
+              Understanding Client-Side vs. Server-Side in a Marketing Tech Stack
             </h2>
           </div>
           <p class="type-body" style="color: var(--color-slate); line-height: 1.7;">
@@ -402,7 +534,7 @@ const faqs = [
           <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-sm);">
             <span class="type-mono-caps text-brand">Core Detection Principle</span>
             <h2 id="growth-truth" class="type-heading-sm" style="color: var(--color-ink); margin: 0;">
-              Why Technical Evidence Matters (No Keyword Guessing)
+              Why Technical Evidence Matters in Marketing Tech Stack Detection
             </h2>
           </div>
           <p class="type-body" style="color: var(--color-slate); line-height: 1.7; margin: 0;">
@@ -417,7 +549,7 @@ const faqs = [
           <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-lg);">
             <span class="eyebrow" style="color: var(--color-mute);">Interpreting confidence</span>
             <h2 id="growth-conf-explained" class="type-display-sm" style="color: var(--color-ink);">
-              How Confidence Bands Are Calculated
+              How Tech Stack Confidence Bands Are Calculated
             </h2>
           </div>
           <div class="gm-verdict-grid">
@@ -461,10 +593,10 @@ const faqs = [
       <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
         <span class="eyebrow type-mono-eyebrow">Comprehensive Directory</span>
         <h2 id="growth-coverage" class="type-display-sm" style="color: var(--color-on-primary);">
-          One Detector, Five Growth Categories
+          Marketing Tech Stack Directory: 38+ Supported Platforms
         </h2>
         <p class="type-subtitle text-ash" style="max-width: 620px;">
-          Explore the 38+ analytics engines, advertising pixels, CRMs, payment providers, and customer support widgets supported by our scanner:
+          Explore the 38+ analytics engines, advertising pixels, CRMs, payment providers, and customer support widgets detected across all 5 marketing tech stack pillars:
         </p>
       </div>
       <CoverageDirectory groups={groups} />
@@ -478,10 +610,10 @@ const faqs = [
         <div class="eyebrow-lockup" style="margin-block-end: var(--spacing-xxl);">
           <span class="eyebrow" style="color: var(--color-mute);">Common questions</span>
           <h2 id="growth-faq" class="type-display-sm" style="color: var(--color-ink);">
-            Frequently Asked Questions
+            Frequently Asked Questions About Marketing Tech Stacks
           </h2>
           <p class="type-subtitle" style="color: var(--color-slate);">
-            Clear, honest answers about marketing technology detection, tag decompilation, and privacy standards.
+            Clear, technical answers about marketing tech stack detection, tag decompilation, and privacy standards.
           </p>
         </div>
 
@@ -501,6 +633,8 @@ const faqs = [
       </div>
     </div>
   </Section>
+
+  <RelatedTools currentPath="/growth-marketing-detector" />
 </Base>
 
 <style>
@@ -570,6 +704,53 @@ const faqs = [
     line-height: 1.35;
   }
   .gm-guide-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-slate);
+    line-height: 1.6;
+  }
+
+  /* Explainer & Benefits grid */
+  .gm-stack-why-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    margin-block-start: var(--spacing-lg);
+  }
+  .gm-stack-why-card {
+    background-color: var(--color-canvas-light);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-app-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .gm-stack-why-card:hover {
+    border-color: rgba(0, 0, 0, 0.25);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  .gm-stack-why-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-app-sm);
+    background: rgba(243, 100, 88, 0.08);
+    border: 1px solid rgba(243, 100, 88, 0.2);
+    color: var(--color-brand);
+  }
+  .gm-stack-why-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-ink);
+    line-height: 1.35;
+  }
+  .gm-stack-why-desc {
     margin: 0;
     font-size: 14px;
     color: var(--color-slate);
@@ -762,7 +943,7 @@ const faqs = [
   .gm-faq-answer p { margin: 0; }
 
   @media (max-width: 900px) {
-    .gm-guide-grid, .gm-checks-grid, .gm-verdict-grid {
+    .gm-guide-grid, .gm-checks-grid, .gm-verdict-grid, .gm-stack-why-grid {
       grid-template-columns: 1fr;
     }
   }
@@ -1967,12 +2148,12 @@ const faqs = [
               <h2 class="gm-domain-title">${esc(displayUrl)}</h2>
               <span class="gm-domain-protocol-badge">${isHttps ? 'HTTPS' : 'HTTP'}</span>
             </div>
-            <p class="gm-domain-meta">Scanned at ${esc(scannedAt)} · Verified against 38+ growth signatures</p>
+            <p class="gm-domain-meta">Scanned at ${esc(scannedAt)} · Verified against 38+ marketing tech stack signatures</p>
           </div>
         </div>
         <div class="gm-empty-card">
-          <h3 class="gm-empty-title">No growth &amp; marketing technologies detected</h3>
-          <p class="gm-empty-body">We found no confident analytics, advertising, marketing, payment, or chat signals on this site. This means no supported technical signals were found in the static document — not that these technologies are definitely absent (they may be loaded dynamically via server-side tagging or after user consent). <a href="/">Try the full technology scan</a> for CMS, hosting, and framework detection.</p>
+          <h3 class="gm-empty-title">No marketing tech stack detected</h3>
+          <p class="gm-empty-body">We found no active analytics, advertising, marketing automation, payment, or chat signals on this site. This means no supported technical signals were found in the static document — not that these technologies are definitely absent (they may be loaded dynamically via server-side tagging or after user consent). <a href="/">Try the full technology scan</a> for CMS, hosting, and framework detection.</p>
         </div>
         ${actionsHtml()}
       </div>`;
@@ -2007,16 +2188,16 @@ const faqs = [
               <h2 class="gm-domain-title">${esc(displayUrl)}</h2>
               <span class="gm-domain-protocol-badge">${isHttps ? 'HTTPS' : 'HTTP'}</span>
             </div>
-            <p class="gm-domain-meta">Scanned at ${esc(scannedAt)} · Verified against 38+ growth signatures</p>
+            <p class="gm-domain-meta">Scanned at ${esc(scannedAt)} · Verified against 38+ marketing tech stack signatures</p>
           </div>
         </div>
         <div class="gm-telemetry-grid">
           <div class="gm-telemetry-tile">
-            <span class="gm-telemetry-label">Technologies</span>
+            <span class="gm-telemetry-label">Stack Tools</span>
             <span class="gm-telemetry-value">${sorted.length}</span>
           </div>
           <div class="gm-telemetry-tile">
-            <span class="gm-telemetry-label">Categories</span>
+            <span class="gm-telemetry-label">Stack Layers</span>
             <span class="gm-telemetry-value">${byCat.size} / 5</span>
           </div>
           <div class="gm-telemetry-tile">

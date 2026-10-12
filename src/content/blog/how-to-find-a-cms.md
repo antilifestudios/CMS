@@ -20,8 +20,8 @@ Every browser allows you to view the raw HTML payload transmitted by the web ser
    - macOS: Press `Cmd + Option + U`
 2. Open the page search dialog (`Ctrl + F` or `Cmd + F`) and look for the following patterns:
    - `generator` — Many platforms include a meta tag identifying the engine (e.g. `<meta name="generator" content="WordPress">` or `Ghost 5.82`).
-   - `wp-content` — Conclusive evidence of WordPress media or theme assets.
-   - `cdn.shopify.com` — Confirms Shopify hosting and theme assets.
+   - `wp-content` — Conclusive evidence of WordPress media or theme assets. To extract the exact theme, author, and plugins, use our free [WordPress Theme Detector](/wordpress-theme-detector).
+   - `cdn.shopify.com` — Confirms Shopify hosting and storefront assets. You can identify the active theme and template using our [Shopify Theme Detector](/shopify-theme-detector).
    - `__NEXT_DATA__` — Indicates a Next.js server-rendered application.
    - `website-files.com` — Standard asset hosting domain for Webflow sites.
    - `static.parastorage.com` or `wixstatic.com` — Identifies Wix site builders.
@@ -53,4 +53,4 @@ Most major content platforms expose standardized administrative or API routes. A
 
 Modern enterprise websites frequently decouple their front-end presentations from their backend CMSs (known as headless architecture) or strip server headers for security hardening. 
 
-In such cases, an automated tool like [CMS Detector AI](/) crawls multiple pages, examines script bundles, analyzes DNS records, and identifies subtle framework signals that manual checks might overlook.
+In such cases, an automated tool like [CMS Detector AI](/) crawls multiple pages, examines script bundles, analyzes DNS records, and identifies subtle framework signals that manual checks might overlook. You can also evaluate marketing pixels with our [Growth & MarTech Detector](/growth-marketing-detector) or audit site health with our [Website Safety Checker](/security-privacy-detector).

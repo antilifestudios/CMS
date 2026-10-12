@@ -56,6 +56,8 @@ const jsonLd = scan.ok
   title={title}
   description={scan.ok ? scan.data.verdictLine + '. ' + `Checked ${scan.data.coverage.checked} of ~${scan.data.coverage.foundApprox} pages found.` : 'Site stack consistency scan.'}
   pagePath={scan.ok ? `/result/${scan.data.rootHost}` : '/result'}
+  noindex={!scan.ok || extras.length > 0}
+  canonical={scan.ok ? `https://cmsdetectorai.com/result/${scan.data.rootHost}` : 'https://cmsdetectorai.com'}
   jsonLd={jsonLd}
 >
   <Section theme="dark" style="padding-block: var(--spacing-section);" ariaLabelledby="r-h1">

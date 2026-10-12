@@ -27,7 +27,7 @@ const {
   description,
   pagePath = '/',
   noindex = false,
-  ogImage = 'https://cmsdetectorai.com/og-default.svg',
+  ogImage = 'https://cmsdetectorai.com/og-default.png',
   locale = 'en',
   jsonLd,
   canonical: canonicalOverride,
@@ -55,12 +55,21 @@ const websiteJsonLd = {
   alternateName: 'CMS Detector',
   url: siteUrl,
   inLanguage: locale,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${siteUrl}/result/{search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
 };
 const orgJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'CMS Detector AI',
   url: siteUrl,
+  logo: `${siteUrl}/favicon.svg`,
 };
 
 const allJsonLd: Record<string, unknown>[] = isHome
@@ -96,6 +105,9 @@ if (jsonLd) {
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:image" content={ogImage} />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content={title} />
 <meta property="og:site_name" content="CMS Detector AI" />
 <meta property="og:locale" content={locale === 'en' ? 'en_US' : locale} />
 
@@ -104,6 +116,7 @@ if (jsonLd) {
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImage} />
+<meta name="twitter:image:alt" content={title} />
 
 <!-- Webmaster verification -->
 {googleSiteVerification && <meta name="google-site-verification" content={googleSiteVerification} />}
@@ -125,6 +138,8 @@ if (jsonLd) {
 )}
 
 <!-- Fonts (Inter substitutes waldenburgNormal per DESIGN.md; IBM Plex Mono for eyebrows) -->
+<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link

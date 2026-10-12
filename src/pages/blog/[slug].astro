@@ -3,6 +3,8 @@ export const prerender = true;
 
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/Section.astro';
+import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -44,13 +46,15 @@ const articleJsonLd = {
   description: post.data.description,
   datePublished: post.data.publishDate.toISOString(),
   dateModified: (post.data.updatedDate ?? post.data.publishDate).toISOString(),
+  inLanguage: 'en',
+  keywords: post.data.tags.join(', '),
   mainEntityOfPage: {
     '@type': 'WebPage',
     '@id': postUrl,
   },
   author: {
     '@type': 'Organization',
-    name: 'CMS Detector AI',
+    name: 'CMS Detector AI Engineering Team',
     url: siteUrl,
   },
   publisher: {
@@ -101,12 +105,13 @@ const breadcrumbJsonLd = {
   <Section theme="dark" class="post-hero" ariaLabelledby="post-h1">
     <div class="container">
       <div class="post-header-inner">
-        <a href="/blog" class="back-link">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-            <path d="M11.5 7h-9M6 3.5L2.5 7 6 10.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Back to Blog</span>
-        </a>
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Blog', href: '/blog' },
+            { label: post.data.title },
+          ]}
+        />
 
         <div class="post-meta-strip">
           <div class="post-tags">
@@ -132,6 +137,13 @@ const breadcrumbJsonLd = {
         <h1 id="post-h1" class="type-display-md post-headline">
           {post.data.title}
         </h1>
+
+        <div class="eeat-badge-wrap">
+          <div class="badge-glow" style="margin-block: 8px 12px; align-self: flex-start;">
+            <span class="dot"></span>
+            <span>Verified by CMS Detector AI Engineering Team · Edge Heuristics &amp; Infrastructure</span>
+          </div>
+        </div>
 
         <p class="type-subtitle text-ash post-lead">
           {post.data.description}
@@ -214,6 +226,8 @@ const breadcrumbJsonLd = {
       )}
     </div>
   </Section>
+
+  <RelatedTools currentPath="/blog" heading="Analyze Your Stack with Free Detectors" />
 </Base>
 
 <style>

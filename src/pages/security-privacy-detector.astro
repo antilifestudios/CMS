@@ -4,6 +4,8 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import CoverageDirectory from '../components/CoverageDirectory.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
+import RelatedTools from '../components/RelatedTools.astro';
 
 const groups = [
   {
@@ -68,6 +70,7 @@ const faqs = [
   description="Check a website for known malware, phishing threats, suspicious redirects, domain reputation signals, and HTTPS security issues before you visit."
   pagePath="/security-privacy-detector"
   canonical="https://cmsdetectorai.com/security-privacy-detector"
+  ogImage="https://cmsdetectorai.com/og-security.png"
   jsonLd={[
     {
       '@context': 'https://schema.org',
@@ -99,6 +102,13 @@ const faqs = [
   <Section theme="dark" class="sp-hero-section" ariaLabelledby="sec-h1">
     <div class="container">
       <div class="sp-hero-shell">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Tools', href: '/' },
+            { label: 'Website Safety & Security Checker' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow" style="margin-block-end: 2px; align-self: flex-start;">
             <span class="dot"></span>
@@ -500,6 +510,8 @@ const faqs = [
       </div>
     </div>
   </Section>
+
+  <RelatedTools currentPath="/security-privacy-detector" />
 </Base>
 
 <style>

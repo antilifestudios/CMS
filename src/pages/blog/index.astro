@@ -3,6 +3,8 @@ export const prerender = true;
 
 import Base from '../../layouts/Base.astro';
 import Section from '../../components/Section.astro';
+import Breadcrumbs from '../../components/layout/Breadcrumbs.astro';
+import RelatedTools from '../../components/RelatedTools.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
@@ -47,6 +49,12 @@ function formatDate(date: Date): string {
   <Section theme="dark" class="blog-hero" ariaLabelledby="blog-h1">
     <div class="container">
       <div class="hero-inner">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Blog' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow">
             <span class="dot"></span>
@@ -106,6 +114,8 @@ function formatDate(date: Date): string {
       </div>
     </div>
   </Section>
+
+  <RelatedTools currentPath="/blog" heading="Analyze Your Stack with Our Free Tools" />
 </Base>
 
 <style>

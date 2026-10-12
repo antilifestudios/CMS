@@ -4,6 +4,8 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import FAQ from '../components/FAQ.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
+import RelatedTools from '../components/RelatedTools.astro';
 import en from '../i18n/en.json';
 
 const pageTitle = "Frequently Asked Questions (FAQ) — CMS Detector AI";
@@ -52,6 +54,12 @@ const faqJsonLd = {
   <Section theme="dark" class="faq-hero" ariaLabelledby="faq-h1">
     <div class="container">
       <div class="hero-inner">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'FAQ' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow">
             <span class="dot"></span>
@@ -88,6 +96,8 @@ const faqJsonLd = {
       </div>
     </div>
   </Section>
+
+  <RelatedTools currentPath="/faq" />
 </Base>
 
 <style>

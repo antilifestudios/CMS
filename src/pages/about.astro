@@ -4,6 +4,16 @@ export const prerender = true;
 import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import NavIcon from '../components/layout/NavIcon.astro';
+import Breadcrumbs from '../components/layout/Breadcrumbs.astro';
+
+const breadcrumbJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://cmsdetectorai.com' },
+    { '@type': 'ListItem', position: 2, name: 'About', item: 'https://cmsdetectorai.com/about' },
+  ],
+};
 
 const aboutJsonLd = {
   '@context': 'https://schema.org',
@@ -33,12 +43,18 @@ const aboutJsonLd = {
   title="About Us — CMS Detector AI | Evidence-Based Web Intelligence"
   description="Learn about CMS Detector AI: our mission to replace opaque, paywalled detectors with free, deterministic, edge-powered platform detection."
   pagePath="/about"
-  jsonLd={aboutJsonLd}
+  jsonLd={[breadcrumbJsonLd, aboutJsonLd]}
 >
   <!-- Hero Section -->
   <Section theme="dark" class="about-hero" ariaLabelledby="about-h1">
     <div class="container">
       <div class="hero-content">
+        <Breadcrumbs
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'About Us' },
+          ]}
+        />
         <div class="eyebrow-lockup">
           <div class="badge-glow">
             <span class="dot"></span>

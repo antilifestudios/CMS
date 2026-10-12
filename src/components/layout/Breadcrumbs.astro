@@ -1,0 +1,90 @@
+---
+/**
+ * Breadcrumbs — accessible visible breadcrumb navigation trail.
+ * Follows DESIGN.md: subtle mono/sans typography, hairline separators, accessible ARIA.
+ */
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+  class?: string;
+}
+
+const { items, class: className = '' } = Astro.props;
+---
+
+<nav aria-label="Breadcrumb" class:list={['breadcrumbs-nav', className]}>
+  <ol class="breadcrumbs-list" role="list">
+    {items.map((item, index) => {
+      const isLast = index === items.length - 1;
+      return (
+        <li class="breadcrumb-item">
+          {item.href && !isLast ? (
+            <a href={item.href} class="breadcrumb-link">
+              {item.label}
+            </a>
+          ) : (
+            <span class="breadcrumb-current" aria-current={isLast ? 'page' : undefined}>
+              {item.label}
+            </span>
+          )}
+          {!isLast && (
+            <span class="breadcrumb-separator" aria-hidden="true">
+              /
+            </span>
+          )}
+        </li>
+      );
+    })}
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs-nav {
+    display: flex;
+    align-items: center;
+    margin-block-end: 20px;
+  }
+
+  .breadcrumbs-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    font-size: 13px;
+    font-family: var(--font-mono, 'IBM Plex Mono', monospace);
+    letter-spacing: 0.02em;
+  }
+
+  .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .breadcrumb-link {
+    color: var(--color-mute, #797979);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .breadcrumb-link:hover {
+    color: var(--color-brand, #f36458);
+  }
+
+  .breadcrumb-separator {
+    color: var(--color-hairline-soft, #353535);
+    user-select: none;
+  }
+
+  .breadcrumb-current {
+    color: var(--color-ash, #b9b9b9);
+    font-weight: 500;
+  }
+</style>

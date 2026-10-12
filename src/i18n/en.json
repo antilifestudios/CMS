@@ -38,8 +38,8 @@
     "wpDesc": "Find any WordPress theme — name, author, version.",
     "shopifyTitle": "Shopify Theme Detector",
     "shopifyDesc": "Identify the Shopify theme powering any store.",
-    "growthTitle": "Growth & Marketing Detector",
-    "growthDesc": "Analytics, advertising, marketing, payments & chat.",
+    "growthTitle": "Marketing Tech Stack Detector",
+    "growthDesc": "Detect any website's marketing tech stack: analytics, pixels, CRM & payments.",
     "securityTitle": "Is This Site Safe?",
     "securityDesc": "Malware, phishing, HTTPS, SSL & security headers.",
     "tryIt": "Try it →"

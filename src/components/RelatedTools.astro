@@ -1,0 +1,198 @@
+---
+/**
+ * RelatedTools — cross-tool internal linking showcase.
+ * Keeps users circulating on-site and strengthens internal link equity.
+ * Follows DESIGN.md: dark container, hairline border, card-glass, micro-hover animations.
+ */
+import NavIcon from './layout/NavIcon.astro';
+
+interface Props {
+  currentPath: string;
+  heading?: string;
+  subtitle?: string;
+}
+
+const {
+  currentPath,
+  heading = 'Explore More Detection Tools',
+  subtitle = 'Zero friction, deterministic edge analyzers for web infrastructure, CMS platforms, and storefronts.',
+} = Astro.props;
+
+const ALL_TOOLS = [
+  {
+    path: '/',
+    title: 'Technology & CMS Detector',
+    badge: 'Core Engine',
+    desc: 'Identify CMS platforms, frontend frameworks, hosting providers, and edge CDNs in one scan.',
+    icon: 'technology' as const,
+  },
+  {
+    path: '/shopify-theme-detector',
+    title: 'Shopify Theme Detector',
+    badge: 'Shopify 2.0',
+    desc: 'Inspect Shopify storefront code to find the active theme, theme ID, version, and parent template.',
+    icon: 'shopify' as const,
+  },
+  {
+    path: '/wordpress-theme-detector',
+    title: 'WordPress Theme Detector',
+    badge: 'Theme & Plugins',
+    desc: 'Extract active WordPress theme name, author, version, parent/child hierarchy, and installed plugins.',
+    icon: 'wordpress' as const,
+  },
+  {
+    path: '/growth-marketing-detector',
+    title: 'Marketing Tech Stack Detector',
+    badge: 'MarTech Stack',
+    desc: 'Detect any website\'s marketing tech stack: Google Analytics, Meta Pixels, CRM automation, and Stripe.',
+    icon: 'growth' as const,
+  },
+  {
+    path: '/security-privacy-detector',
+    title: 'Website Safety Checker',
+    badge: 'Security & Headers',
+    desc: 'Audit domain threats, phishing signals, malicious redirects, TLS certificates, and security headers.',
+    icon: 'security' as const,
+  },
+];
+
+const tools = ALL_TOOLS.filter((t) => t.path !== currentPath);
+---
+
+<section class="related-tools-section" aria-labelledby="related-tools-heading">
+  <div class="container">
+    <div class="related-header">
+      <div class="badge-glow" style="margin-block-end: 8px; align-self: flex-start;">
+        <span class="dot"></span>
+        <span>Platform Suite</span>
+      </div>
+      <h2 id="related-tools-heading" class="type-heading-md" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+        {heading}
+      </h2>
+      <p class="type-body-sm text-ash" style="margin: 0; max-width: 640px;">
+        {subtitle}
+      </p>
+    </div>
+
+    <div class="related-grid">
+      {tools.map((t) => (
+        <a href={t.path} class="related-card card-glass">
+          <div class="card-top">
+            <div class="icon-wrap">
+              <NavIcon name={t.icon} size={20} />
+            </div>
+            <span class="badge-pill type-mono-caps">{t.badge}</span>
+          </div>
+          <h3 class="type-heading-sm card-title">{t.title}</h3>
+          <p class="type-body-sm card-desc text-ash">{t.desc}</p>
+          <div class="card-footer">
+            <span class="launch-link">
+              Launch Detector
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .related-tools-section {
+    padding-block: var(--spacing-section);
+    border-block-start: 1px solid var(--color-hairline-soft);
+    background-color: var(--color-canvas);
+  }
+
+  .related-header {
+    margin-block-end: 32px;
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .related-card {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    border-radius: var(--radius-app-lg, 8px);
+    text-decoration: none;
+    border: 1px solid var(--color-hairline-soft);
+    background: rgba(33, 33, 33, 0.4);
+    transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .related-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(243, 100, 88, 0.4);
+    background: rgba(33, 33, 33, 0.7);
+    box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  }
+
+  .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-block-end: 16px;
+  }
+
+  .icon-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-brand, #f36458);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .badge-pill {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-ash);
+    border: 1px solid var(--color-hairline-soft);
+  }
+
+  .card-title {
+    color: var(--color-on-primary);
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  .card-desc {
+    margin: 0 0 20px 0;
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    margin-block-start: auto;
+  }
+
+  .launch-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-brand, #f36458);
+    transition: gap 0.15s ease;
+  }
+
+  .related-card:hover .launch-link {
+    gap: 9px;
+  }
+</style>
