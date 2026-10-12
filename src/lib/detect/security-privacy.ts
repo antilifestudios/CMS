@@ -132,7 +132,7 @@ export function extractChannels(html: string, headers: Record<string, string> = 
 
   // Resource URLs — every loaded reference EXCEPT <a href>.
   const attrRx =
-    /<(script|iframe|img|source|video|audio|embed|track|link|form)[^>]*?(?:src|href|action|data-src|data-href)=["']([^"']+)["']/gi;
+    /<(script|iframe|img|source|video|audio|embed|track|link|form)[^>]*?(?:src|href|action|data-src|data-href)\s*=\s*["']([^"']+)["']/gi;
   const srcsetRx = /<(img|source|video)[^>]*?srcset=["']([^"']+)["']/gi;
   while ((m = attrRx.exec(html)) !== null) {
     const tag = m[1].toLowerCase();

@@ -216,6 +216,9 @@ function matchDirect(sig: GrowthSignature, bags: GrowthChannels): TypeHit[] {
         if (re.test(bags.resourceHay)) {
           matched = true;
           value = snippetFor(re, bags.resourceHay);
+        } else if (re.test(bags.codeHay)) {
+          matched = true;
+          value = snippetFor(re, bags.codeHay);
         } else if (re.test(bags.csp) || re.test(bags.commentHay)) {
           // Vendor domain visible ONLY inside CSP / comments → weak.
           matched = true;
@@ -305,7 +308,8 @@ const idRegexCache = new Map<string, RegExp>();
 function idRx(pattern: string): RegExp {
   let r = idRegexCache.get(pattern);
   if (!r) {
-    r = new RegExp(pattern, 'gi');
+    const hasExplicitUppercase = /\[A-Z\]|GTM-|AW-|GA4/.test(pattern);
+    r = new RegExp(pattern, hasExplicitUppercase ? 'g' : 'gi');
     idRegexCache.set(pattern, r);
   }
   r.lastIndex = 0;
@@ -318,16 +322,33 @@ function extractIds(
   containers: Array<{ id: string; js: string }>,
 ): Array<{ kind: string; value: string }> {
   if (!sig.ids?.length) return [];
-  const hay = `${bags.resourceHay}\n${bags.codeHay}\n${containers.map((c) => c.js).join('\n')}`;
+  const hay = `${bags.resourceHay}\n${bags.codeHay}`;
   const out: Array<{ kind: string; value: string }> = [];
+
+  // For Google Tag Manager, ensure deployed container IDs found on page are included
+  if (sig.id === 'google-tag-manager') {
+    for (const c of containers) {
+      if (/^GTM-[A-Z0-9]{4,15}$/.test(c.id)) {
+        if (!out.some((o) => o.kind === 'GTM container ID' && o.value === c.id)) {
+          out.push({ kind: 'GTM container ID', value: c.id });
+        }
+      }
+    }
+  }
+
   for (const rule of sig.ids) {
     const re = idRx(rule.pattern);
     let m: RegExpExecArray | null;
     while ((m = re.exec(hay)) !== null && out.length < 10) {
       const v = (m[1] ?? '').trim();
       if (!v || v.length > 128) continue;
-      // Known GTM-internal placeholder, not a real container id.
-      if (/^gtm-webtemplate$/i.test(v)) continue;
+      // Filter out invalid/internal tokens
+      if (rule.kind === 'GTM container ID') {
+        if (!/^GTM-[A-Z0-9]{4,15}$/.test(v) || /^gtm-(init|msr|start|webtemplate|dom|load)$/i.test(v)) continue;
+      }
+      if (rule.kind === 'GA4 measurement ID') {
+        if (!/^G-[A-Z0-9]{4,15}$/.test(v) || /^g-(recaptcha|signin)/i.test(v)) continue;
+      }
       if (!out.some((o) => o.kind === rule.kind && o.value === v)) out.push({ kind: rule.kind, value: v });
     }
   }
@@ -341,6 +362,17 @@ export function detectGrowthMarketing(input: GrowthInput): GrowthTechnology[] {
 
   for (const sig of GROWTH_MARKETING_SIGNATURES) {
     const direct = matchDirect(sig, bags);
+    // If GTM containers were fetched, GTM is deployed directly on the page
+    if (sig.id === 'google-tag-manager' && containers.length > 0 && direct.length === 0) {
+      direct.push({
+        type: 'script-host',
+        weight: 0.9,
+        detail: `Google Tag Manager container (${containers.map((c) => c.id).join(', ')}) deployed`,
+        value: containers[0].id,
+        headerOnly: false,
+        launchOnly: false,
+      });
+    }
     const viaGtm = matchContainers(sig, containers);
     const hits = [...direct, ...viaGtm];
     if (hits.length === 0) continue;

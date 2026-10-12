@@ -22,7 +22,7 @@ import { ERROR_HTTP_STATUS } from '../../lib/detect/types.ts';
 export const prerender = false;
 
 const CACHE_TTL_SECONDS = 600;
-const DETECTOR_REVISION = 3;
+const DETECTOR_REVISION = 4;
 
 const memoryCache = new Map<string, { body: string; expires: number }>();
 

@@ -113,10 +113,10 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
     category: 'analytics',
     website: 'https://marketingplatform.google.com/about/tag-manager/',
     evidence: [
-      { type: 'script-host', pattern: 'googletagmanager\\.com/(gtm\\.js\\?id=GTM-|ns\\.html\\?id=GTM-)', weight: 0.9, description: 'GTM container loader referenced (gtm.js / ns.html)' },
-      { type: 'sdk-init', pattern: 'google_tag_manager\\b', weight: 0.85, description: 'GTM runtime global (google_tag_manager)' },
+      { type: 'script-host', pattern: 'googletagmanager\\.com/(gtm\\.js|ns\\.html)', weight: 0.9, description: 'GTM container loader referenced (gtm.js / ns.html)' },
+      { type: 'sdk-init', pattern: 'google_tag_manager\\b|dataLayer\\.push\\(\\s*\\{\\s*[\'"]gtm\\.start[\'"]', weight: 0.85, description: 'GTM runtime / start event (gtm.start)' },
     ],
-    ids: [{ kind: 'GTM container ID', pattern: '\\b(GTM-[A-Z0-9]+)\\b' }],
+    ids: [{ kind: 'GTM container ID', pattern: '\\b(GTM-[A-Z0-9]{4,15})\\b' }],
     variantNote: 'A lone `dataLayer` without gtm.js / ns.html / google_tag_manager is NOT enough.',
   },
   {
@@ -129,7 +129,10 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
       { type: 'sdk-init', pattern: 'clarity\\(\\s*[\'"](set|identify|consent|event|upgrade)', weight: 0.85, description: 'Clarity API call with project id' },
       { type: 'cookie-storage', pattern: '_clck\\b|_clsk\\b', weight: 0.55, description: 'Clarity cookie (_clck / _clsk)' },
     ],
-    ids: [{ kind: 'Clarity project ID', pattern: 'clarity\\.ms/tag/([a-z0-9]+)' }],
+    ids: [
+      { kind: 'Clarity project ID', pattern: 'clarity\\.ms/tag/([a-z0-9]+)' },
+      { kind: 'Clarity project ID', pattern: '[\'"]clarity[\'"]\\s*,\\s*[\'"]script[\'"]\\s*,\\s*[\'"]([a-z0-9]{6,12})[\'"]' },
+    ],
   },
   {
     id: 'hotjar',
@@ -141,7 +144,10 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
       { type: 'sdk-init', pattern: 'hj\\(\\s*[\'"](trigger|identify|event|stateChange)|_hjSettings\\s*=', weight: 0.85, description: 'Hotjar init call (hj / _hjSettings)' },
       { type: 'cookie-storage', pattern: '_hjSessionUser_|_hjSession_', weight: 0.55, description: 'Hotjar session cookie' },
     ],
-    ids: [{ kind: 'Hotjar site ID', pattern: 'hotjar-(\\d+)\\.js' }],
+    ids: [
+      { kind: 'Hotjar site ID', pattern: 'hotjar-(\\d+)\\.js' },
+      { kind: 'Hotjar site ID', pattern: 'hjid\\s*:\\s*(\\d+)' },
+    ],
   },
   {
     id: 'matomo',
@@ -191,6 +197,7 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
       { type: 'sdk-init', pattern: 'posthog\\.(init|capture)\\(', weight: 0.85, description: 'PostHog init/capture call' },
       { type: 'cookie-storage', pattern: 'ph_[a-z0-9]+_posthog', weight: 0.55, description: 'PostHog cookie (ph_<key>_posthog)' },
     ],
+    ids: [{ kind: 'PostHog project key', pattern: 'posthog\\.init\\(\\s*[\'"](phc_[A-Za-z0-9_-]+)[\'"]' }],
   },
   {
     id: 'segment',
@@ -204,7 +211,10 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
       { type: 'sdk-init', pattern: 'analytics\\.SNIPPET_VERSION|analytics\\.load\\(', weight: 0.85, description: 'Segment snippet init marker' },
       { type: 'cookie-storage', pattern: 'ajs_anonymous_id|ajs_user_id', weight: 0.55, description: 'Segment cookie (ajs_anonymous_id / ajs_user_id)' },
     ],
-    ids: [{ kind: 'Segment write key', pattern: 'cdn\\.segment\\.com/analytics\\.js/v1/([A-Za-z0-9]+)/analytics\\.min\\.js' }],
+    ids: [
+      { kind: 'Segment write key', pattern: 'cdn\\.segment\\.com/analytics\\.js/v1/([A-Za-z0-9]+)/analytics\\.min\\.js' },
+      { kind: 'Segment write key', pattern: 'analytics\\.load\\(\\s*[\'"]([A-Za-z0-9_-]{16,})[\'"]' },
+    ],
   },
   {
     id: 'adobe-analytics',
@@ -373,6 +383,7 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
       { type: 'script-host', pattern: 'trackcmp\\.net|diffuser-cdn\\.app-us1\\.com|[\\w-]+\\.activehosted\\.com', weight: 0.9, description: 'ActiveCampaign tracking/forms host referenced' },
       { type: 'sdk-init', pattern: 'vgo\\(\\s*[\'"]setAccount[\'"]', weight: 0.85, description: 'ActiveCampaign site-tracking init (vgo)' },
     ],
+    ids: [{ kind: 'ActiveCampaign account ID', pattern: 'vgo\\(\\s*[\'"]setAccount[\'"]\\s*,\\s*[\'"]([A-Za-z0-9_-]+)[\'"]' }],
   },
   {
     id: 'marketo',
@@ -415,10 +426,11 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
     website: 'https://stripe.com',
     evidence: [
       { type: 'script-host', pattern: 'js\\.stripe\\.com/v[23]|checkout\\.stripe\\.com|m\\.stripe\\.network', weight: 0.9, description: 'Stripe SDK loaded (js.stripe.com)' },
-      { type: 'sdk-init', pattern: 'Stripe\\(\\s*[\'"]pk_(live|test)_|new\\s+Stripe\\(', weight: 0.85, description: 'Stripe initialised with publishable key' },
+      { type: 'sdk-init', pattern: '(load)?Stripe\\(\\s*[\'"]pk_(live|test)_|new\\s+Stripe\\(', weight: 0.85, description: 'Stripe initialised with publishable key' },
       { type: 'dom', pattern: 'stripe-buy-button|stripe-pricing-table|__privateStripeFrame', weight: 0.6, description: 'Stripe checkout element / iframe' },
       { type: 'cookie-storage', pattern: '__stripe_mid\\b|__stripe_sid\\b', weight: 0.55, description: 'Stripe cookie (__stripe_mid / __stripe_sid)' },
     ],
+    ids: [{ kind: 'Stripe publishable key', pattern: '\\b(pk_(?:live|test)_[A-Za-z0-9]{20,})\\b' }],
     variantNote: 'A plain link to buy.stripe.com without the SDK is Low at most (links are never scanned).',
   },
   {
@@ -506,7 +518,10 @@ export const GROWTH_MARKETING_SIGNATURES: GrowthSignature[] = [
       { type: 'dom', pattern: 'intercom-container', weight: 0.6, description: 'Intercom container element' },
       { type: 'cookie-storage', pattern: 'intercom-id-|intercom-session-', weight: 0.55, description: 'Intercom cookie' },
     ],
-    ids: [{ kind: 'Intercom app ID', pattern: 'widget\\.intercom\\.io/widget/([a-z0-9]+)' }],
+    ids: [
+      { kind: 'Intercom app ID', pattern: 'widget\\.intercom\\.io/widget/([a-z0-9]+)' },
+      { kind: 'Intercom app ID', pattern: 'app_id\\s*:\\s*[\'"]([a-z0-9]{4,12})[\'"]' },
+    ],
   },
   {
     id: 'zendesk',

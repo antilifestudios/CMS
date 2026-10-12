@@ -219,6 +219,40 @@ describe('extractedIds — the exact evidence behind every finding', () => {
     assert.ok(hit('klaviyo', inp(POSITIVES[19].html)).extractedIds.some((e) => e.kind === 'Klaviyo company ID' && e.value === 'ABC123'));
     assert.ok(hit('google-adsense', inp(POSITIVES[11].html)).extractedIds.some((e) => e.value === 'ca-pub-123456789'));
   });
+  it('extracts Stripe publishable key and supports loadStripe', () => {
+    const s = hit('stripe', inp(`<script>const stripe = loadStripe('pk_live_51Abcdef1234567890abcdef12345');</script>`));
+    assert.ok(s.extractedIds.some((e) => e.kind === 'Stripe publishable key' && e.value === 'pk_live_51Abcdef1234567890abcdef12345'));
+  });
+  it('extracts Segment write key from analytics.load call', () => {
+    const seg = hit('segment', inp(`<script>analytics.load('abcdef1234567890');analytics.SNIPPET_VERSION='4.15.3';</script>`));
+    assert.ok(seg.extractedIds.some((e) => e.kind === 'Segment write key' && e.value === 'abcdef1234567890'));
+  });
+  it('extracts Hotjar site ID from _hjSettings object', () => {
+    const hj = hit('hotjar', inp(`<script>window._hjSettings={hjid:7654321,hjsv:6};</script>`));
+    assert.ok(hj.extractedIds.some((e) => e.kind === 'Hotjar site ID' && e.value === '7654321'));
+  });
+  it('extracts PostHog project key from init call', () => {
+    const ph = hit('posthog', inp(`<script>posthog.init('phc_abcdef1234567890', { api_host: 'https://us.i.posthog.com' });</script>`));
+    assert.ok(ph.extractedIds.some((e) => e.kind === 'PostHog project key' && e.value === 'phc_abcdef1234567890'));
+  });
+  it('never extracts internal gtm- tokens as GTM container IDs', () => {
+    const gtm = hit('google-tag-manager', inp(`<script src="https://www.googletagmanager.com/gtm.js?id=GTM-REAL123"></script><script>var x = "gtm-msr gtm-init gtm-webtemplate gtm-start";</script>`));
+    const ids = gtm.extractedIds.map((e) => e.value);
+    assert.ok(ids.includes('GTM-REAL123'));
+    assert.ok(!ids.includes('gtm-msr'));
+    assert.ok(!ids.includes('gtm-init'));
+    assert.ok(!ids.includes('gtm-webtemplate'));
+  });
+  it('never extracts g-recaptcha as a GA4 measurement ID', () => {
+    const ga = hit('google-analytics', inp(`<script src="https://www.googletagmanager.com/gtag/js?id=G-REAL1234"></script><div class="g-recaptcha" data-sitekey="12345"></div><script>var x = "g-recaptcha-response";</script>`));
+    const ids = ga.extractedIds.map((e) => e.value);
+    assert.ok(ids.includes('G-REAL1234'));
+    assert.ok(!ids.includes('g-recaptcha'));
+  });
+  it('detects script-host when vendor URL is loaded via inline script', () => {
+    const m = hit('meta-pixel', inp(`<script>!function(f,b,e,v,n,t,s){t=b.createElement(e);t.src=v;}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','123456789');</script>`));
+    assert.ok(m.evidence.some((e) => e.type === 'script-host' && e.value?.includes('connect.facebook.net')));
+  });
   it('Salesforce names the matched product in a sub-note', () => {
     const h = hit('salesforce', inp(`<script src="https://pi.pardot.com/pd.js"></script><script>var piAId='1';</script>`));
     assert.ok(h.subNote?.includes('Pardot'), `subNote: ${h.subNote}`);
