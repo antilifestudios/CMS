@@ -7,7 +7,7 @@ import ThemeCard from '../components/ThemeCard.astro';
 ---
 <Base
   title="WordPress Theme Detector — Find Any WordPress Theme Free"
-  description="Instantly detect the WordPress theme and child theme of any site — including theme name, author, and version. Free, no sign-up."
+  description="Instantly detect the WordPress theme and child theme of any site — including theme name, author, version, and active plugins. Free, no sign-up."
   pagePath="/wordpress-theme-detector"
   jsonLd={[
     {
@@ -48,15 +48,17 @@ import ThemeCard from '../components/ThemeCard.astro';
 >
   <Section theme="dark" class="hero" ariaLabelledby="wp-h1">
     <div class="container">
-      <div style="max-inline-size: 860px;">
+      <div style="max-inline-size: 880px;">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="wordpress" size={16} />WordPress Theme Detector</span>
+          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon">
+            <NavIcon name="wordpress" size={16} />WordPress Theme Detector
+          </span>
           <h1 id="wp-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
             What WordPress Theme<br />Is This Site Using?
           </h1>
-          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 540px;">
-            Paste any WordPress site URL and we'll identify the active theme — name, author,
-            and version — from the theme stylesheet. No sign-up needed.
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 580px;">
+            Paste any WordPress site URL to identify the active theme — name, author,
+            version, parent/child hierarchy, and active plugins — extracted from page assets in real time.
           </p>
         </div>
 
@@ -101,9 +103,9 @@ import ThemeCard from '../components/ThemeCard.astro';
             <div class="preset-bar">
               <span class="type-mono-caps text-mute preset-lbl">Try:</span>
               <div class="preset-chips">
-                <button type="button" class="preset-chip" data-wp-example="getifinity.com">getifinity.com</button>
-                <button type="button" class="preset-chip" data-wp-example="engnovate.com">engnovate.com</button>
+                <button type="button" class="preset-chip" data-wp-example="woocommerce.com">woocommerce.com</button>
                 <button type="button" class="preset-chip" data-wp-example="pallion.com">pallion.com</button>
+                <button type="button" class="preset-chip" data-wp-example="getifinity.com">getifinity.com</button>
               </div>
             </div>
 
@@ -115,14 +117,43 @@ import ThemeCard from '../components/ThemeCard.astro';
               <span>Automated &amp; private theme audit. Submitted domains are evaluated in real time without storing browsing history.</span>
             </div>
           </form>
-          <div id="wp-result"  hidden aria-live="polite"  style="margin-block-start: var(--spacing-xl);"></div>
-          <div id="wp-loading" hidden aria-live="polite"  aria-busy="true" style="margin-block-start: var(--spacing-xl);">
-            <div class="skeleton-card">
-              <div class="skeleton sk-row sk-headline"></div>
-              <div class="skeleton sk-row sk-body"></div>
+
+          {/* Progress / Loading steps */}
+          <div id="wp-loading" hidden aria-live="polite" aria-busy="true" style="margin-block-start: var(--spacing-xl);">
+            <div class="card-dark wp-loading-card">
+              <div class="wp-loading-head">
+                <div class="wp-loading-spinner" aria-hidden="true"></div>
+                <div>
+                  <p class="type-mono-caps text-mute" style="margin: 0;">Edge Inspector</p>
+                  <p class="type-heading-sm" style="color: var(--color-on-primary); margin: 2px 0 0 0;" id="wp-loading-status">Analyzing WordPress theme...</p>
+                </div>
+              </div>
+              <div class="wp-scan-steps">
+                <div class="wp-scan-step active" id="wp-step-1">
+                  <span class="wp-step-dot"></span>
+                  <span>Connecting to domain &amp; verifying SSL handshake</span>
+                </div>
+                <div class="wp-scan-step" id="wp-step-2">
+                  <span class="wp-step-dot"></span>
+                  <span>Scanning HTML DOM for WordPress core signatures</span>
+                </div>
+                <div class="wp-scan-step" id="wp-step-3">
+                  <span class="wp-step-dot"></span>
+                  <span>Inspecting active theme stylesheet (style.css)</span>
+                </div>
+                <div class="wp-scan-step" id="wp-step-4">
+                  <span class="wp-step-dot"></span>
+                  <span>Resolving parent/child hierarchy &amp; active plugins</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div id="wp-error"   hidden aria-live="assertive" role="alert" style="margin-block-start: var(--spacing-xl);"></div>
+
+          {/* Result Output */}
+          <div id="wp-result" hidden aria-live="polite" style="margin-block-start: var(--spacing-xl);"></div>
+
+          {/* Error Message */}
+          <div id="wp-error" hidden aria-live="assertive" role="alert" style="margin-block-start: var(--spacing-xl);"></div>
         </div>
       </div>
     </div>
@@ -233,28 +264,247 @@ import ThemeCard from '../components/ThemeCard.astro';
   .hero { padding-block: var(--spacing-section-lg); }
   .detect-form { display: flex; flex-direction: column; gap: var(--spacing-xs); }
 
-  .wp-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-  .wp-example-link {
+  /* Loading State */
+  .wp-loading-card {
+    border: 1px solid var(--color-hairline-soft);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  .wp-loading-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .wp-loading-spinner {
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    border-top-color: var(--color-brand);
+    animation: wpSpin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes wpSpin {
+    to { transform: rotate(360deg); }
+  }
+  .wp-scan-steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding-block-start: 8px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .wp-scan-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--color-mute);
+    transition: color 0.2s ease;
+  }
+  .wp-scan-step.active {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  .wp-scan-step.done {
+    color: var(--color-ash);
+  }
+  .wp-step-dot {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background-color: var(--color-hairline-soft);
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .wp-scan-step.active .wp-step-dot {
+    background-color: var(--color-brand);
+    box-shadow: 0 0 8px var(--color-brand);
+  }
+  .wp-scan-step.done .wp-step-dot {
+    background-color: var(--color-success);
+  }
+
+  /* Result Card Styling */
+  :global(.wp-theme-card) {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  :global(.wp-header-bar) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block-end: var(--spacing-md);
+    border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  :global(.wp-domain-lockup) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  :global(.wp-edge-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  :global(.wp-edge-dot) {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+  }
+  :global(.wp-domain-name) {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    margin: 0;
+    word-break: break-all;
+  }
+  :global(.wp-child-banner) {
+    background: rgba(243, 100, 88, 0.1);
+    border: 1px solid rgba(243, 100, 88, 0.3);
+    border-radius: var(--radius-app-md);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-on-primary);
+    font-size: 14px;
+  }
+  :global(.wp-child-banner strong) {
+    color: var(--color-brand);
+  }
+  :global(.wp-theme-hero) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  :global(.wp-badge-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  :global(.wp-theme-title) {
+    font-family: var(--font-sans);
+    font-size: 36px;
+    font-weight: 425;
+    line-height: 1.15;
+    color: var(--color-on-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  :global(.wp-props-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  :global(.wp-prop-tile) {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-md);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  :global(.wp-prop-label) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-mute);
+  }
+  :global(.wp-prop-value) {
+    font-size: 14px;
+    color: var(--color-on-primary);
+    word-break: break-all;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  :global(.wp-prop-value a) {
+    color: var(--color-link-blue-soft);
+    text-decoration: none;
+  }
+  :global(.wp-prop-value a:hover) {
+    text-decoration: underline;
+  }
+  :global(.wp-copy-icon-btn) {
     background: none;
     border: none;
-    padding: 0;
-    font: inherit;
-    color: var(--color-link-blue-soft);
-    text-decoration: underline;
-    text-decoration-color: rgba(85, 190, 255, 0.45);
-    text-underline-offset: 3px;
+    padding: 4px;
+    color: var(--color-mute);
     cursor: pointer;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease, background-color 0.15s ease;
   }
-  .wp-example-link:hover { text-decoration-color: var(--color-link-blue-soft); }
-  .wp-example-link:focus-visible { outline: 2px solid var(--color-link-blue-soft); outline-offset: 2px; border-radius: 2px; }
-  .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: var(--spacing-sm); }
-  .sk-row { block-size: 20px; border-radius: var(--radius-app-sm); }
-  .sk-headline { inline-size: 60%; block-size: 32px; }
-  .sk-body { inline-size: 85%; }
-
-  @media (max-width: 480px) {
-    .input-row { flex-direction: column; }
-    .detect-btn { inline-size: 100%; }
+  :global(.wp-copy-icon-btn:hover) {
+    color: var(--color-on-primary);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  :global(.wp-plugins-box) {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-md);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  :global(.wp-plugins-head) {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  :global(.wp-plugins-chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  :global(.wp-plugin-chip) {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-app-sm);
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--color-ash);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+  }
+  :global(.wp-plugin-chip:hover) {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--color-on-primary);
+  }
+  :global(.wp-actions-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block-start: 8px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
   }
 
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
@@ -265,108 +515,408 @@ import ThemeCard from '../components/ThemeCard.astro';
 </style>
 
 <script>
-// Reuse the homepage detect API but focus on WordPress theme results
-const form      = document.getElementById('wp-detect-form') as HTMLFormElement | null;
-const urlInput  = document.getElementById('wp-url-input')   as HTMLInputElement | null;
-const resultEl  = document.getElementById('wp-result')      as HTMLElement | null;
-const loadingEl = document.getElementById('wp-loading')     as HTMLElement | null;
-const errorEl   = document.getElementById('wp-error')       as HTMLElement | null;
-const submitBtn = document.getElementById('wp-detect-submit') as HTMLButtonElement | null;
+(function() {
+  const form      = document.getElementById('wp-detect-form') as HTMLFormElement | null;
+  const urlInput  = document.getElementById('wp-url-input')   as HTMLInputElement | null;
+  const resultEl  = document.getElementById('wp-result')      as HTMLElement | null;
+  const loadingEl = document.getElementById('wp-loading')     as HTMLElement | null;
+  const errorEl   = document.getElementById('wp-error')       as HTMLElement | null;
+  const submitBtn = document.getElementById('wp-detect-submit') as HTMLButtonElement | null;
+  const clearBtn  = document.getElementById('wp-clear-btn')   as HTMLButtonElement | null;
+  const statusEl  = document.getElementById('wp-loading-status') as HTMLElement | null;
 
-function esc(s: string) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+  let stepInterval: number | null = null;
 
-async function detect(url: string) {
-  if (!resultEl || !loadingEl || !errorEl || !submitBtn) return;
-  loadingEl.hidden = false; resultEl.hidden = true; errorEl.hidden = true;
-  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Detecting…'; }
+  function esc(s: unknown) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
 
-  try {
-    const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
-    const res = await fetch('/api/detect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, token }),
+  function startStepAnimation() {
+    let currentStep = 1;
+    const steps = [
+      'Connecting to domain & verifying SSL handshake',
+      'Scanning HTML DOM for WordPress core signatures',
+      'Inspecting active theme stylesheet (style.css)',
+      'Resolving parent/child hierarchy & active plugins',
+    ];
+    document.querySelectorAll('.wp-scan-step').forEach((el, idx) => {
+      el.classList.toggle('active', idx === 0);
+      el.classList.remove('done');
     });
-    const data = await res.json() as any;
-    loadingEl.hidden = true;
-    submitBtn.disabled = false; submitBtn.textContent = 'Find Theme';
+    if (statusEl) statusEl.textContent = steps[0];
 
-    if (data.ok) {
-      const results: any[] = data.data.results ?? [];
-      const wp = results.find((r: any) => r.id === 'wordpress');
-      const themeEvidence = wp?.evidence?.find((e: any) => e.type === 'probe' && e.artifact?.includes('theme:'));
-
-      if (!wp) {
-        resultEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">This doesn't appear to be a WordPress site.</p></div>`;
-      } else if (!themeEvidence) {
-        resultEl.innerHTML = `
-          <div class="card-dark">
-            <p class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
-              WordPress detected, but theme not identifiable
-            </p>
-            <p class="type-body-sm text-ash" style="margin: 0;">
-              The site runs WordPress but the active theme couldn't be read from the stylesheet
-              (it may be obfuscated or a headless setup).
-            </p>
-          </div>`;
-      } else {
-        const raw = themeEvidence.artifact.replace('theme: ', '');
-        resultEl.innerHTML = `
-          <div class="card-dark">
-            <p class="type-mono-caps text-mute" style="margin: 0 0 4px 0;">WordPress theme</p>
-            <h2 class="type-heading-md" style="color: var(--color-on-primary); margin: 0 0 8px 0;">${esc(raw)}</h2>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-block-start: 12px;">
-              <span class="badge chip-confirmed">Confirmed</span>
-              <a href="/blog/wordpress-signatures" class="badge badge-filled">WordPress Signatures Guide →</a>
-            </div>
-          </div>`;
+    stepInterval = window.setInterval(() => {
+      if (currentStep < 4) {
+        const prev = document.getElementById(`wp-step-${currentStep}`);
+        if (prev) {
+          prev.classList.remove('active');
+          prev.classList.add('done');
+        }
+        currentStep++;
+        const next = document.getElementById(`wp-step-${currentStep}`);
+        if (next) next.classList.add('active');
+        if (statusEl) statusEl.textContent = steps[currentStep - 1];
       }
-      resultEl.hidden = false;
+    }, 700);
+  }
+
+  function stopStepAnimation() {
+    if (stepInterval !== null) {
+      clearInterval(stepInterval);
+      stepInterval = null;
+    }
+    document.querySelectorAll('.wp-scan-step').forEach((el) => {
+      el.classList.remove('active');
+      el.classList.add('done');
+    });
+  }
+
+  function setLoading(loading: boolean) {
+    if (!loadingEl || !resultEl || !errorEl || !submitBtn) return;
+    loadingEl.hidden = !loading;
+    submitBtn.disabled = loading;
+    submitBtn.innerHTML = loading
+      ? `<span>Detecting…</span>`
+      : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Find Theme</span>`;
+
+    if (loading) {
+      resultEl.hidden = true;
+      errorEl.hidden = true;
+      startStepAnimation();
     } else {
-      const code = data.error?.code ?? 'UNKNOWN';
-      errorEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">${esc(code)}: Detection failed. Please check the URL.</p></div>`;
-      errorEl.hidden = false;
-    }
-  } catch {
-    loadingEl.hidden = true;
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Find Theme'; }
-    if (errorEl) {
-      errorEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Network error. Please try again.</p></div>`;
-      errorEl.hidden = false;
+      stopStepAnimation();
     }
   }
-}
 
-const clearBtn = document.getElementById('wp-clear-btn');
-function updateClearBtn() {
-  if (!clearBtn || !urlInput) return;
-  clearBtn.hidden = !urlInput.value.trim();
-}
-urlInput?.addEventListener('input', updateClearBtn);
-clearBtn?.addEventListener('click', () => {
-  if (urlInput) {
-    urlInput.value = '';
-    urlInput.focus();
-    updateClearBtn();
+  function copyText(text: string, btn: HTMLButtonElement) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> <span>Copied!</span>`;
+      setTimeout(() => { btn.innerHTML = orig; }, 2000);
+    }).catch(() => {});
   }
-});
-updateClearBtn();
 
-urlInput?.focus();
-form?.addEventListener('submit', (e) => {
-  e.preventDefault();
-  const url = urlInput?.value.trim() ?? '';
-  if (url) detect(url);
-});
-document.querySelectorAll<HTMLButtonElement>('[data-wp-example]').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    if (!urlInput || !form) return;
-    urlInput.value = btn.dataset.wpExample ?? '';
-    updateClearBtn();
-    urlInput.focus();
-    form.requestSubmit();
+  function renderReport(data: any, queryUrl: string) {
+    const finalUrl = data.data?.finalUrl || queryUrl;
+    let hostname = queryUrl;
+    let isHttps = true;
+    try {
+      const parsed = new URL(/^https?:\/\//i.test(finalUrl) ? finalUrl : `https://${finalUrl}`);
+      hostname = parsed.hostname;
+      isHttps = parsed.protocol === 'https:';
+    } catch { /* noop */ }
+
+    const results: any[] = data.data?.results ?? [];
+    const wp = results.find((r) => r.id === 'wordpress');
+    const wpTheme = data.data?.wordpressTheme;
+    const plugins: string[] = Array.isArray(data.data?.wordpressPlugins) ? data.data.wordpressPlugins : [];
+
+    // CASE 1: Not WordPress
+    if (!wp) {
+      const cmsOther = results.filter((r) => r.category === 'cms' || r.category === 'ecommerce' || r.category === 'builder');
+      const otherNames = cmsOther.map((r) => r.name).join(', ');
+      const isShopify = results.some((r) => r.id === 'shopify');
+
+      return `
+        <div class="card-dark wp-theme-card">
+          <div class="wp-header-bar">
+            <div class="wp-domain-lockup">
+              <span class="wp-edge-pill"><span class="wp-edge-dot"></span>Real-Time Edge Analysis</span>
+              <h2 class="wp-domain-name">${esc(hostname)}</h2>
+            </div>
+            <span class="badge badge-neutral">${isHttps ? 'HTTPS' : 'HTTP'}</span>
+          </div>
+          <div>
+            <span class="badge badge-warning" style="margin-block-end: 8px;">Non-WordPress Platform</span>
+            <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+              This site does not run on WordPress
+            </h3>
+            <p class="type-body text-ash" style="margin: 0; max-inline-size: 600px;">
+              ${cmsOther.length > 0
+                ? `Our edge detector identified that this site is powered by <strong>${esc(otherNames)}</strong> instead of WordPress.`
+                : `We found no WordPress core signatures, REST API endpoints, or theme stylesheets on this domain.`}
+            </p>
+          </div>
+          <div class="wp-actions-row">
+            ${isShopify
+              ? `<a href="/shopify-theme-detector?url=${encodeURIComponent(queryUrl)}" class="btn btn-brand">Detect Shopify Theme →</a>`
+              : ''}
+            <a href="/?url=${encodeURIComponent(queryUrl)}" class="btn btn-secondary-dark">Run Full Technology Scan →</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // CASE 2: WordPress found, but no theme exposed (Headless / obfuscated)
+    if (!wpTheme || (!wpTheme.name && !wpTheme.slug)) {
+      return `
+        <div class="card-dark wp-theme-card">
+          <div class="wp-header-bar">
+            <div class="wp-domain-lockup">
+              <span class="wp-edge-pill"><span class="wp-edge-dot"></span>Real-Time Edge Analysis</span>
+              <h2 class="wp-domain-name">${esc(hostname)}</h2>
+            </div>
+            <span class="badge chip-confirmed">WordPress Confirmed</span>
+          </div>
+          <div>
+            <span class="badge badge-warning" style="margin-block-end: 8px;">Theme Assets Undetected</span>
+            <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+              WordPress detected, but theme not identifiable
+            </h3>
+            <p class="type-body text-ash" style="margin: 0; max-inline-size: 640px;">
+              WordPress backend signals were verified via core REST endpoints (/wp-json/), but no theme assets
+              were found in the rendered HTML. This typically indicates a <strong>Headless WordPress</strong> setup
+              (decoupled frontend using Next.js, Nuxt, or Astro) or specialized proxying.
+            </p>
+          </div>
+          <div class="wp-actions-row">
+            <a href="/?url=${encodeURIComponent(queryUrl)}" class="btn btn-secondary-dark">Run Full Technology Scan →</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // CASE 3: Active WordPress Theme Found!
+    const themeName = wpTheme.name || (wpTheme.slug ? wpTheme.slug.replace(/[-_]+/g, ' ') : 'Custom Theme');
+    const slug = wpTheme.slug || 'unknown';
+    const author = wpTheme.author || 'Not specified';
+    const version = wpTheme.version || 'Unversioned';
+    const isChild = Boolean(wpTheme.isChild);
+    const parentTheme = wpTheme.parentTheme;
+    const authorUri = wpTheme.authorUri;
+    const themeUri = wpTheme.themeUri;
+    const isKnown = Boolean(wpTheme.known);
+
+    const summaryText = `WordPress Theme: ${themeName}
+Slug: ${slug}
+Author: ${author}
+Version: ${version}${isChild && parentTheme ? `\nParent Theme: ${parentTheme}` : ''}
+Site: ${finalUrl}`;
+
+    return `
+      <div class="card-dark wp-theme-card">
+        <div class="wp-header-bar">
+          <div class="wp-domain-lockup">
+            <span class="wp-edge-pill"><span class="wp-edge-dot"></span>Real-Time Edge Analysis</span>
+            <h2 class="wp-domain-name">${esc(hostname)}</h2>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span class="badge badge-neutral">${isHttps ? 'HTTPS' : 'HTTP'}</span>
+            <span class="badge chip-confirmed">Confirmed</span>
+          </div>
+        </div>
+
+        <div class="wp-theme-hero">
+          <div class="wp-badge-row">
+            <span class="badge badge-filled">WordPress Theme</span>
+            ${isChild ? `<span class="badge badge-warning">Child Theme</span>` : `<span class="badge chip-confirmed">Active</span>`}
+            ${isKnown ? `<span class="badge badge-neutral">Official Catalog</span>` : ''}
+          </div>
+          <h3 class="wp-theme-title">${esc(themeName)}</h3>
+        </div>
+
+        ${isChild && parentTheme ? `
+          <div class="wp-child-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>
+            </svg>
+            <div>
+              <span>Child Theme Configuration: Extends <strong>${esc(parentTheme)}</strong> as the base parent template.</span>
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="wp-props-grid">
+          <div class="wp-prop-tile">
+            <span class="wp-prop-label">Theme Name</span>
+            <span class="wp-prop-value"><strong>${esc(themeName)}</strong></span>
+          </div>
+
+          <div class="wp-prop-tile">
+            <span class="wp-prop-label">Theme Directory Slug</span>
+            <div class="wp-prop-value">
+              <code>${esc(slug)}</code>
+              <button type="button" class="wp-copy-icon-btn" data-copy-val="${esc(slug)}" title="Copy slug" aria-label="Copy slug">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="wp-prop-tile">
+            <span class="wp-prop-label">Author</span>
+            <span class="wp-prop-value">
+              ${authorUri ? `<a href="${esc(authorUri)}" target="_blank" rel="noopener noreferrer">${esc(author)} ↗</a>` : esc(author)}
+            </span>
+          </div>
+
+          <div class="wp-prop-tile">
+            <span class="wp-prop-label">Version</span>
+            <span class="wp-prop-value">${esc(version)}</span>
+          </div>
+
+          <div class="wp-prop-tile">
+            <span class="wp-prop-label">Catalog Status</span>
+            <span class="wp-prop-value">${isKnown ? 'Recognized Public Theme' : 'Custom / Uncataloged'}</span>
+          </div>
+
+          <div class="wp-prop-tile">
+            <span class="wp-prop-label">Theme Source / Homepage</span>
+            <span class="wp-prop-value">
+              ${themeUri
+                ? `<a href="${esc(themeUri)}" target="_blank" rel="noopener noreferrer">Visit Theme Site ↗</a>`
+                : (isKnown
+                  ? `<a href="https://wordpress.org/themes/${esc(slug.replace(/-child$/, ''))}/" target="_blank" rel="noopener noreferrer">WordPress.org Directory ↗</a>`
+                  : 'Self-hosted')}
+            </span>
+          </div>
+        </div>
+
+        ${plugins.length > 0 ? `
+          <div class="wp-plugins-box">
+            <div class="wp-plugins-head">
+              <span class="type-mono-caps text-mute">Active Plugins (${plugins.length} detected)</span>
+              <span class="type-caption text-mute">From /wp-content/plugins/ asset paths</span>
+            </div>
+            <div class="wp-plugins-chips">
+              ${plugins.map((p) => `
+                <a href="https://wordpress.org/plugins/${esc(p)}/" target="_blank" rel="noopener noreferrer" class="wp-plugin-chip" title="View plugin on WordPress.org">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                  <span>${esc(p)}</span>
+                </a>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+
+        <div class="wp-actions-row">
+          <button type="button" class="btn btn-secondary-dark wp-copy-summary-btn" data-summary="${esc(summaryText)}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy Theme Details</span>
+          </button>
+          <a href="/?url=${encodeURIComponent(queryUrl)}" class="btn btn-ghost-dark">
+            <span>Run Full Technology Scan →</span>
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireResultActions(container: HTMLElement) {
+    container.querySelectorAll<HTMLButtonElement>('.wp-copy-icon-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-copy-val') ?? '';
+        if (val) copyText(val, btn);
+      });
+    });
+
+    container.querySelectorAll<HTMLButtonElement>('.wp-copy-summary-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const sum = btn.getAttribute('data-summary') ?? '';
+        if (sum) copyText(sum, btn);
+      });
+    });
+  }
+
+  async function detect(url: string) {
+    if (!resultEl || !errorEl) return;
+    setLoading(true);
+
+    try {
+      const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
+      const res = await fetch('/api/detect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, token }),
+      });
+      const data = await res.json() as any;
+      setLoading(false);
+
+      if (data.ok) {
+        resultEl.innerHTML = renderReport(data, url);
+        resultEl.hidden = false;
+        wireResultActions(resultEl);
+        resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        const code = data.error?.code ?? 'UNKNOWN';
+        const msg = data.error?.message ?? 'Detection failed. Please check the URL and try again.';
+        errorEl.innerHTML = `
+          <div class="card-dark wp-theme-card">
+            <span class="badge badge-error">Inspection Notice (${esc(code)})</span>
+            <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 8px 0 4px 0;">Could not complete detection</h3>
+            <p class="type-body text-ash" style="margin: 0 0 12px 0;">${esc(msg)}</p>
+            <div>
+              <button type="button" class="btn btn-secondary-dark wp-retry-btn">Try again</button>
+            </div>
+          </div>
+        `;
+        errorEl.hidden = false;
+        errorEl.querySelector('.wp-retry-btn')?.addEventListener('click', () => detect(url));
+      }
+    } catch {
+      setLoading(false);
+      errorEl.innerHTML = `
+        <div class="card-dark wp-theme-card">
+          <span class="badge badge-error">Network Error</span>
+          <p class="type-body text-ash" style="margin: 8px 0 12px 0;">Could not connect to detection service. Please check your network connection.</p>
+          <div>
+            <button type="button" class="btn btn-secondary-dark wp-retry-btn">Try again</button>
+          </div>
+        </div>
+      `;
+      errorEl.hidden = false;
+      errorEl.querySelector('.wp-retry-btn')?.addEventListener('click', () => detect(url));
+    }
+  }
+
+  function updateClearBtn() {
+    if (!clearBtn || !urlInput) return;
+    clearBtn.hidden = !urlInput.value.trim();
+  }
+  urlInput?.addEventListener('input', updateClearBtn);
+  clearBtn?.addEventListener('click', () => {
+    if (urlInput) {
+      urlInput.value = '';
+      urlInput.focus();
+      updateClearBtn();
+    }
   });
-});
+  updateClearBtn();
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const url = urlInput?.value.trim() ?? '';
+    if (url) {
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.set('url', url);
+        window.history.replaceState({}, '', u.toString());
+      } catch { /* noop */ }
+      detect(url);
+    }
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-wp-example]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (!urlInput || !form) return;
+      urlInput.value = btn.dataset.wpExample ?? '';
+      updateClearBtn();
+      urlInput.focus();
+      form.requestSubmit();
+    });
+  });
+
+  // Check URL query param on initial page load
+  const urlParam = new URLSearchParams(window.location.search).get('url');
+  if (urlParam && urlInput && form) {
+    urlInput.value = urlParam;
+    updateClearBtn();
+    form.requestSubmit();
+  } else {
+    urlInput?.focus();
+  }
+})();
 </script>

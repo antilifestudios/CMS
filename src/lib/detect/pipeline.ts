@@ -8,7 +8,13 @@
 import { validateUrl } from './ssrf.ts';
 import { runSignatureEngine, type DetectionResult, type MatchContext } from './signatures.ts';
 import { applyConfidenceModel } from './confidence.ts';
-import { isKnownShopifyTheme, isKnownWpTheme } from '../../data/themes.ts';
+import {
+  isKnownShopifyTheme,
+  isKnownWpTheme,
+  getKnownWpThemeMeta,
+  getShopifyThemeStoreName,
+  getShopifyThemeStoreUrl,
+} from '../../data/themes.ts';
 import { collectEvidence, type CollectEvidenceOptions } from './static-collect.ts';
 import type { StandardApiResponse, StandardErrorCode, CoverageMetadata, ScanStatus } from './types.ts';
 import type { BotProtectionInfo } from './protection.ts';
@@ -28,9 +34,28 @@ export interface PipelineSuccess {
   finalUrl: string;
   results: DetectionResult[];
   isClientRendered: boolean;
-  wordpressTheme?: { name?: string; author?: string; version?: string; slug?: string; known?: boolean };
+  wordpressTheme?: {
+    name?: string;
+    author?: string;
+    authorUri?: string;
+    themeUri?: string;
+    version?: string;
+    parentTheme?: string;
+    slug?: string;
+    isChild?: boolean;
+    known?: boolean;
+  };
   wordpressPlugins?: string[];
-  shopifyTheme?: { name?: string; id?: string; known?: boolean };
+  shopifyTheme?: {
+    name?: string;
+    id?: string;
+    themeStoreId?: number;
+    themeStoreName?: string;
+    themeStoreUrl?: string;
+    version?: string;
+    role?: string;
+    known?: boolean;
+  };
 }
 
 export interface PipelineError {
@@ -87,62 +112,204 @@ async function runProbes(
 }
 
 // ----------------------------------------------------------------
-// WordPress extras: theme name from style.css
+// WordPress extras: theme name, author, version, parent/child
 // ----------------------------------------------------------------
 
-async function fetchWpThemeMeta(
+export interface WpThemeMetaResult {
+  themeName?: string;
+  themeAuthor?: string;
+  themeAuthorUri?: string;
+  themeUri?: string;
+  themeVersion?: string;
+  parentTheme?: string;
+  slug?: string;
+  isChild?: boolean;
+}
+
+export async function fetchWpThemeMeta(
   origin: string,
   html: string,
-  signal: AbortSignal,
-): Promise<{ themeName?: string; themeAuthor?: string; themeVersion?: string }> {
-  const slugMatch = /\/wp-content\/themes\/([^/]+)\//i.exec(html);
-  if (!slugMatch) return {};
+  signal?: AbortSignal,
+): Promise<WpThemeMetaResult> {
+  const themeMatches = [...html.matchAll(/\/wp-content\/themes\/([^/"'\s?#]+)\//gi)].map((m) => m[1]);
+  if (themeMatches.length === 0) return {};
 
-  const slug = slugMatch[1];
-  const cssUrl = `${origin}/wp-content/themes/${slug}/style.css`;
+  const slugs = [...new Set(themeMatches)];
+  const childSlug = slugs.find((s) => s.toLowerCase().endsWith('-child'));
+  const primarySlug = childSlug || slugs[0];
+  const parentCandidateSlug = slugs.find((s) => s !== primarySlug);
+
+  const cssUrl = `${origin}/wp-content/themes/${primarySlug}/style.css`;
   const validated = validateUrl(cssUrl);
-  if (!validated.ok) return {};
-
-  try {
-    const res = await fetch(cssUrl, { signal, headers: { 'User-Agent': USER_AGENT } });
-    if (!res.ok) return {};
-    const css = await res.text().then((t) => t.slice(0, 10_000));
-
-    const themeName = /^Theme Name:\s*(.+)$/im.exec(css)?.[1]?.trim();
-    const themeAuthor = /^Author:\s*(.+)$/im.exec(css)?.[1]?.trim();
-    const themeVersion = /^Version:\s*(.+)$/im.exec(css)?.[1]?.trim();
-
-    return { themeName, themeAuthor, themeVersion };
-  } catch {
-    return {};
+  let css = '';
+  if (validated.ok) {
+    try {
+      const res = await fetch(cssUrl, { signal, headers: { 'User-Agent': USER_AGENT } });
+      if (res.ok) {
+        css = await res.text().then((t) => t.slice(0, 15_000));
+      }
+    } catch {
+      // Fail soft
+    }
   }
+
+  let themeName = /^Theme Name:\s*(.+)$/im.exec(css)?.[1]?.trim();
+  let themeAuthor = /^Author:\s*(.+)$/im.exec(css)?.[1]?.trim();
+  let themeAuthorUri = /^(?:Author URI|Author Uri):\s*(https?:\/\/[^\s]+)$/im.exec(css)?.[1]?.trim();
+  let themeUri = /^(?:Theme URI|Theme Uri):\s*(https?:\/\/[^\s]+)$/im.exec(css)?.[1]?.trim();
+  let themeVersion = /^Version:\s*(.+)$/im.exec(css)?.[1]?.trim();
+  let templateSlug = /^Template:\s*(.+)$/im.exec(css)?.[1]?.trim();
+
+  const isChild = Boolean(templateSlug || primarySlug.toLowerCase().endsWith('-child'));
+  let parentTheme = templateSlug || (isChild ? parentCandidateSlug : undefined);
+
+  // If style.css could not be read or themeName is missing, fall back to known catalog or clean slug
+  const baseSlug = primarySlug.toLowerCase().replace(/-child$/, '');
+  const known = getKnownWpThemeMeta(baseSlug);
+
+  if (!themeName) {
+    if (known) {
+      themeName = isChild ? `${known.name} Child` : known.name;
+      if (!themeAuthor && known.author) themeAuthor = known.author;
+      if (!themeUri && known.url) themeUri = known.url;
+    } else {
+      themeName = primarySlug
+        .split(/[-_]+/)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+    }
+  }
+
+  if (parentTheme) {
+    const parentKnown = getKnownWpThemeMeta(parentTheme.toLowerCase());
+    if (parentKnown) parentTheme = parentKnown.name;
+  }
+
+  return {
+    themeName,
+    themeAuthor,
+    themeAuthorUri,
+    themeUri,
+    themeVersion,
+    parentTheme,
+    slug: primarySlug,
+    isChild,
+  };
 }
 
 // ----------------------------------------------------------------
-// Shopify theme from JS embed
+// Shopify theme from JS embed and BOOMR analytics
 // ----------------------------------------------------------------
 
-function extractShopifyTheme(html: string): { name?: string; id?: string } {
-  const nameMatch = /Shopify\.theme\s*=\s*\{[^}]*["']name["']\s*:\s*["']([^"']+)["']/i.exec(html);
-  const idMatch =
-    /Shopify\.theme\s*=\s*\{[^}]*["']id["']\s*:\s*(\d+)/i.exec(html) ??
-    /["']theme_id["']\s*:\s*(\d+)/i.exec(html);
-  return { name: nameMatch?.[1], id: idMatch?.[1] };
+export interface ShopifyThemeInfo {
+  name?: string;
+  id?: string;
+  themeStoreId?: number;
+  themeStoreName?: string;
+  themeStoreUrl?: string;
+  version?: string;
+  role?: string;
+  known?: boolean;
+}
+
+export function extractShopifyTheme(html: string): ShopifyThemeInfo {
+  let name: string | undefined;
+  let id: string | undefined;
+  let themeStoreId: number | undefined;
+  let version: string | undefined;
+  let role: string | undefined;
+
+  // 1. Shopify.theme object in storefront scripts
+  const themeObjMatch = /Shopify\.theme\s*=\s*(\{[^;]+?\});/i.exec(html);
+  if (themeObjMatch) {
+    try {
+      const parsed = JSON.parse(themeObjMatch[1]);
+      if (typeof parsed.name === 'string') name = parsed.name.trim();
+      if (parsed.id != null) id = String(parsed.id);
+      if (typeof parsed.theme_store_id === 'number') themeStoreId = parsed.theme_store_id;
+      if (typeof parsed.role === 'string') role = parsed.role;
+    } catch {
+      const nameM = /["']name["']\s*:\s*["']([^"']+)["']/i.exec(themeObjMatch[1]);
+      if (nameM) name = nameM[1].trim();
+      const idM = /["']id["']\s*:\s*(\d+)/i.exec(themeObjMatch[1]);
+      if (idM) id = idM[1];
+      const storeIdM = /["']theme_store_id["']\s*:\s*(\d+)/i.exec(themeObjMatch[1]);
+      if (storeIdM) themeStoreId = parseInt(storeIdM[1], 10);
+      const roleM = /["']role["']\s*:\s*["']([^"']+)["']/i.exec(themeObjMatch[1]);
+      if (roleM) role = roleM[1];
+    }
+  }
+
+  // 2. Direct assignment or BOOMR theme variables
+  if (!name) {
+    const directName = /Shopify\.theme\.name\s*=\s*["']([^"']+)["']/i.exec(html);
+    if (directName) name = directName[1].trim();
+  }
+  if (!name) {
+    const boomrName = /BOOMR\.themeName\s*=\s*["']([^"']+)["']/i.exec(html);
+    if (boomrName) name = boomrName[1].trim();
+  }
+  if (!version) {
+    const boomrVer = /BOOMR\.themeVersion\s*=\s*["']([^"']+)["']/i.exec(html);
+    if (boomrVer) version = boomrVer[1].trim();
+  }
+  if (!id) {
+    const boomrId = /BOOMR\.themeId\s*=\s*(\d+)/i.exec(html);
+    if (boomrId) id = boomrId[1];
+  }
+  if (!id) {
+    const idMatch =
+      /["']theme_id["']\s*:\s*(\d+)/i.exec(html) ??
+      /data-theme-id=["'](\d+)["']/i.exec(html);
+    if (idMatch) id = idMatch[1];
+  }
+
+  const themeStoreName = getShopifyThemeStoreName(themeStoreId);
+  const effectiveName = name || themeStoreName;
+  const themeStoreUrl = getShopifyThemeStoreUrl(themeStoreName || effectiveName);
+  const known = isKnownShopifyTheme(effectiveName) || Boolean(themeStoreName);
+
+  return {
+    name: effectiveName,
+    id,
+    themeStoreId,
+    themeStoreName,
+    themeStoreUrl,
+    version,
+    role,
+    known,
+  };
 }
 
 // ----------------------------------------------------------------
 // WordPress plugins from asset paths (/wp-content/plugins/<slug>/)
 // ----------------------------------------------------------------
 
-const WP_PLUGIN_IGNORE = new Set(['cache', 'uploads', 'upgrade', 'languages']);
+const WP_PLUGIN_IGNORE = new Set([
+  'cache',
+  'uploads',
+  'upgrade',
+  'languages',
+  'dist',
+  'build',
+  'assets',
+  'vendor',
+  'node_modules',
+  'tmp',
+  'temp',
+]);
+
+const VALID_PLUGIN_SLUG = /^[a-z0-9][a-z0-9_-]{1,60}$/i;
 
 export function extractWpPlugins(html: string, limit = 8): string[] {
   const seen: string[] = [];
   const rx = /\/wp-content\/plugins\/([^/"'\s?#]+)/gi;
   let m: RegExpExecArray | null;
   while ((m = rx.exec(html)) !== null) {
-    const slug = m[1].replace(/\/$/, '');
-    if (!slug || WP_PLUGIN_IGNORE.has(slug) || seen.includes(slug)) continue;
+    const slug = m[1].replace(/\/$/, '').toLowerCase();
+    if (!slug || !VALID_PLUGIN_SLUG.test(slug) || WP_PLUGIN_IGNORE.has(slug) || seen.includes(slug)) {
+      continue;
+    }
     seen.push(slug);
     if (seen.length >= limit) break;
   }
@@ -255,8 +422,8 @@ export async function runDetectionPipeline(
   const probeTimeout = setTimeout(() => probeCtrl.abort(), 4_000);
 
   let probeResults: Record<string, string> = {};
-  let wpThemeMeta: { themeName?: string; themeAuthor?: string; themeVersion?: string } = {};
-  let shopifyTheme: { name?: string; id?: string } = {};
+  let wpThemeMeta: WpThemeMetaResult = {};
+  let shopifyTheme: ShopifyThemeInfo = {};
   let wpPlugins: string[] = [];
   let dnsHint: { id: string; name: string; cname: string } | null = null;
 
@@ -289,7 +456,11 @@ export async function runDetectionPipeline(
   let results = runSignatureEngine(ctx2);
 
   // 5. Augment WordPress result with theme metadata
-  if (wpThemeMeta.themeName) {
+  if (wpThemeMeta.themeName || wpThemeMeta.slug) {
+    const themeDisplay = wpThemeMeta.themeName ?? wpThemeMeta.slug;
+    const authorPart = wpThemeMeta.themeAuthor ? ` by ${wpThemeMeta.themeAuthor}` : '';
+    const versionPart = wpThemeMeta.themeVersion ? ` v${wpThemeMeta.themeVersion}` : '';
+    const childPart = wpThemeMeta.parentTheme ? ` (child of ${wpThemeMeta.parentTheme})` : '';
     results = results.map((r) => {
       if (r.id === 'wordpress') {
         return {
@@ -298,14 +469,14 @@ export async function runDetectionPipeline(
             ...r.evidence,
             {
               type: 'probe' as const,
-              artifact: `theme: "${wpThemeMeta.themeName}"${wpThemeMeta.themeVersion ? ` v${wpThemeMeta.themeVersion}` : ''}${wpThemeMeta.themeAuthor ? ` by ${wpThemeMeta.themeAuthor}` : ''}`,
+              artifact: `theme: "${themeDisplay}"${versionPart}${authorPart}${childPart}`,
               weight: 85,
               name: 'theme',
-              value: wpThemeMeta.themeName ?? '',
+              value: themeDisplay ?? '',
               strength: 'strong' as const,
               family: 'PLATFORM_IDENTIFIER' as const,
               specificity: 0.7,
-              description: 'WordPress theme stylesheet identified',
+              description: 'WordPress theme identified',
               signalId: 'wordpress#probe:theme',
             },
           ],
@@ -316,8 +487,13 @@ export async function runDetectionPipeline(
   }
 
   // 6. Augment Shopify result with theme name / ID
-  if (shopifyTheme.name || shopifyTheme.id) {
-    const label = `theme: "${shopifyTheme.name ?? 'unknown'}"${shopifyTheme.id ? ` (id ${shopifyTheme.id})` : ''}`;
+  if (shopifyTheme.name || shopifyTheme.id || shopifyTheme.themeStoreName) {
+    const displayName = shopifyTheme.name || shopifyTheme.themeStoreName || 'Custom';
+    const storePart = shopifyTheme.themeStoreName && shopifyTheme.themeStoreName !== displayName
+      ? ` [Store: ${shopifyTheme.themeStoreName}]`
+      : '';
+    const idPart = shopifyTheme.id ? ` (id ${shopifyTheme.id})` : '';
+    const label = `theme: "${displayName}"${storePart}${idPart}`;
     results = results.map((r) => {
       if (r.id === 'shopify') {
         return {
@@ -329,7 +505,7 @@ export async function runDetectionPipeline(
               artifact: label,
               weight: 80,
               name: 'theme',
-              value: shopifyTheme.name ?? shopifyTheme.id ?? '',
+              value: displayName,
               strength: 'strong' as const,
               family: 'PLATFORM_IDENTIFIER' as const,
               specificity: 0.7,
@@ -404,20 +580,29 @@ export async function runDetectionPipeline(
       finalUrl,
       results,
       isClientRendered: collected.isClientRendered,
-      ...(wpThemeMeta.themeName || themeSlug
+      ...(wpThemeMeta.themeName || wpThemeMeta.slug || themeSlug
         ? {
             wordpressTheme: {
               name: wpThemeMeta.themeName,
               author: wpThemeMeta.themeAuthor,
+              authorUri: wpThemeMeta.themeAuthorUri,
+              themeUri: wpThemeMeta.themeUri,
               version: wpThemeMeta.themeVersion,
-              slug: themeSlug,
-              known: isKnownWpTheme(themeSlug),
+              slug: wpThemeMeta.slug ?? themeSlug,
+              parentTheme: wpThemeMeta.parentTheme,
+              isChild: wpThemeMeta.isChild,
+              known: isKnownWpTheme(wpThemeMeta.slug ?? themeSlug),
             },
           }
         : {}),
       ...(wpPlugins.length > 0 ? { wordpressPlugins: wpPlugins } : {}),
-      ...(shopifyTheme.name || shopifyTheme.id
-        ? { shopifyTheme: { ...shopifyTheme, known: isKnownShopifyTheme(shopifyTheme.name) } }
+      ...(shopifyTheme.name || shopifyTheme.id || shopifyTheme.themeStoreName
+        ? {
+            shopifyTheme: {
+              ...shopifyTheme,
+              known: shopifyTheme.known ?? isKnownShopifyTheme(shopifyTheme.name),
+            },
+          }
         : {}),
     },
   };

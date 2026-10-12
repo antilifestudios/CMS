@@ -21,7 +21,7 @@
     "category": "cms",
     "signals": [
       { "type": "meta-generator", "pattern": "Drupal\\s*([\\d.]+)?", "weight": 95, "versionGroup": 1, "strength": "definitive" },
-      { "type": "html-path", "pattern": "/sites/default/files/|/modules/|/themes/", "weight": 60, "strength": "weak" },
+      { "type": "html-path", "pattern": "/sites/(?:default|all)/files/|/sites/(?:default|all)/(?:modules|themes)/|/core/assets/", "weight": 60, "strength": "weak" },
       { "type": "header", "name": "x-generator", "pattern": "Drupal", "weight": 95, "strength": "definitive" },
       { "type": "header", "name": "x-drupal-cache", "pattern": ".*", "weight": 90, "strength": "definitive" },
       { "type": "cookie-name", "pattern": "^SESS[a-f0-9]{32}$|^Drupal\\.visitor", "weight": 75, "strength": "strong" },

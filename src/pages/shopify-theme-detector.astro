@@ -7,7 +7,7 @@ import ThemeCard from '../components/ThemeCard.astro';
 ---
 <Base
   title="Shopify Theme Detector — Identify Any Shopify Store's Theme"
-  description="Find the Shopify theme powering any store, including theme name and store ID. Free CMS Detector AI tool."
+  description="Find the Shopify theme powering any store, including theme name, store ID, and official Theme Store base. Free CMS Detector AI tool."
   pagePath="/shopify-theme-detector"
   jsonLd={[
     {
@@ -46,21 +46,24 @@ import ThemeCard from '../components/ThemeCard.astro';
     },
   ]}
 >
-  <Section theme="dark" style="min-block-size: 60vh; display: flex; align-items: center;" ariaLabelledby="shopify-h1">
+  <Section theme="dark" class="hero" ariaLabelledby="shopify-h1">
     <div class="container">
-      <div style="max-inline-size: 860px;">
+      <div style="max-inline-size: 880px;">
         <div class="eyebrow-lockup">
-          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon"><NavIcon name="shopify" size={16} />Shopify Theme Detector</span>
+          <span class="eyebrow type-mono-eyebrow eyebrow-with-icon">
+            <NavIcon name="shopify" size={16} />Shopify Theme Detector
+          </span>
           <h1 id="shopify-h1" class="type-display-xl" style="color: var(--color-on-primary); margin: 0;">
             What Shopify Theme<br />Is This Store Using?
           </h1>
-          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 540px;">
-            Identify the theme of any Shopify store — name and theme ID — extracted from the
-            store's own page data. Free, instant, no sign-up.
+          <p class="type-subtitle text-ash" style="margin: 0; max-inline-size: 580px;">
+            Identify the theme powering any Shopify store — active theme name, official Theme Store
+            identity, theme ID, and version — extracted directly from storefront data in real time.
           </p>
         </div>
+
         <div style="margin-block-start: var(--spacing-xxl);">
-          <form id="shopify-form" novalidate>
+          <form id="shopify-form" class="detect-form" aria-label="Shopify theme detection" novalidate>
             <div class="search-bar">
               <div class="search-icon" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -100,8 +103,8 @@ import ThemeCard from '../components/ThemeCard.astro';
             <div class="preset-bar">
               <span class="type-mono-caps text-mute preset-lbl">Try:</span>
               <div class="preset-chips">
-                <button type="button" class="preset-chip" data-shopify-example="gymshark.com">gymshark.com</button>
                 <button type="button" class="preset-chip" data-shopify-example="allbirds.com">allbirds.com</button>
+                <button type="button" class="preset-chip" data-shopify-example="gymshark.com">gymshark.com</button>
                 <button type="button" class="preset-chip" data-shopify-example="kyliecosmetics.com">kyliecosmetics.com</button>
               </div>
             </div>
@@ -114,14 +117,43 @@ import ThemeCard from '../components/ThemeCard.astro';
               <span>Automated &amp; private theme audit. Submitted stores are evaluated in real time without storing browsing history.</span>
             </div>
           </form>
-          <div id="shopify-loading" hidden style="margin-block-start: 24px;">
-            <div class="skeleton-card">
-              <div class="skeleton sk-row" style="block-size: 32px; inline-size: 60%; border-radius: 4px;"></div>
-              <div class="skeleton sk-row" style="block-size: 20px; inline-size: 80%; border-radius: 4px;"></div>
+
+          {/* Progress / Loading steps */}
+          <div id="shopify-loading" hidden aria-live="polite" aria-busy="true" style="margin-block-start: var(--spacing-xl);">
+            <div class="card-dark shopify-loading-card">
+              <div class="shopify-loading-head">
+                <div class="shopify-loading-spinner" aria-hidden="true"></div>
+                <div>
+                  <p class="type-mono-caps text-mute" style="margin: 0;">Edge Inspector</p>
+                  <p class="type-heading-sm" style="color: var(--color-on-primary); margin: 2px 0 0 0;" id="shopify-loading-status">Analyzing Shopify storefront...</p>
+                </div>
+              </div>
+              <div class="shopify-scan-steps">
+                <div class="shopify-scan-step active" id="shopify-step-1">
+                  <span class="shopify-step-dot"></span>
+                  <span>Connecting to store domain &amp; verifying SSL handshake</span>
+                </div>
+                <div class="shopify-scan-step" id="shopify-step-2">
+                  <span class="shopify-step-dot"></span>
+                  <span>Scanning HTML DOM for Shopify storefront indicators</span>
+                </div>
+                <div class="shopify-scan-step" id="shopify-step-3">
+                  <span class="shopify-step-dot"></span>
+                  <span>Extracting Shopify.theme configuration &amp; BOOMR analytics</span>
+                </div>
+                <div class="shopify-scan-step" id="shopify-step-4">
+                  <span class="shopify-step-dot"></span>
+                  <span>Matching Shopify Theme Store catalog &amp; resolving custom names</span>
+                </div>
+              </div>
             </div>
           </div>
-          <div id="shopify-result" hidden style="margin-block-start: 24px;"></div>
-          <div id="shopify-error"  hidden style="margin-block-start: 24px;"></div>
+
+          {/* Result Output */}
+          <div id="shopify-result" hidden aria-live="polite" style="margin-block-start: var(--spacing-xl);"></div>
+
+          {/* Error Message */}
+          <div id="shopify-error" hidden aria-live="assertive" role="alert" style="margin-block-start: var(--spacing-xl);"></div>
         </div>
       </div>
     </div>
@@ -205,98 +237,613 @@ import ThemeCard from '../components/ThemeCard.astro';
     </div>
   </Section>
 </Base>
+
 <style>
   .eyebrow-with-icon { display: inline-flex; align-items: center; gap: 8px; }
   .eyebrow-with-icon svg { flex-shrink: 0; display: block; }
-  .shopify-examples { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
-  .shopify-example-link {
+  .hero { padding-block: var(--spacing-section-lg); }
+  .detect-form { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+
+  /* Loading State */
+  .shopify-loading-card {
+    border: 1px solid var(--color-hairline-soft);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  .shopify-loading-head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .shopify-loading-spinner {
+    inline-size: 32px;
+    block-size: 32px;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.12);
+    border-top-color: var(--color-brand);
+    animation: shopifySpin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes shopifySpin {
+    to { transform: rotate(360deg); }
+  }
+  .shopify-scan-steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding-block-start: 8px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .shopify-scan-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--color-mute);
+    transition: color 0.2s ease;
+  }
+  .shopify-scan-step.active {
+    color: var(--color-on-primary);
+    font-weight: 500;
+  }
+  .shopify-scan-step.done {
+    color: var(--color-ash);
+  }
+  .shopify-step-dot {
+    inline-size: 8px;
+    block-size: 8px;
+    border-radius: 50%;
+    background-color: var(--color-hairline-soft);
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+  }
+  .shopify-scan-step.active .shopify-step-dot {
+    background-color: var(--color-brand);
+    box-shadow: 0 0 8px var(--color-brand);
+  }
+  .shopify-scan-step.done .shopify-step-dot {
+    background-color: var(--color-success);
+  }
+
+  /* Result Card Styling */
+  :global(.shopify-theme-card) {
+    background-color: var(--color-canvas-soft);
+    border: 1px solid var(--color-hairline-soft);
+    border-radius: var(--radius-marketing);
+    padding: var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  :global(.shopify-header-bar) {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block-end: var(--spacing-md);
+    border-block-end: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  :global(.shopify-domain-lockup) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  :global(.shopify-edge-pill) {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-mute);
+  }
+  :global(.shopify-edge-dot) {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    box-shadow: 0 0 6px var(--color-success);
+  }
+  :global(.shopify-domain-name) {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--color-on-primary);
+    margin: 0;
+    word-break: break-all;
+  }
+  :global(.shopify-store-banner) {
+    background: rgba(85, 190, 255, 0.08);
+    border: 1px solid rgba(85, 190, 255, 0.25);
+    border-radius: var(--radius-app-md);
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    color: var(--color-on-primary);
+    font-size: 14px;
+  }
+  :global(.shopify-store-banner strong) {
+    color: var(--color-link-blue-soft);
+  }
+  :global(.shopify-theme-hero) {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  :global(.shopify-badge-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  :global(.shopify-theme-title) {
+    font-family: var(--font-sans);
+    font-size: 36px;
+    font-weight: 425;
+    line-height: 1.15;
+    color: var(--color-on-primary);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  :global(.shopify-props-grid) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  :global(.shopify-prop-tile) {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: var(--radius-app-md);
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  :global(.shopify-prop-label) {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-mute);
+  }
+  :global(.shopify-prop-value) {
+    font-size: 14px;
+    color: var(--color-on-primary);
+    word-break: break-all;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  :global(.shopify-prop-value a) {
+    color: var(--color-link-blue-soft);
+    text-decoration: none;
+  }
+  :global(.shopify-prop-value a:hover) {
+    text-decoration: underline;
+  }
+  :global(.shopify-copy-icon-btn) {
     background: none;
     border: none;
-    padding: 0;
-    font: inherit;
-    color: var(--color-link-blue-soft);
-    text-decoration: underline;
-    text-decoration-color: rgba(85, 190, 255, 0.45);
-    text-underline-offset: 3px;
+    padding: 4px;
+    color: var(--color-mute);
     cursor: pointer;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease, background-color 0.15s ease;
   }
-  .shopify-example-link:hover { text-decoration-color: var(--color-link-blue-soft); }
-  .shopify-example-link:focus-visible { outline: 2px solid var(--color-link-blue-soft); outline-offset: 2px; border-radius: 2px; }
-  .skeleton-card { background: var(--color-canvas-soft); border-radius: var(--radius-marketing); padding: var(--spacing-xl); border: 1px solid var(--color-hairline-soft); display: flex; flex-direction: column; gap: 12px; }
+  :global(.shopify-copy-icon-btn:hover) {
+    color: var(--color-on-primary);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  :global(.shopify-actions-row) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-block-start: 8px;
+    border-block-start: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   .theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-lg); }
   .theme-grid > :global(article) { min-inline-size: 0; }
   @media (max-width: 960px) {
     .theme-grid { grid-template-columns: 1fr; }
   }
-  @media (max-width: 480px) {
-    .shopify-input-row { flex-direction: column; }
-    .detect-btn { inline-size: 100%; }
-  }
 </style>
-<script>
-const form   = document.getElementById('shopify-form')   as HTMLFormElement | null;
-const input  = document.getElementById('shopify-input')  as HTMLInputElement | null;
-const btn    = document.getElementById('shopify-submit') as HTMLButtonElement | null;
-const loadEl = document.getElementById('shopify-loading') as HTMLElement | null;
-const resEl  = document.getElementById('shopify-result') as HTMLElement | null;
-const errEl  = document.getElementById('shopify-error')  as HTMLElement | null;
-const clearBtn = document.getElementById('shopify-clear-btn');
-function updateClearBtn() {
-  if (!clearBtn || !input) return;
-  clearBtn.hidden = !input.value.trim();
-}
-input?.addEventListener('input', updateClearBtn);
-clearBtn?.addEventListener('click', () => {
-  if (input) {
-    input.value = '';
-    input.focus();
-    updateClearBtn();
-  }
-});
-updateClearBtn();
 
-input?.focus();
-form?.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const url = input?.value.trim() ?? '';
-  if (!url) return;
-  if (loadEl) loadEl.hidden = false;
-  if (resEl)  resEl.hidden = true;
-  if (errEl)  errEl.hidden = true;
-  if (btn)    { btn.disabled = true; btn.textContent = 'Detecting…'; }
-  try {
-    const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
-    const res = await fetch('/api/detect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url, token }) });
-    const data = await res.json() as any;
-    if (loadEl) loadEl.hidden = true;
-    if (btn) { btn.disabled = false; btn.textContent = 'Find Theme'; }
-    if (data.ok) {
-      const shopify = (data.data.results ?? []).find((r: any) => r.id === 'shopify');
-      const structured = data.data.shopifyTheme as { name?: string; id?: string } | undefined;
-      const themeName = structured?.name;
-      if (!shopify) {
-        if (resEl) { resEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">This doesn't appear to be a Shopify store.</p></div>`; resEl.hidden = false; }
-      } else if (!themeName) {
-        if (resEl) { resEl.innerHTML = `<div class="card-dark"><p class="type-heading-sm" style="color:var(--color-on-primary);margin:0 0 8px 0;">Shopify detected, theme not identified</p><p class="type-body-sm text-ash" style="margin:0;">The store runs Shopify but the theme name wasn't embedded in the page.</p></div>`; resEl.hidden = false; }
-      } else {
-        const idLine = structured?.id ? ` <span class="type-caption text-mute">(theme ID ${esc(structured.id)})</span>` : '';
-        if (resEl) { resEl.innerHTML = `<div class="card-dark"><p class="type-mono-caps text-mute" style="margin:0 0 4px 0;">Shopify theme</p><h2 class="type-heading-md" style="color:var(--color-on-primary);margin:0 0 12px 0;">${esc(themeName)}${idLine}</h2><span class="badge chip-confirmed">Confirmed</span></div>`; resEl.hidden = false; }
-      }
-    } else {
-      if (errEl) { errEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Detection failed: ${esc(data.error?.code ?? 'UNKNOWN')}</p></div>`; errEl.hidden = false; }
-    }
-  } catch {
-    if (loadEl) loadEl.hidden = true;
-    if (btn) { btn.disabled = false; btn.textContent = 'Find Theme'; }
-    if (errEl) { errEl.innerHTML = `<div class="card-dark"><p class="type-body-sm text-ash">Network error. Please try again.</p></div>`; errEl.hidden = false; }
+<script>
+(function() {
+  const form      = document.getElementById('shopify-form')   as HTMLFormElement | null;
+  const input     = document.getElementById('shopify-input')  as HTMLInputElement | null;
+  const submitBtn = document.getElementById('shopify-submit') as HTMLButtonElement | null;
+  const clearBtn  = document.getElementById('shopify-clear-btn') as HTMLButtonElement | null;
+  const loadingEl = document.getElementById('shopify-loading') as HTMLElement | null;
+  const resultEl  = document.getElementById('shopify-result') as HTMLElement | null;
+  const errorEl   = document.getElementById('shopify-error')  as HTMLElement | null;
+  const statusEl  = document.getElementById('shopify-loading-status') as HTMLElement | null;
+
+  let stepInterval: number | null = null;
+
+  function esc(s: unknown) {
+    return String(s ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
-});
-document.querySelectorAll<HTMLButtonElement>('[data-shopify-example]').forEach((exampleBtn) => {
-  exampleBtn.addEventListener('click', () => {
-    if (!input || !form) return;
-    input.value = exampleBtn.dataset.shopifyExample ?? '';
-    input.focus();
-    form.requestSubmit();
+
+  function startStepAnimation() {
+    let currentStep = 1;
+    const steps = [
+      'Connecting to store domain & verifying SSL handshake',
+      'Scanning HTML DOM for Shopify storefront indicators',
+      'Extracting Shopify.theme configuration & BOOMR analytics',
+      'Matching Shopify Theme Store catalog & resolving custom names',
+    ];
+    document.querySelectorAll('.shopify-scan-step').forEach((el, idx) => {
+      el.classList.toggle('active', idx === 0);
+      el.classList.remove('done');
+    });
+    if (statusEl) statusEl.textContent = steps[0];
+
+    stepInterval = window.setInterval(() => {
+      if (currentStep < 4) {
+        const prev = document.getElementById(`shopify-step-${currentStep}`);
+        if (prev) {
+          prev.classList.remove('active');
+          prev.classList.add('done');
+        }
+        currentStep++;
+        const next = document.getElementById(`shopify-step-${currentStep}`);
+        if (next) next.classList.add('active');
+        if (statusEl) statusEl.textContent = steps[currentStep - 1];
+      }
+    }, 700);
+  }
+
+  function stopStepAnimation() {
+    if (stepInterval !== null) {
+      clearInterval(stepInterval);
+      stepInterval = null;
+    }
+    document.querySelectorAll('.shopify-scan-step').forEach((el) => {
+      el.classList.remove('active');
+      el.classList.add('done');
+    });
+  }
+
+  function setLoading(loading: boolean) {
+    if (!loadingEl || !resultEl || !errorEl || !submitBtn) return;
+    loadingEl.hidden = !loading;
+    submitBtn.disabled = loading;
+    submitBtn.innerHTML = loading
+      ? `<span>Detecting…</span>`
+      : `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span>Find Theme</span>`;
+
+    if (loading) {
+      resultEl.hidden = true;
+      errorEl.hidden = true;
+      startStepAnimation();
+    } else {
+      stopStepAnimation();
+    }
+  }
+
+  function copyText(text: string, btn: HTMLButtonElement) {
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> <span>Copied!</span>`;
+      setTimeout(() => { btn.innerHTML = orig; }, 2000);
+    }).catch(() => {});
+  }
+
+  function renderReport(data: any, queryUrl: string) {
+    const finalUrl = data.data?.finalUrl || queryUrl;
+    let hostname = queryUrl;
+    let isHttps = true;
+    try {
+      const parsed = new URL(/^https?:\/\//i.test(finalUrl) ? finalUrl : `https://${finalUrl}`);
+      hostname = parsed.hostname;
+      isHttps = parsed.protocol === 'https:';
+    } catch { /* noop */ }
+
+    const results: any[] = data.data?.results ?? [];
+    const shopify = results.find((r) => r.id === 'shopify');
+    const theme = data.data?.shopifyTheme;
+
+    // CASE 1: Not Shopify
+    if (!shopify) {
+      const ecomOther = results.filter((r) => r.category === 'ecommerce' || r.category === 'cms' || r.category === 'builder');
+      const otherNames = ecomOther.map((r) => r.name).join(', ');
+      const isWordpress = results.some((r) => r.id === 'wordpress');
+
+      return `
+        <div class="card-dark shopify-theme-card">
+          <div class="shopify-header-bar">
+            <div class="shopify-domain-lockup">
+              <span class="shopify-edge-pill"><span class="shopify-edge-dot"></span>Real-Time Edge Analysis</span>
+              <h2 class="shopify-domain-name">${esc(hostname)}</h2>
+            </div>
+            <span class="badge badge-neutral">${isHttps ? 'HTTPS' : 'HTTP'}</span>
+          </div>
+          <div>
+            <span class="badge badge-warning" style="margin-block-end: 8px;">Non-Shopify Platform</span>
+            <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+              This store does not run on Shopify
+            </h3>
+            <p class="type-body text-ash" style="margin: 0; max-inline-size: 600px;">
+              ${ecomOther.length > 0
+                ? `Our edge detector identified that this site is powered by <strong>${esc(otherNames)}</strong> instead of Shopify.`
+                : `We found no Shopify storefront scripts, CDN assets (cdn.shopify.com), or checkout identifiers on this domain.`}
+            </p>
+          </div>
+          <div class="shopify-actions-row">
+            ${isWordpress
+              ? `<a href="/wordpress-theme-detector?url=${encodeURIComponent(queryUrl)}" class="btn btn-brand">Detect WordPress Theme →</a>`
+              : ''}
+            <a href="/?url=${encodeURIComponent(queryUrl)}" class="btn btn-secondary-dark">Run Full Technology Scan →</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // CASE 2: Shopify found, but no theme exposed (Headless / Hydrogen)
+    if (!theme || (!theme.name && !theme.id && !theme.themeStoreName)) {
+      return `
+        <div class="card-dark shopify-theme-card">
+          <div class="shopify-header-bar">
+            <div class="shopify-domain-lockup">
+              <span class="shopify-edge-pill"><span class="shopify-edge-dot"></span>Real-Time Edge Analysis</span>
+              <h2 class="shopify-domain-name">${esc(hostname)}</h2>
+            </div>
+            <span class="badge chip-confirmed">Shopify Confirmed</span>
+          </div>
+          <div>
+            <span class="badge badge-warning" style="margin-block-end: 8px;">Theme Data Undetected</span>
+            <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 0 0 8px 0;">
+              Shopify detected, but theme not identifiable
+            </h3>
+            <p class="type-body text-ash" style="margin: 0; max-inline-size: 640px;">
+              Shopify platform signatures were verified, but the storefront does not declare standard
+              Liquid theme objects in page scripts. This usually indicates a <strong>Headless Shopify</strong> storefront
+              (built using Shopify Hydrogen, Next.js, or custom Storefront API) rather than a pre-built theme.
+            </p>
+          </div>
+          <div class="shopify-actions-row">
+            <a href="/?url=${encodeURIComponent(queryUrl)}" class="btn btn-secondary-dark">Run Full Technology Scan →</a>
+          </div>
+        </div>
+      `;
+    }
+
+    // CASE 3: Active Shopify Theme Found!
+    const effectiveName = theme.name || theme.themeStoreName || 'Custom Theme';
+    const baseTheme = theme.themeStoreName;
+    const hasRenamedBase = baseTheme && baseTheme.toLowerCase() !== effectiveName.toLowerCase();
+    const themeId = theme.id || 'Not exposed';
+    const storeId = theme.themeStoreId ? String(theme.themeStoreId) : 'N/A';
+    const version = theme.version || 'Online Store 2.0';
+    const role = theme.role || 'published (main)';
+    const storeUrl = theme.themeStoreUrl;
+    const isKnown = Boolean(theme.known || baseTheme);
+
+    const summaryText = `Shopify Theme: ${effectiveName}
+${baseTheme ? `Official Theme: ${baseTheme}\n` : ''}Storefront Theme ID: ${themeId}
+${theme.themeStoreId ? `Theme Store ID: ${theme.themeStoreId}\n` : ''}Version: ${version}
+Role: ${role}
+Site: ${finalUrl}`;
+
+    return `
+      <div class="card-dark shopify-theme-card">
+        <div class="shopify-header-bar">
+          <div class="shopify-domain-lockup">
+            <span class="shopify-edge-pill"><span class="shopify-edge-dot"></span>Real-Time Edge Analysis</span>
+            <h2 class="shopify-domain-name">${esc(hostname)}</h2>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <span class="badge badge-neutral">${isHttps ? 'HTTPS' : 'HTTP'}</span>
+            <span class="badge chip-confirmed">Confirmed</span>
+          </div>
+        </div>
+
+        <div class="shopify-theme-hero">
+          <div class="shopify-badge-row">
+            <span class="badge badge-filled">Shopify Theme</span>
+            <span class="badge chip-confirmed">Active</span>
+            ${isKnown ? `<span class="badge badge-neutral">Official Theme Store</span>` : `<span class="badge badge-warning">Custom Theme</span>`}
+          </div>
+          <h3 class="shopify-theme-title">${esc(effectiveName)}</h3>
+        </div>
+
+        ${hasRenamedBase ? `
+          <div class="shopify-store-banner">
+            <div>
+              <span>Merchant Renamed Theme: Built on official Shopify theme <strong>${esc(baseTheme)}</strong>.</span>
+            </div>
+            ${storeUrl ? `<a href="${esc(storeUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary-dark" style="font-size: 12px; block-size: 32px;">View in Theme Store ↗</a>` : ''}
+          </div>
+        ` : ''}
+
+        <div class="shopify-props-grid">
+          <div class="shopify-prop-tile">
+            <span class="shopify-prop-label">Store Theme Name</span>
+            <span class="shopify-prop-value"><strong>${esc(effectiveName)}</strong></span>
+          </div>
+
+          <div class="shopify-prop-tile">
+            <span class="shopify-prop-label">Official Base Theme</span>
+            <span class="shopify-prop-value">
+              ${baseTheme
+                ? (storeUrl ? `<a href="${esc(storeUrl)}" target="_blank" rel="noopener noreferrer">${esc(baseTheme)} ↗</a>` : esc(baseTheme))
+                : (isKnown ? esc(effectiveName) : 'Custom Architecture')}
+            </span>
+          </div>
+
+          <div class="shopify-prop-tile">
+            <span class="shopify-prop-label">Storefront Theme ID</span>
+            <div class="shopify-prop-value">
+              <code>${esc(themeId)}</code>
+              ${theme.id ? `
+                <button type="button" class="shopify-copy-icon-btn" data-copy-val="${esc(themeId)}" title="Copy theme ID" aria-label="Copy theme ID">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="shopify-prop-tile">
+            <span class="shopify-prop-label">Theme Store ID</span>
+            <span class="shopify-prop-value">${esc(storeId)}</span>
+          </div>
+
+          <div class="shopify-prop-tile">
+            <span class="shopify-prop-label">Theme Version</span>
+            <span class="shopify-prop-value">${esc(version)}</span>
+          </div>
+
+          <div class="shopify-prop-tile">
+            <span class="shopify-prop-label">Theme Role</span>
+            <span class="shopify-prop-value">${esc(role)}</span>
+          </div>
+        </div>
+
+        <div class="shopify-actions-row">
+          <button type="button" class="btn btn-secondary-dark shopify-copy-summary-btn" data-summary="${esc(summaryText)}">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy Theme Details</span>
+          </button>
+          ${storeUrl ? `
+            <a href="${esc(storeUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary-dark">
+              <span>View in Shopify Theme Store ↗</span>
+            </a>
+          ` : ''}
+          <a href="/?url=${encodeURIComponent(queryUrl)}" class="btn btn-ghost-dark">
+            <span>Run Full Technology Scan →</span>
+          </a>
+        </div>
+      </div>
+    `;
+  }
+
+  function wireResultActions(container: HTMLElement) {
+    container.querySelectorAll<HTMLButtonElement>('.shopify-copy-icon-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const val = btn.getAttribute('data-copy-val') ?? '';
+        if (val) copyText(val, btn);
+      });
+    });
+
+    container.querySelectorAll<HTMLButtonElement>('.shopify-copy-summary-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const sum = btn.getAttribute('data-summary') ?? '';
+        if (sum) copyText(sum, btn);
+      });
+    });
+  }
+
+  async function detect(url: string) {
+    if (!resultEl || !errorEl) return;
+    setLoading(true);
+
+    try {
+      const token = await ((window as any).cmsDetectorToken ? (window as any).cmsDetectorToken() : '');
+      const res = await fetch('/api/detect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, token }),
+      });
+      const data = await res.json() as any;
+      setLoading(false);
+
+      if (data.ok) {
+        resultEl.innerHTML = renderReport(data, url);
+        resultEl.hidden = false;
+        wireResultActions(resultEl);
+        resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        const code = data.error?.code ?? 'UNKNOWN';
+        const msg = data.error?.message ?? 'Detection failed. Please check the URL and try again.';
+        errorEl.innerHTML = `
+          <div class="card-dark shopify-theme-card">
+            <span class="badge badge-error">Inspection Notice (${esc(code)})</span>
+            <h3 class="type-heading-sm" style="color: var(--color-on-primary); margin: 8px 0 4px 0;">Could not complete detection</h3>
+            <p class="type-body text-ash" style="margin: 0 0 12px 0;">${esc(msg)}</p>
+            <div>
+              <button type="button" class="btn btn-secondary-dark shopify-retry-btn">Try again</button>
+            </div>
+          </div>
+        `;
+        errorEl.hidden = false;
+        errorEl.querySelector('.shopify-retry-btn')?.addEventListener('click', () => detect(url));
+      }
+    } catch {
+      setLoading(false);
+      errorEl.innerHTML = `
+        <div class="card-dark shopify-theme-card">
+          <span class="badge badge-error">Network Error</span>
+          <p class="type-body text-ash" style="margin: 8px 0 12px 0;">Could not connect to detection service. Please check your network connection.</p>
+          <div>
+            <button type="button" class="btn btn-secondary-dark shopify-retry-btn">Try again</button>
+          </div>
+        </div>
+      `;
+      errorEl.hidden = false;
+      errorEl.querySelector('.shopify-retry-btn')?.addEventListener('click', () => detect(url));
+    }
+  }
+
+  function updateClearBtn() {
+    if (!clearBtn || !input) return;
+    clearBtn.hidden = !input.value.trim();
+  }
+  input?.addEventListener('input', updateClearBtn);
+  clearBtn?.addEventListener('click', () => {
+    if (input) {
+      input.value = '';
+      input.focus();
+      updateClearBtn();
+    }
   });
-});
+  updateClearBtn();
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const url = input?.value.trim() ?? '';
+    if (url) {
+      try {
+        const u = new URL(window.location.href);
+        u.searchParams.set('url', url);
+        window.history.replaceState({}, '', u.toString());
+      } catch { /* noop */ }
+      detect(url);
+    }
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('[data-shopify-example]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (!input || !form) return;
+      input.value = btn.dataset.shopifyExample ?? '';
+      updateClearBtn();
+      input.focus();
+      form.requestSubmit();
+    });
+  });
+
+  // Check URL query param on initial page load
+  const urlParam = new URLSearchParams(window.location.search).get('url');
+  if (urlParam && input && form) {
+    input.value = urlParam;
+    updateClearBtn();
+    form.requestSubmit();
+  } else {
+    input?.focus();
+  }
+})();
 </script>

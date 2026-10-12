@@ -24,7 +24,7 @@ export const prerender = false;
 
 const TURNSTILE_SECRET = (import.meta.env?.TURNSTILE_SECRET as string | undefined) ?? '';
 const CACHE_TTL_SECONDS = 3600;
-const DETECTOR_REVISION = 3;
+const DETECTOR_REVISION = 5;
 
 async function verifyTurnstile(token: string): Promise<boolean> {
   if (!TURNSTILE_SECRET) return true;

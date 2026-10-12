@@ -52,7 +52,7 @@
     "category": "ecommerce",
     "signals": [
       { "type": "meta-generator", "pattern": "PrestaShop", "weight": 90, "strength": "definitive" },
-      { "type": "html-path", "pattern": "/modules/|/themes/.*prestashop", "weight": 60, "strength": "strong" },
+      { "type": "html-path", "pattern": "/(?:modules|themes)/prestashop|/modules/ps_[a-z0-9_-]+/", "weight": 60, "strength": "strong" },
       { "type": "html-regex", "pattern": "prestashop|window\\.prestashop", "weight": 70, "strength": "strong" },
       { "type": "cookie-name", "pattern": "^PrestaShop-", "weight": 80, "strength": "strong" }
     ],
@@ -64,7 +64,7 @@
     "category": "ecommerce",
     "signals": [
       { "type": "html-path", "pattern": "/catalog/view/theme/|/image/catalog/", "weight": 75, "strength": "strong" },
-      { "type": "html-regex", "pattern": "route=common/home|opencart", "weight": 65, "strength": "strong" },
+      { "type": "html-regex", "pattern": "route=common/home|index\\.php\\?route=|/catalog/view/javascript/opencart", "weight": 65, "strength": "strong" },
       { "type": "cookie-name", "pattern": "^OCSESSID$", "weight": 85, "strength": "strong" }
     ],
     "pageSlug": "opencart"
