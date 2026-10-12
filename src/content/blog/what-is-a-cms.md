@@ -55,4 +55,5 @@ Whether you are auditing competitor infrastructure, evaluating themes, or planni
 - **[CMS Detector AI](/)** — Instant scan for CMS engines, frameworks, hosting, and CDNs.
 - **[WordPress Theme Detector](/wordpress-theme-detector)** — Find active WordPress themes, parent templates, and plugins.
 - **[Shopify Theme Detector](/shopify-theme-detector)** — Identify active Shopify themes, versions, and Theme Store links.
-- **[Growth & Marketing Tech Detector](/growth-marketing-detector)** — Reveal third-party pixels, analytics, and CRM tools.
+- **[Marketing Tech Stack Detector](/marketing-tech-stack-detector)** — Reveal analytics, ad pixels, CRM automation, and payments.
+- **[Is This Site Safe?](/is-this-site-safe)** — Audit malware, phishing signals, and security vulnerabilities.

@@ -68,20 +68,44 @@ const faqs = [
 <Base
   title="Is This Site Safe? Free Website Safety Checker | CMS Detector AI"
   description="Check a website for known malware, phishing threats, suspicious redirects, domain reputation signals, and HTTPS security issues before you visit."
-  pagePath="/security-privacy-detector"
-  canonical="https://cmsdetectorai.com/security-privacy-detector"
+  pagePath="/is-this-site-safe"
+  canonical="https://cmsdetectorai.com/is-this-site-safe"
   ogImage="https://cmsdetectorai.com/og-security.png"
   jsonLd={[
     {
       '@context': 'https://schema.org',
       '@type': 'WebApplication',
       name: 'Is This Site Safe? Website Safety Checker',
-      url: 'https://cmsdetectorai.com/security-privacy-detector',
+      url: 'https://cmsdetectorai.com/is-this-site-safe',
       applicationCategory: 'SecurityApplication',
       operatingSystem: 'All',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
       description: 'Check a website for known malware, phishing threats, suspicious redirects, domain reputation signals, and HTTPS security issues before you visit.',
       inLanguage: 'en',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: 'Home',
+          item: 'https://cmsdetectorai.com',
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: 'Tools',
+          item: 'https://cmsdetectorai.com',
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: 'Is This Site Safe?',
+          item: 'https://cmsdetectorai.com/is-this-site-safe',
+        },
+      ],
     },
     {
       '@context': 'https://schema.org',
@@ -106,7 +130,7 @@ const faqs = [
           items={[
             { label: 'Home', href: '/' },
             { label: 'Tools', href: '/' },
-            { label: 'Website Safety & Security Checker' },
+            { label: 'Is This Site Safe?' },
           ]}
         />
         <div class="eyebrow-lockup">
@@ -511,7 +535,7 @@ const faqs = [
     </div>
   </Section>
 
-  <RelatedTools currentPath="/security-privacy-detector" />
+  <RelatedTools currentPath="/is-this-site-safe" />
 </Base>
 
 <style>
@@ -1891,7 +1915,7 @@ const faqs = [
           + `**Passed Checks**: ${data?.safety?.stats?.passed ?? 0}\n`
           + `**Concerns**: ${data?.safety?.stats?.concerns ?? 0}\n`
           + `**Threats**: ${data?.safety?.stats?.threats ?? 0}\n\n`
-          + `Audited by CMS Detector AI (https://cmsdetectorai.com/security-privacy-detector)`;
+          + `Audited by CMS Detector AI (https://cmsdetectorai.com/is-this-site-safe)`;
         try {
           await navigator.clipboard.writeText(text);
           const origHtml = b.innerHTML;

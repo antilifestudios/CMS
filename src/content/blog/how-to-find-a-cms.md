@@ -53,4 +53,4 @@ Most major content platforms expose standardized administrative or API routes. A
 
 Modern enterprise websites frequently decouple their front-end presentations from their backend CMSs (known as headless architecture) or strip server headers for security hardening. 
 
-In such cases, an automated tool like [CMS Detector AI](/) crawls multiple pages, examines script bundles, analyzes DNS records, and identifies subtle framework signals that manual checks might overlook. You can also evaluate marketing pixels with our [Growth & MarTech Detector](/growth-marketing-detector) or audit site health with our [Website Safety Checker](/security-privacy-detector).
+In such cases, an automated tool like [CMS Detector AI](/) crawls multiple pages, examines script bundles, analyzes DNS records, and identifies subtle framework signals that manual checks might overlook. You can also evaluate marketing pixels with our [Marketing Tech Stack Detector](/marketing-tech-stack-detector) or audit site health with our [Is This Site Safe?](/is-this-site-safe).
