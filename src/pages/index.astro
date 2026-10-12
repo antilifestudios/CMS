@@ -2705,29 +2705,42 @@ init();
     display: flex;
     align-items: flex-start;
     gap: var(--spacing-xs);
-    flex-wrap: wrap;
+    min-width: 0;
   }
   .evidence-type {
     flex-shrink: 0;
-    padding: 2px 6px;
+    padding: 4px 6px;
     background-color: var(--color-canvas);
     border-radius: var(--radius-app-sm);
     color: var(--color-mute);
-    min-inline-size: 110px;
+    width: 115px;
+    min-inline-size: 115px;
+    max-inline-size: 115px;
+    font-size: 10.5px;
+    line-height: 1.4;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .evidence-artifact {
     font-family: var(--font-mono);
     font-size: 11px;
+    line-height: 1.5;
     color: var(--color-ash);
     word-break: break-all;
     overflow-wrap: anywhere;
     white-space: pre-wrap;
     background-color: var(--color-canvas);
-    padding: 2px 6px;
+    padding: 4px 8px;
     border-radius: var(--radius-app-sm);
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     min-width: 0;
+  }
+
+  .evidence-item .evidence-copy-btn {
+    flex-shrink: 0;
+    margin-left: auto;
+    align-self: flex-start;
   }
 
   /* ---- One card template (scan summary cards) ---- */
@@ -2822,7 +2835,7 @@ init();
     align-items: baseline;
     gap: 6px 8px;
     min-width: 0;
-    flex: 1 1 auto;
+    flex: 1 1 0%;
   }
 
   .evidence-name {
